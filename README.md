@@ -1,2 +1,2 @@
 # trnsl8r_server
- Server implmentation of a translation service - prototype
+Server implementation of a translation service - prototype
