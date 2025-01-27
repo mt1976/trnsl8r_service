@@ -18,7 +18,7 @@ COPY data ./data/
 COPY README.md ./
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o trnsl8r_service
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./trnsl8r_service
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -28,4 +28,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o trnsl8r_service
 EXPOSE 7076
 
 # Run
-CMD ["trnsl8r_service"]
+CMD ["./trnsl8r_service"]
