@@ -9,7 +9,7 @@ releaseDate = "2021-07-01"
 copyright = "2021"
 author = "Cervical Hamster"
 license= "MIT"
-locale = "en-GB"
+locale = "en_GB"
 
 [Translation]
 locale = "en-GB"
