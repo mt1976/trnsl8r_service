@@ -1,0 +1,134 @@
+[Application]
+name = "trnsl8r_service"
+prefix = "ts"
+home = "dashboard"
+description = "This application provides for monitoring and notification of network devices."
+version = "0.0.1"
+environment = "development"
+releaseDate = "2021-07-01"
+copyright = "2021"
+author = "Cervical Hamster"
+license= "MIT"
+locale = "en-GB"
+
+[Translation]
+locale = "en-GB"
+host = "localhost"
+port = 7076
+protocol = "http"
+
+[Server]
+host = "127.0.0.1"
+port = 7076
+protocol = "http"
+environment = "development"
+
+[Assets]
+logo = "co-logo.png"
+favicon = "co-favicon.ico"
+
+[Dates]
+dateTimeFormat = "2006-01-02 15:04:05"
+dateFormat = "02/01/2006"
+timeFormat = "15:04:05"
+backup = "060102"
+backupFolder = "060102150405"
+human = "02 Jan 2006"
+dmy2 = "02/01/06"
+ymd = "2006-01-02"
+internal = "20060102"
+
+[History]
+maxEntries = 10
+
+[Security]
+sessionKey = "xs-id"
+sessionUserIDKey = "xs-u-id"
+sessionUserCodeKey = "xs-u-code"
+sessionTokenKey = "xs-token"
+sessionExpiry = 3600
+sessionExpiryKey = "xs-expiry"
+serviceUserName = "service"
+serviceUserCode = "sys"
+
+[Message]
+typeKey = "xm-type"
+titleKey = "xm-title"
+contentKey = "xm-content"
+actionKey = "xm-act"
+
+[Display]
+delim = "⋮"
+
+[Pushover]
+UserKey = "uyosdopsu9wxxo7b264bmnnhbfz8nj"
+APIToken = "autd5u19nczbs5v6zq2i7afpzjpe2v"
+
+[Status]
+unknown = "UNKN"
+online = "ONLN"
+offline = "OFLN"
+error = "ERRO"
+warning = "WARN"
+
+[[Hosts]]
+name = "SILICON"
+fqdn = "silicon.local"
+ip = "192.168.1.145"
+zone = "local"
+
+[[Hosts]]
+name = "PROTEUS"
+fqdn = "proteus.local"
+ip = "10.147.20.104"
+zone = "zero"
+
+[[Hosts]]
+name = "UNREACHABLE"
+fqdn = "unreachable.any"
+ip = "192.192.192.192"
+zone = "any"
+
+[[Hosts]]
+name = "HPDeskJet"
+fqdn = "hp6c02e0332032.local."
+ip = "192.168.1.150"
+zone = "local"
+
+[[Hosts]]
+name = "EUROPA"
+fqdn = "europa.local"
+ip = "192.168.1.103"
+zone = "local"
+
+[[Hosts]]
+name = "MERCURY"
+fqdn = "mercury.zero"
+ip = "10.147.20.106"
+zone = "zero"
+
+[[Hosts]]
+name = "HELIOS"
+fqdn = "helios.zero"
+ip = "10.147.20.110"
+zone = "zero"
+
+[[Hosts]]
+name = "ORION"
+fqdn = "orion.zero"
+ip = "10.147.20.229"
+zone = "zero"
+
+[[Hosts]]
+name = "FATHER"
+fqdn = "father.zero"
+ip = "10.147.20.221"
+zone = "zero"
+
+[[Hosts]]
+name = "pdp1173"
+fqdn = "pdp1173.com"
+ip = "pdp1173.com"
+zone = "external"
+
+

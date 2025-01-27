@@ -1,0 +1,26 @@
+package routes
+
+import (
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/mt1976/trnsl8r_service/app/jobs"
+	"github.com/mt1976/trnsl8r_service/app/support/logger"
+)
+
+func Backup(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	logger.EventLogger.Println("Backup")
+
+	trace(r)
+
+	err := jobs.DatabaseBackup.Run()
+	if err != nil {
+		logger.ErrorLogger.Print(err.Error())
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	_, err = w.Write([]byte("done"))
+	if err != nil {
+		logger.ErrorLogger.Print(err.Error())
+	}
+}
