@@ -29,6 +29,15 @@ func New(signature, message string) (TextStore, error) {
 	u.Original = message
 	u.Source = cfg.ApplicationName()
 	u.Locale = cfg.ApplicationLocale()
+
+	u.ConsumedBy = addConsumer(u.ConsumedBy, cfg.ApplicationName())
+
+	if u.Localised == nil {
+		u.Localised = make(map[string]string)
+	}
+	u.Localised["en_GB"] = "reserved"
+	u.Localised["eu_ES"] = "reserved"
+
 	// Add basic attributes
 
 	// Record the create action in the audit data
@@ -70,6 +79,37 @@ func New(signature, message string) (TextStore, error) {
 	logger.AuditLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", strings.ToUpper(tableName), audit.CREATE.Code(), signature, msg)
 
 	return u, nil
+}
+
+// addConsumer adds the given appName to the list of consumers if it is not already present.
+// If the input list is nil, it initializes a new list with the appName.
+// Parameters:
+// - u: A slice of strings representing the list of consumers.
+// - appName: A string representing the name of the application to be added to the list.
+// Returns:
+// - A slice of strings with the appName added if it was not already present.
+func addConsumer(u []string, appName string) []string {
+
+	if u == nil {
+		u = []string{}
+		u = append(u, appName)
+		return u
+	}
+
+	inList := false
+
+	for _, v := range u {
+		if v == appName {
+			// Already in the list
+			inList = true
+		}
+	}
+
+	if !inList {
+		u = append(u, appName)
+	}
+
+	return u
 }
 
 // update updates the current dest instance in the database

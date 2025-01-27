@@ -68,3 +68,18 @@ func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 		logger.InfoLogger.Println("Original: {{", item.Original, "}} Translation: {{", translation.String(), "}}", "Information: {{", translation.Information, "}}")
 	}
 }
+
+func ExportTranslations(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	//logger.EventLogger.Printf("[TEST] [View]")
+
+	trace(r)
+
+	err := textStore.ExportCSV()
+	if err != nil {
+		logger.ErrorLogger.Print(err.Error())
+		oops(w, r, nil, "error", err.Error())
+	}
+	//successMessage(w, r, nil, "success - translations exported")
+	logger.EventLogger.Printf("[TEST] [Export] [Translations] [Success]")
+	http.Redirect(w, r, "/test", http.StatusSeeOther)
+}

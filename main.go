@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"io"
+	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
@@ -24,7 +28,13 @@ func init() {
 
 func main() {
 
-	err := error(nil)
+	err := startup()
+	if err != nil {
+		logger.ErrorLogger.Fatal(err.Error())
+	}
+
+	err = error(nil)
+
 	logger.InfoLogger.Printf("[%v] Starting...", cfg.ApplicationName())
 	logger.InfoLogger.Printf("[%v] Connecting...", cfg.ApplicationName())
 	err = dao.Initialise(cfg)
@@ -102,4 +112,94 @@ func setupSystemUser() {
 	sysUName := "service"
 
 	logger.InfoLogger.Printf("System User [%v] [%v] Available", sysUName, sysUCode)
+}
+
+func startup() error {
+	list, err := os.ReadDir("defaults")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, entry := range list {
+		if entry.IsDir() {
+			continue
+		}
+		if strings.HasSuffix(entry.Name(), ".toml") {
+			continue
+		}
+		if entry.Name() == ".DS_Store" {
+			continue
+		}
+		//logger.InfoLogger.Printf("Copying %v", entry.Name())
+		from := "./defaults" + string(os.PathSeparator) + entry.Name()
+		to := "./data" + string(os.PathSeparator) + "defaults" + string(os.PathSeparator) + entry.Name()
+		logger.EventLogger.Printf("Copying [%v] to [%v]", from, to)
+		err = startupCopyFile(from, to)
+		if err != nil {
+			logger.ErrorLogger.Println(err.Error())
+		}
+		//err = CopyFile("defaults/defaults.toml", "data/defaults/defaults.toml")
+
+	}
+	return err
+}
+
+// startupCopyFile copies a file from src to dst. If src and dst files exist, and are
+// the same, then return success. Otherise, attempt to create a hard link
+// between the two files. If that fail, copy the file contents from src to dst.
+func startupCopyFile(src, dst string) (err error) {
+	sfi, err := os.Stat(src)
+	if err != nil {
+		return
+	}
+	if !sfi.Mode().IsRegular() {
+		// cannot copy non-regular files (e.g., directories,
+		// symlinks, devices, etc.)
+		return fmt.Errorf("CopyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
+	}
+	dfi, err := os.Stat(dst)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return
+		}
+	} else {
+		if !(dfi.Mode().IsRegular()) {
+			return fmt.Errorf("CopyFile: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
+		}
+		if os.SameFile(sfi, dfi) {
+			return
+		}
+	}
+	if err = os.Link(src, dst); err == nil {
+		return
+	}
+	err = startupCopyFileContents(src, dst)
+	return
+}
+
+// startupCopyFileContents copies the contents of the file named src to the file named
+// by dst. The file will be created if it does not already exist. If the
+// destination file exists, all it's contents will be replaced by the contents
+// of the source file.
+func startupCopyFileContents(src, dst string) (err error) {
+	in, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer func() {
+		cerr := out.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+	if _, err = io.Copy(out, in); err != nil {
+		return
+	}
+	err = out.Sync()
+	return
 }
