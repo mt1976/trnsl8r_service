@@ -15,6 +15,7 @@ COPY main.go ./
 COPY res ./res
 COPY app ./app/
 COPY data ./data/
+COPY defaults ./defaults/
 COPY README.md ./
 
 # Build
