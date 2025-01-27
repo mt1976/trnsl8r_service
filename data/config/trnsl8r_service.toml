@@ -14,12 +14,12 @@ locale = "en-GB"
 [Translation]
 locale = "en-GB"
 host = "localhost"
-port = 7076
+port = 8080
 protocol = "http"
 
 [Server]
 host = "127.0.0.1"
-port = 7076
+port = 8080
 protocol = "http"
 environment = "development"
 

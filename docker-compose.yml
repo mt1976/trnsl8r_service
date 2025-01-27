@@ -1,0 +1,19 @@
+---
+services:
+  trnsl8r_service:
+    build: .
+    image: trnsl8r_service:latest
+    container_name: trnsl8r_service
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /Users/matttownsend/Docker/trnsl8r_service/backups:/app/data/backups
+      - /Users/matttownsend/Docker/trnsl8r_service/database:/app/data/database
+      - /Users/matttownsend/Docker/trnsl8r_service/dumps:/app/data/dumps
+      - /Users/matttownsend/Docker/trnsl8r_service/logs:/app/data/logs
+      - /Users/matttownsend/Docker/trnsl8r_service/defaults:/app/data/defaults
+    ports:
+      - 5055:8080
+    restart: unless-stopped

@@ -49,9 +49,9 @@ func ExportCSV() error {
 }
 
 func openTextsFile() *os.File {
-	exportPath := paths.Config()
+	exportPath := paths.Defaults()
 	textsFileName := fmt.Sprintf("%s%s/%s", paths.Application().String(), exportPath, "translations.csv")
-
+	logger.InfoLogger.Printf("Export File: [%v]", textsFileName)
 	// fmt.Printf("exportPath: %v\n", exportPath)
 	// fmt.Printf("textsFile: %v\n", textsFileName)
 

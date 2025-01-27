@@ -61,6 +61,10 @@ func Config() FileSystemPath {
 	return FileSystemPath{Data().String() + "/config"}
 }
 
+func Defaults() FileSystemPath {
+	return FileSystemPath{Data().String() + "/defaults"}
+}
+
 func Logs() FileSystemPath {
 	return FileSystemPath{Data().String() + "/logs"}
 }
