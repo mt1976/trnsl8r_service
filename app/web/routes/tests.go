@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
-	"github.com/mt1976/trnsl8r_service/app/support/paths"
+	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/paths"
 	"github.com/mt1976/trnsl8r_service/app/web/pages"
 )
 

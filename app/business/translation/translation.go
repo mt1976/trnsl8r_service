@@ -1,9 +1,9 @@
 package translation
 
 import (
+	"github.com/mt1976/frantic-plum/id"
+	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
-	"github.com/mt1976/trnsl8r_service/app/support/id"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
 )
 
 func Get(in string) string {

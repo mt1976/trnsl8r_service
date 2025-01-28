@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/trnsl8r_service/app/support/config"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
+	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/logger"
 )
 
 var cfg *config.Configuration

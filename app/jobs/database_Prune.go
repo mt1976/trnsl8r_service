@@ -5,14 +5,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mt1976/frantic-plum/application"
+	"github.com/mt1976/frantic-plum/config"
+	dates "github.com/mt1976/frantic-plum/date"
+	"github.com/mt1976/frantic-plum/io"
+	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/paths"
+	"github.com/mt1976/frantic-plum/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
-	"github.com/mt1976/trnsl8r_service/app/support/application"
-	"github.com/mt1976/trnsl8r_service/app/support/config"
-	dates "github.com/mt1976/trnsl8r_service/app/support/date"
-	"github.com/mt1976/trnsl8r_service/app/support/io"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
-	"github.com/mt1976/trnsl8r_service/app/support/paths"
-	"github.com/mt1976/trnsl8r_service/app/support/timing"
 )
 
 type databasePrune struct {

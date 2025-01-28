@@ -1,0 +1,39 @@
+original|message
+Scheduled Database Backup|Scheduled Database Backup
+Started|Started
+Completed|Completed
+Scheduled Database Maintenance - Prune Old Backups|Scheduled Database Maintenance - Prune Old Backups
+⛓️‍💥 OFFLINE : Sent=[%v] Packets Recv=[%v]|⛓️‍💥 OFFLINE : Sent=[%v] Packets Recv=[%v]
+😀 ONLINE : Rtts=[%v]|😀 ONLINE : Rtts=[%v]
+404 page not found|404 page not found
+Authority Granted|Authority Granted
+Home|Home
+Host Worker - Check Hosts Availability|Host Worker - Check Hosts Availability
+Login|Login
+List|List
+Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]|Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]
+[SECURITY] Method=[%s] URI=[%s] Header[%v]|[SECURITY] Method=[%s] URI=[%s] Header[%v]
+Scheduled|Scheduled
+Route|Route
+Texts|Monkey
+Test|Test
+This application provides for monitoring and notification of network devices.|This application provides for monitoring and notification of network devices.
+View|View
+demon-pear|demon-pear
+dp|dp
+login|login
+[%v] - [%v] - Status Change [%v] -> [%v]|[%v] - [%v] - Status Change [%v] -> [%v]
+[%v] DUPLICATE %v already in use|[%v] DUPLICATE %v already in use
+trnsl8r_service|trnsl8r_service
+ts|ts
+Tests|Tests
+Edit|Edit
+Message updated from [%v]->[%v]|Message updated from [%v]->[%v]
+Text %v : |Text %v : 
+Message|Message
+Success|Success
+success|success
+🙁+ERROR+:+%v|🙁+ERROR+:+%v
+Text|Text
+Monkey|Monkey
+demon_pear|Demon Pear

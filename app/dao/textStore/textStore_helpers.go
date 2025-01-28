@@ -3,8 +3,8 @@ package textStore
 import (
 	"strings"
 
-	support "github.com/mt1976/trnsl8r_service/app/support"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
+	"github.com/mt1976/frantic-plum/errors"
+	"github.com/mt1976/frantic-plum/logger"
 )
 
 func (u *TextStore) prepare() (TextStore, error) {
@@ -42,7 +42,7 @@ func (u *TextStore) dup(name string) (TextStore, error) {
 		//logger.InfoLogger.Printf("CHK: Code:[%v] s.Code:[%v] s.Audit.DeletedBy:[%v]", testCode, s.Code, s.Audit.DeletedBy)
 		if checkValue == testValue && s.Audit.DeletedBy == "" {
 			//logger.InfoLogger.Printf("[%v] DUPLICATE %v already in use", strings.ToUpper(tableName), name)
-			return s, support.ErrorDuplicate
+			return s, errors.ErrorDuplicate
 		}
 	}
 

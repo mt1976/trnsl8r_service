@@ -1,8 +1,8 @@
 package pages
 
 import (
+	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
 )
 
 func TextView(title, action, id string) (*Page, error) {

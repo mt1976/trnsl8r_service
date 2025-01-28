@@ -1,11 +1,11 @@
 package pages
 
 import (
+	"github.com/mt1976/frantic-plum/application"
+	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
-	"github.com/mt1976/trnsl8r_service/app/support/application"
-	"github.com/mt1976/trnsl8r_service/app/support/config"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
-	"github.com/mt1976/trnsl8r_service/app/support/paths"
 )
 
 var cfg *config.Configuration

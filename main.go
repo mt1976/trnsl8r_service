@@ -9,14 +9,13 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 	"github.com/mt1976/trnsl8r_service/app/dao"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 	"github.com/mt1976/trnsl8r_service/app/jobs"
-	"github.com/mt1976/trnsl8r_service/app/support"
-	"github.com/mt1976/trnsl8r_service/app/support/config"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
-	"github.com/mt1976/trnsl8r_service/app/support/timing"
 	"github.com/mt1976/trnsl8r_service/app/web/routes"
 )
 
@@ -63,20 +62,20 @@ func main() {
 
 	timer := timing.Start(na, "Initialise", "Service")
 
-	support.Banner(na, "Initialise", "Start...")
+	logger.Banner(na, "Initialise", "Start...")
 
 	// Preload the text store
-	support.Banner(na, "Texts", "Importing")
+	logger.Banner(na, "Texts", "Importing")
 	err = textStore.ImportCSV()
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 	}
 
-	support.Banner(na, "Texts", "Imported")
+	logger.Banner(na, "Texts", "Imported")
 
-	support.Banner(na, "Initialise", "Done")
+	logger.Banner(na, "Initialise", "Done")
 
-	support.Banner(na, "Routes", "Setup")
+	logger.Banner(na, "Routes", "Setup")
 
 	router := httprouter.New()
 	router = routes.Setup(router)
@@ -87,7 +86,7 @@ func main() {
 	})
 
 	//logger.InfoLogger.Println("APP: Routes Setup")
-	support.Banner(na, "Routes", "Done")
+	logger.Banner(na, "Routes", "Done")
 
 	// Start the job processor
 	jobs.Start()
@@ -105,7 +104,7 @@ func main() {
 }
 
 func setupSystemUser() {
-	support.Banner("System", "Users", "Setup")
+	logger.Banner("System", "Users", "Setup")
 	// Create the system user
 
 	sysUCode := "sys"

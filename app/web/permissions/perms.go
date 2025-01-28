@@ -3,7 +3,7 @@ package permissions
 import (
 	"fmt"
 
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
+	"github.com/mt1976/frantic-plum/logger"
 )
 
 type Rights struct {

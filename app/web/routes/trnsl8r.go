@@ -7,10 +7,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 
+	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/timing"
 	trnsl8r "github.com/mt1976/trnsl8r_connect"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
-	"github.com/mt1976/trnsl8r_service/app/support/timing"
 )
 
 func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

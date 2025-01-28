@@ -8,13 +8,13 @@ import (
 	"strings"
 
 	"github.com/gocarina/gocsv"
+	"github.com/mt1976/frantic-plum/dao/audit"
+	"github.com/mt1976/frantic-plum/dao/database"
+	"github.com/mt1976/frantic-plum/errors"
+	"github.com/mt1976/frantic-plum/id"
+	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
-	audit "github.com/mt1976/trnsl8r_service/app/dao/support/audit"
-	"github.com/mt1976/trnsl8r_service/app/dao/support/database"
-	support "github.com/mt1976/trnsl8r_service/app/support"
-	"github.com/mt1976/trnsl8r_service/app/support/id"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
-	"github.com/mt1976/trnsl8r_service/app/support/paths"
 )
 
 func ExportCSV() error {
@@ -125,7 +125,7 @@ func load(original, message string) (TextStore, error) {
 
 	// Log the dest instance before the creation
 	xtext, err := u.prepare()
-	if err == support.ErrorDuplicate {
+	if err == errors.ErrorDuplicate {
 		// This is OK, do nothing as this is a duplicate record
 		// we ignore duplicate destinations.
 		logger.WarningLogger.Printf("[%v] DUPLICATE %v already in use", strings.ToUpper(tableName), message)

@@ -1,7 +1,7 @@
 package pages
 
 import (
-	lookup "github.com/mt1976/trnsl8r_service/app/dao/support/lookup"
+	dao "github.com/mt1976/frantic-plum/dao/lookup"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
@@ -33,5 +33,5 @@ type Page struct {
 	TextList    []textStore.TextStore
 	TextItem    textStore.TextStore
 	NoTextItems int
-	HostsSelect lookup.Lookup
+	HostsSelect dao.Lookup
 }

@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"strings"
 
-	audit "github.com/mt1976/trnsl8r_service/app/dao/support/audit"
-	"github.com/mt1976/trnsl8r_service/app/dao/support/database"
-	support "github.com/mt1976/trnsl8r_service/app/support"
-	"github.com/mt1976/trnsl8r_service/app/support/config"
-	"github.com/mt1976/trnsl8r_service/app/support/io"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
-	"github.com/mt1976/trnsl8r_service/app/support/paths"
-	"github.com/mt1976/trnsl8r_service/app/support/timing"
-	stopwatch "github.com/mt1976/trnsl8r_service/app/support/timing"
+	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/dao/audit"
+	"github.com/mt1976/frantic-plum/dao/database"
+	"github.com/mt1976/frantic-plum/errors"
+	"github.com/mt1976/frantic-plum/io"
+	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/paths"
+	"github.com/mt1976/frantic-plum/timing"
+	stopwatch "github.com/mt1976/frantic-plum/timing"
 )
 
 // New creates a New dest with the given name and saves it to the database
@@ -23,29 +23,29 @@ func New(signature, message string) (TextStore, error) {
 	//logger.InfoLogger.Printf("ACT: NEW New %v %v %v", tableName, name, destination)
 	cfg := config.Get()
 	// Create a new d
-	u := TextStore{}
-	u.Signature = signature
-	u.Message = message
-	u.Original = message
-	u.Source = cfg.ApplicationName()
-	u.Locale = cfg.ApplicationLocale()
+	t := TextStore{}
+	t.Signature = signature
+	t.Message = message
+	t.Original = message
+	t.Source = cfg.ApplicationName()
+	t.Locale = cfg.ApplicationLocale()
 
-	u.ConsumedBy = addConsumer(u.ConsumedBy, cfg.ApplicationName())
+	t.ConsumedBy = addConsumer(t.ConsumedBy, cfg.ApplicationName())
 
-	if u.Localised == nil {
-		u.Localised = make(map[string]string)
+	if t.Localised == nil {
+		t.Localised = make(map[string]string)
 	}
-	u.Localised["en_GB"] = "reserved"
-	u.Localised["eu_ES"] = "reserved"
+	t.Localised["en_GB"] = "reserved"
+	t.Localised["eu_ES"] = "reserved"
 
 	// Add basic attributes
 
 	// Record the create action in the audit data
-	_ = u.Audit.Action(nil, audit.CREATE.WithMessage(fmt.Sprintf("New text [%v]", message)))
+	_ = t.Audit.Action(nil, audit.CREATE.WithMessage(fmt.Sprintf("New text [%v]", message)))
 
 	// Log the dest instance before the creation
-	xtext, err := u.prepare()
-	if err == support.ErrorDuplicate {
+	xtext, err := t.prepare()
+	if err == errors.ErrorDuplicate {
 		// This is OK, do nothing as this is a duplicate record
 		// we ignore duplicate destinations.
 		logger.WarningLogger.Printf("[%v] DUPLICATE %v already in use", strings.ToUpper(tableName), message)
@@ -60,15 +60,15 @@ func New(signature, message string) (TextStore, error) {
 	}
 
 	// Save the dest instance to the database
-	if u.Signature == "" {
+	if t.Signature == "" {
 		logger.WarningLogger.Printf("[%v] ID is required, skipping", strings.ToUpper(tableName))
 		return TextStore{}, nil
 	}
 
-	err = database.Create(&u)
+	err = database.Create(&t)
 	if err != nil {
 		// Log and panic if there is an error creating the dest instance
-		logger.ErrorLogger.Printf("[%v] Create [%v] %s", strings.ToUpper(tableName), u.Original, err.Error())
+		logger.ErrorLogger.Printf("[%v] Create [%v] %s", strings.ToUpper(tableName), t.Original, err.Error())
 		panic(err)
 	}
 
@@ -78,7 +78,7 @@ func New(signature, message string) (TextStore, error) {
 	// Return the created dest and nil error
 	logger.AuditLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", strings.ToUpper(tableName), audit.CREATE.Code(), signature, msg)
 
-	return u, nil
+	return t, nil
 }
 
 // addConsumer adds the given appName to the list of consumers if it is not already present.

@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/jsuar/go-cron-descriptor/pkg/crondescriptor"
+	"github.com/mt1976/frantic-plum/date"
+	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
-	"github.com/mt1976/trnsl8r_service/app/support/date"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
 )
 
 func StartOfDay(t time.Time) time.Time {

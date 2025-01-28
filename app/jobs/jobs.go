@@ -1,9 +1,9 @@
 package jobs
 
 import (
+	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
-	"github.com/mt1976/trnsl8r_service/app/support/config"
-	"github.com/mt1976/trnsl8r_service/app/support/logger"
 	cron3 "github.com/robfig/cron/v3"
 )
 
