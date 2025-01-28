@@ -22,3 +22,4 @@ go.work
 data/backups/*
 data/database/*
 data/logs/*
+.DS_Store
