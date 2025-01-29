@@ -44,8 +44,8 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 	router.GET(announceInsecure("/fail"), Fail)
 	router.GET(announceInsecure("/ExportTranslations"), ExportTranslations) // Not Required
 
-	router.GET(announceInsecure("/trnsl8r/translate/:message"), Trnsl8r)
-	router.GET(announceInsecure("/trnsl8r/test"), Trnsl8r_Test)
+	router.GET(announceInsecure("/trnsl8r/:origin/:message"), Trnsl8r)
+	router.GET(announceInsecure("/testit"), Trnsl8r_Test)
 
 	// Special Routes
 	if cfg.ApplicationModeIs(config.MODE_DEVELOPMENT) {

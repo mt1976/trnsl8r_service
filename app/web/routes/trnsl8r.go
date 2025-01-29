@@ -3,10 +3,12 @@ package routes
 import (
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 
+	"github.com/mt1976/frantic-plum/config"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/frantic-plum/timing"
 	trnsl8r "github.com/mt1976/trnsl8r_connect"
@@ -15,17 +17,37 @@ import (
 
 func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
+	c := config.Get()
+
 	itemToTranslate := ps.ByName("message")
+	originOfRequest := ps.ByName("origin")
 
 	watch := timing.Start("Trnsl8r", "Translate", itemToTranslate)
 
-	logger.TranslationLogger.Println("Request to translate message {{", itemToTranslate, "}}")
+	logger.TranslationLogger.Println("Request to translate message [", itemToTranslate, "]")
 
 	if itemToTranslate == "" {
 		err := fmt.Errorf("No message to translate")
 		logger.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
 		oops(w, r, nil, "error", err.Error())
+		return
+	}
+
+	if originOfRequest == "" {
+		err := fmt.Errorf("No origin of request, a valid origin is required")
+		logger.ErrorLogger.Println(err.Error())
+		watch.Stop(0)
+		oops(w, r, nil, "error", err.Error())
+		return
+	}
+
+	if !slices.Contains(c.GetValidOrigins(), originOfRequest) {
+		err := fmt.Errorf("Invalid origin of request [%v]", originOfRequest)
+		logger.ErrorLogger.Println(err.Error())
+		watch.Stop(0)
+		oops(w, r, nil, "error", err.Error())
+		return
 	}
 
 	translatedItem := translation.Get(itemToTranslate)
@@ -35,20 +57,23 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		logger.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
 		oops(w, r, nil, "error", err.Error())
+		return
 	}
 
 	// Respond with the translated item and a success status
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("Application", cfg.ApplicationName())
-	w.WriteHeader(http.StatusOK)
+
 	fmt.Fprintf(w, "{\"message\":\"%v\"}", translatedItem)
+	w.WriteHeader(http.StatusOK)
+	logger.InfoLogger.Println("Translated message [", itemToTranslate, "] to [", translatedItem, "]")
 	watch.Stop(1)
 }
 
 func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Build a URI query string
-	tl8 := trnsl8r.NewRequest().WithProtocol(cfg.TranslationProtocol()).WithHost(cfg.TranslationHost()).WithPort(cfg.TranslationPort()).WithLogger(logger.TranslationLogger).WithOriginOf(cfg.ApplicationName())
+	tl8 := trnsl8r.NewRequest().WithProtocol(cfg.TranslationProtocol()).WithHost(cfg.TranslationHost()).WithPort(cfg.TranslationPort()).WithLogger(logger.InfoLogger).WithOriginOf("trnsl8r_connect")
 
 	tl8.Spew()
 

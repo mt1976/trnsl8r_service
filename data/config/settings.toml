@@ -131,4 +131,9 @@ fqdn = "pdp1173.com"
 ip = "pdp1173.com"
 zone = "external"
 
-
+[[Origins]]
+name = "demon-pear"
+[[Origins]]
+name = "trnsl8r_connect"
+[[Origins]]
+name = "cosmic-orange"

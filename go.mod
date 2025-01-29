@@ -7,13 +7,13 @@ require (
 	github.com/go-playground/validator/v10 v10.24.0 // indirect
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
 	github.com/julienschmidt/httprouter v1.3.0
-	github.com/mt1976/trnsl8r_connect v0.0.1
+	github.com/mt1976/trnsl8r_connect v0.0.2
 	github.com/robfig/cron/v3 v3.0.1
 )
 
 require (
 	github.com/jsuar/go-cron-descriptor v0.1.0
-	github.com/mt1976/frantic-plum v0.0.2
+	github.com/mt1976/frantic-plum v0.0.5
 )
 
 require (
@@ -35,7 +35,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
+	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/term v0.28.0 // indirect
