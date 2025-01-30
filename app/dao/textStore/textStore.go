@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mt1976/frantic-plum/commonErrors"
 	"github.com/mt1976/frantic-plum/config"
 	"github.com/mt1976/frantic-plum/dao/audit"
 	"github.com/mt1976/frantic-plum/dao/database"
-	"github.com/mt1976/frantic-plum/errors"
 	"github.com/mt1976/frantic-plum/io"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/frantic-plum/paths"
@@ -45,7 +45,7 @@ func New(signature, message string) (TextStore, error) {
 
 	// Log the dest instance before the creation
 	xtext, err := t.prepare()
-	if err == errors.ErrorDuplicate {
+	if err == commonErrors.ErrorDuplicate {
 		// This is OK, do nothing as this is a duplicate record
 		// we ignore duplicate destinations.
 		logger.WarningLogger.Printf("[%v] DUPLICATE %v already in use", strings.ToUpper(tableName), message)

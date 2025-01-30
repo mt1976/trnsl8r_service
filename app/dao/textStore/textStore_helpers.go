@@ -3,7 +3,7 @@ package textStore
 import (
 	"strings"
 
-	"github.com/mt1976/frantic-plum/errors"
+	errors "github.com/mt1976/frantic-plum/commonErrors"
 	"github.com/mt1976/frantic-plum/logger"
 )
 
