@@ -42,10 +42,12 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 
 	router.GET(announceInsecure("/health"), Health)
 	router.GET(announceInsecure("/fail"), Fail)
-	router.GET(announceInsecure("/ExportTranslations"), ExportTranslations) // Not Required
+	router.GET(announceInsecure("/export"), Trnsl8r_Export) // Not Required
 
 	router.GET(announceInsecure("/trnsl8r/:origin/:message"), Trnsl8r)
 	router.GET(announceInsecure("/testit"), Trnsl8r_Test)
+	router.GET(announceInsecure("/refresh"), Trnsl8r_Refresh)
+	router.GET(announceInsecure("/rebuild"), Trnsl8r_Rebuild)
 
 	// Special Routes
 	if cfg.ApplicationModeIs(config.MODE_DEVELOPMENT) {

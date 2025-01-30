@@ -132,7 +132,7 @@ ip = "pdp1173.com"
 zone = "external"
 
 [[Origins]]
-name = "demon-pear"
+name = "demon_pear"
 [[Origins]]
 name = "trnsl8r_connect"
 [[Origins]]

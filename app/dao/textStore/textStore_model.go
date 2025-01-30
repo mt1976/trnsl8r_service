@@ -3,7 +3,7 @@ package textStore
 import "github.com/mt1976/frantic-plum/dao/audit"
 
 const (
-	tableName = "texts" // table name in the database
+	tableName = "TextStore" // table name in the database
 )
 
 // TextStore represents a TextStore entity.

@@ -27,12 +27,10 @@ func ExportCSV() error {
 		logger.ErrorLogger.Printf("Error Getting all texts: %v", err.Error())
 	}
 
-	csvContent, err := gocsv.MarshalString(&texts) // Get all texts as CSV string
+	_, err = gocsv.MarshalString(&texts) // Get all texts as CSV string
 	if err != nil {
 		logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
 	}
-
-	fmt.Printf("csvContent: %v\n", csvContent)
 
 	gocsv.SetCSVWriter(func(out io.Writer) *gocsv.SafeCSVWriter {
 		writer := csv.NewWriter(out)

@@ -460,3 +460,7 @@ func Get(signature string) (TextStore, error) {
 	// Return the retrieved dest object and nil error
 	return u, nil
 }
+
+func Drop() error {
+	return database.Drop(tableName)
+}
