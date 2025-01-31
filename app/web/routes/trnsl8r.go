@@ -2,7 +2,6 @@ package routes
 
 import (
 	"fmt"
-	"html"
 	"net/http"
 	"slices"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 
 	"github.com/mt1976/frantic-plum/config"
+	h "github.com/mt1976/frantic-plum/html"
 	"github.com/mt1976/frantic-plum/id"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/frantic-plum/timing"
@@ -23,9 +23,6 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	c := config.Get()
 
 	itemToTranslate := ps.ByName("message")
-	// Needs to be decoded from the URL
-	itemToTranslate = html.UnescapeString(itemToTranslate)
-
 	originOfRequest := ps.ByName("origin")
 
 	watch := timing.Start("Trnsl8r", "Translate", itemToTranslate)
@@ -36,6 +33,14 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		err := fmt.Errorf("No message to translate")
 		logger.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
+		oops(w, r, nil, "error", err.Error())
+		return
+	}
+
+	// Needs to be decoded from the URL
+	itemToTranslate, err := h.FromPathSafe(itemToTranslate)
+	if err != nil {
+		logger.ErrorLogger.Println(err.Error())
 		oops(w, r, nil, "error", err.Error())
 		return
 	}
