@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/frantic-plum/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
@@ -19,10 +19,10 @@ import (
 	"github.com/mt1976/trnsl8r_service/app/web/routes"
 )
 
-var cfg *config.Configuration
+var settings *common.Settings
 
 func init() {
-	cfg = config.Get()
+	settings = common.Get()
 }
 
 func main() {
@@ -34,14 +34,14 @@ func main() {
 
 	err = error(nil)
 
-	logger.InfoLogger.Printf("[%v] Starting...", cfg.ApplicationName())
-	logger.InfoLogger.Printf("[%v] Connecting...", cfg.ApplicationName())
-	err = dao.Initialise(cfg)
+	logger.InfoLogger.Printf("[%v] Starting...", settings.ApplicationName())
+	logger.InfoLogger.Printf("[%v] Connecting...", settings.ApplicationName())
+	err = dao.Initialise(settings)
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 	}
-	logger.InfoLogger.Printf("[%v] Connected", cfg.ApplicationName())
-	logger.ServiceLogger.Printf("[%v] Backup Starting...", cfg.ApplicationName())
+	logger.InfoLogger.Printf("[%v] Connected", settings.ApplicationName())
+	logger.ServiceLogger.Printf("[%v] Backup Starting...", settings.ApplicationName())
 
 	err = jobs.DatabaseBackup.Run()
 	if err != nil {
@@ -53,12 +53,12 @@ func main() {
 		logger.PanicLogger.Fatal(err.Error())
 	}
 
-	logger.ServiceLogger.Printf("[%v] Backup Done", cfg.ApplicationName())
+	logger.ServiceLogger.Printf("[%v] Backup Done", settings.ApplicationName())
 
-	logger.InfoLogger.Printf("[%v] Starting...", cfg.ApplicationName())
+	logger.InfoLogger.Printf("[%v] Starting...", settings.ApplicationName())
 	setupSystemUser()
 
-	na := strings.ToUpper(cfg.ApplicationName())
+	na := strings.ToUpper(settings.ApplicationName())
 
 	timer := timing.Start(na, "Initialise", "Service")
 
@@ -91,9 +91,9 @@ func main() {
 	// Start the job processor
 	jobs.Start()
 
-	port := cfg.ApplicationPortString()
+	port := settings.ApplicationPortString()
 	hostMachine := "localhost"
-	protocol := cfg.ServerProtocol()
+	protocol := settings.ServerProtocol()
 
 	logger.InfoLogger.Printf("[%v] Starting Server Port=[%v]", na, port)
 

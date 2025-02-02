@@ -6,15 +6,15 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/logger"
 )
 
-var cfg *config.Configuration
+var settings *common.Settings
 
 func init() {
 	logger.EventLogger.Println("Loading Routes")
-	cfg = config.Get()
+	settings = common.Get()
 }
 
 func Setup(router *httprouter.Router) *httprouter.Router {
@@ -50,7 +50,7 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 	router.GET(announceInsecure("/rebuild"), Trnsl8r_Rebuild)
 
 	// Special Routes
-	if cfg.ApplicationModeIs(config.MODE_DEVELOPMENT) {
+	if settings.ApplicationModeIs(common.MODE_DEVELOPMENT) {
 		router.GET(announceInsecure("/test"), Test)
 	}
 
@@ -59,9 +59,9 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 }
 
 func announceInsecure(route string) string {
-	port := cfg.ApplicationPortString()
+	port := settings.ApplicationPortString()
 	hostMachine := "localhost"
-	protocol := cfg.ServerProtocol()
+	protocol := settings.ServerProtocol()
 
 	prefix := fmt.Sprintf("[ROUTE] Path=[%v]", route)
 	padTo := 50
@@ -73,10 +73,10 @@ func announceInsecure(route string) string {
 }
 
 // func announceSecure(route string) string {
-// 	route = route + "/:" + cfg.SecuritySessionKey()
+// 	route = route + "/:" + settings.SecuritySessionKey()
 // 	return announceInsecure(route)
 // }
 
-func Initialise(cfg *config.Configuration) {
+func Initialise(cfg *common.Settings) {
 	logger.EventLogger.Println("Initialise Routes")
 }

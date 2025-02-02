@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/frantic-plum/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
@@ -16,27 +16,27 @@ import (
 func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	logger.EventLogger.Printf("[%v] [FAIL] [View] Fail", domains.ROUTE.String())
 
-	cfg := config.Get()
+	settings := common.Get()
 
 	title := "Fail"
 	action := "Message"
 
 	trace(r)
 
-	messageType := r.URL.Query().Get(cfg.MessageTypeKey())
-	messageTitle := r.URL.Query().Get(cfg.MessageTitleKey())
-	messageContent := r.URL.Query().Get(cfg.MessageContentKey())
-	messageAction := r.URL.Query().Get(cfg.MessageActionKey())
+	messageType := r.URL.Query().Get(settings.MessageTypeKey())
+	messageTitle := r.URL.Query().Get(settings.MessageTitleKey())
+	messageContent := r.URL.Query().Get(settings.MessageContentKey())
+	messageAction := r.URL.Query().Get(settings.MessageActionKey())
 
-	logger.ErrorLogger.Printf("[%v] [FAIL] message Type: [%v]=[%v]\n", domains.ROUTE.String(), cfg.MessageTypeKey(), messageType)
-	logger.ErrorLogger.Printf("[%v] [FAIL] message title: [%v]=[%v]\n", domains.ROUTE.String(), cfg.MessageTitleKey(), messageTitle)
-	logger.ErrorLogger.Printf("[%v] [FAIL] message content: [%v]=[%v]\n", domains.ROUTE.String(), cfg.MessageContentKey(), messageContent)
-	logger.ErrorLogger.Printf("[%v] [FAIL] message action: [%v]=[%v]\n", domains.ROUTE.String(), cfg.MessageActionKey(), messageAction)
+	logger.ErrorLogger.Printf("[%v] [FAIL] message Type: [%v]=[%v]\n", domains.ROUTE.String(), settings.MessageTypeKey(), messageType)
+	logger.ErrorLogger.Printf("[%v] [FAIL] message title: [%v]=[%v]\n", domains.ROUTE.String(), settings.MessageTitleKey(), messageTitle)
+	logger.ErrorLogger.Printf("[%v] [FAIL] message content: [%v]=[%v]\n", domains.ROUTE.String(), settings.MessageContentKey(), messageContent)
+	logger.ErrorLogger.Printf("[%v] [FAIL] message action: [%v]=[%v]\n", domains.ROUTE.String(), settings.MessageActionKey(), messageAction)
 
 	t := template.Must(template.ParseFiles(getTemplate(title, action), paths.HTMLTemplate())) // Create a template.
 
 	w.Header().Set("Content-Type", "text/html")
-	w.Header().Add("Application", cfg.ApplicationName())
+	w.Header().Add("Application", settings.ApplicationName())
 
 	pg := pages.Generic(title, action)
 
@@ -73,9 +73,9 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 func buildFailPS(msg string, title string, content string, action string) httprouter.Params {
 	ps := httprouter.Params{}
-	ps = append(ps, httprouter.Param{Key: cfg.MessageTitleKey(), Value: translation.Get(msg)})
-	ps = append(ps, httprouter.Param{Key: cfg.MessageTitleKey(), Value: translation.Get(title)})
-	ps = append(ps, httprouter.Param{Key: cfg.MessageContentKey(), Value: translation.Get(content)})
-	ps = append(ps, httprouter.Param{Key: cfg.MessageActionKey(), Value: translation.Get(action)})
+	ps = append(ps, httprouter.Param{Key: settings.MessageTitleKey(), Value: translation.Get(msg)})
+	ps = append(ps, httprouter.Param{Key: settings.MessageTitleKey(), Value: translation.Get(title)})
+	ps = append(ps, httprouter.Param{Key: settings.MessageContentKey(), Value: translation.Get(content)})
+	ps = append(ps, httprouter.Param{Key: settings.MessageActionKey(), Value: translation.Get(action)})
 	return ps
 }

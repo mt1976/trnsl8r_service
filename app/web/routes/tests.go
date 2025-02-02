@@ -18,7 +18,7 @@ func Test(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	t := template.Must(template.ParseFiles(getTemplate(title, action), paths.HTMLTemplate())) // Create a template.
 	w.Header().Set("Content-Type", "text/html")
-	w.Header().Add("Application", cfg.ApplicationName())
+	w.Header().Add("Application", settings.ApplicationName())
 
 	err := t.Execute(w, pages.Generic(title, action)) // merge.
 	if err != nil {

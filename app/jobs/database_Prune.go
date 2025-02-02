@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/mt1976/frantic-plum/application"
-	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/common"
 	dates "github.com/mt1976/frantic-plum/date"
 	"github.com/mt1976/frantic-plum/io"
 	"github.com/mt1976/frantic-plum/logger"
@@ -40,13 +40,13 @@ func (p databasePrune) Name() string {
 
 func jobPruneBackups() {
 
-	cfg := config.Get()
+	settings := common.Get()
 	// Do something every day at midnight
 	name := "Prune"
 	j := timing.Start(strings.ToUpper(name), "Prune", "Old Backups")
 	// Get Settings
 
-	retainBackupDays := cfg.MaxEntries()
+	retainBackupDays := settings.MaxEntries()
 
 	logger.ServiceLogger.Printf("[%v] RetainBackupDays=[%v]", strings.ToUpper(name), retainBackupDays)
 	today := StartOfDay(time.Now())

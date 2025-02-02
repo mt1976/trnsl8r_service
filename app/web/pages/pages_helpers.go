@@ -2,38 +2,38 @@ package pages
 
 import (
 	"github.com/mt1976/frantic-plum/application"
-	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/frantic-plum/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 )
 
-var cfg *config.Configuration
+var settings *common.Settings
 
 func init() {
-	cfg = config.Get()
+	settings = common.Get()
 }
 
 func New(title, action string) *Page {
 	logger.EventLogger.Printf("Create New Page [%v],[%v]", title, action)
 
 	p := Page{}
-	p.ApplicationLogo = cfg.AssetsLogo()
-	p.ApplicationName = translation.Get(cfg.ApplicationName())
-	p.ApplicationDescription = translation.Get(cfg.ApplicationDescription())
-	p.ApplicationPrefix = translation.Get(cfg.ApplicationPrefix())
-	p.ApplicationFavicon = cfg.AssetsFavicon()
+	p.ApplicationLogo = settings.AssetsLogo()
+	p.ApplicationName = translation.Get(settings.ApplicationName())
+	p.ApplicationDescription = translation.Get(settings.ApplicationDescription())
+	p.ApplicationPrefix = translation.Get(settings.ApplicationPrefix())
+	p.ApplicationFavicon = settings.AssetsFavicon()
 
 	p.Message = ""
 	p.MessageType = ""
 	p.SingleItem = true
 	p.ID = ""
 
-	p.Delimiter = cfg.DisplayDelimiter()
-	p.ApplicationVersion = cfg.ApplicationVersion()
-	p.ApplicationEnvironment = cfg.ApplicationEnvironment()
-	p.ApplicationBuildDate = cfg.ApplicationReleaseDate()
-	p.ApplicationCopyriteDate = cfg.ApplicationCopyright()
+	p.Delimiter = settings.DisplayDelimiter()
+	p.ApplicationVersion = settings.ApplicationVersion()
+	p.ApplicationEnvironment = settings.ApplicationEnvironment()
+	p.ApplicationBuildDate = settings.ApplicationReleaseDate()
+	p.ApplicationCopyriteDate = settings.ApplicationCopyright()
 	p.OSSeperator = paths.Seperator()
 	p.BackupLocation = paths.Backups().String()
 	p.DumpLocation = paths.Dumps().String()

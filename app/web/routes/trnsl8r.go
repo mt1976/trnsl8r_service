@@ -9,7 +9,7 @@ import (
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 
-	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/common"
 	h "github.com/mt1976/frantic-plum/html"
 	"github.com/mt1976/frantic-plum/id"
 	"github.com/mt1976/frantic-plum/logger"
@@ -20,7 +20,7 @@ import (
 
 func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
-	c := config.Get()
+	c := common.Get()
 
 	itemToTranslate := ps.ByName("message")
 	originOfRequest := ps.ByName("origin")
@@ -75,7 +75,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Respond with the translated item and a success status
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("Application", cfg.ApplicationName())
+	w.Header().Add("Application", settings.ApplicationName())
 
 	fmt.Fprintf(w, "{\"message\":\"%v\"}", translatedItem)
 	w.WriteHeader(http.StatusOK)
@@ -86,7 +86,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Build a URI query string
-	tl8 := trnsl8r.NewRequest().WithProtocol(cfg.TranslationProtocol()).WithHost(cfg.TranslationHost()).WithPort(cfg.TranslationPort()).WithLogger(logger.InfoLogger).WithOriginOf("trnsl8r_connect")
+	tl8 := trnsl8r.NewRequest().WithProtocol(settings.TranslationProtocol()).WithHost(settings.TranslationHost()).WithPort(settings.TranslationPort()).WithLogger(logger.InfoLogger).WithOriginOf("trnsl8r_connect")
 
 	tl8.Spew()
 

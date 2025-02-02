@@ -1,7 +1,7 @@
 package jobs
 
 import (
-	"github.com/mt1976/frantic-plum/config"
+	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	cron3 "github.com/robfig/cron/v3"
@@ -12,12 +12,12 @@ var Template Job = template{} // This is a template for other jobs.
 var DatabaseBackup Job = databaseBackup{}
 var DatabasePrune Job = databasePrune{}
 var scheduledTasks *cron3.Cron
-var cfg *config.Configuration
+var cfg *common.Settings
 var domain = domains.JOBS
 
 func init() {
 	scheduledTasks = cron3.New()
-	cfg = config.Get()
+	cfg = common.Get()
 }
 
 func Start() {

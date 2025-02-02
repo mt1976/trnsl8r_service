@@ -22,7 +22,7 @@ func oops(w http.ResponseWriter, r *http.Request, ps httprouter.Params, msgType,
 	trace(r)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("Application", cfg.ApplicationName())
+	w.Header().Add("Application", settings.ApplicationName())
 	w.WriteHeader(http.StatusNotFound)
 	fmt.Fprintf(w, "{\"message\":\"%v\"}", msg)
 	logger.ErrorLogger.Printf("[ACTION] Oops - %s %v", msgType, msg)

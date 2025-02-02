@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/commonErrors"
-	"github.com/mt1976/frantic-plum/config"
 	"github.com/mt1976/frantic-plum/dao/audit"
 	"github.com/mt1976/frantic-plum/dao/database"
 	"github.com/mt1976/frantic-plum/io"
@@ -21,16 +21,16 @@ import (
 func New(signature, message string) (TextStore, error) {
 
 	//logger.InfoLogger.Printf("ACT: NEW New %v %v %v", tableName, name, destination)
-	cfg := config.Get()
+	settings := common.Get()
 	// Create a new d
 	t := TextStore{}
 	t.Signature = signature
 	t.Message = message
 	t.Original = message
-	t.Source = cfg.ApplicationName()
-	t.Locale = cfg.ApplicationLocale()
+	t.Source = settings.ApplicationName()
+	t.Locale = settings.ApplicationLocale()
 
-	t.ConsumedBy = addConsumer(t.ConsumedBy, cfg.ApplicationName())
+	t.ConsumedBy = addConsumer(t.ConsumedBy, settings.ApplicationName())
 
 	if t.Localised == nil {
 		t.Localised = make(map[string]string)
