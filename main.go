@@ -81,7 +81,6 @@ func main() {
 
 	logger.Banner(na, "Texts", "Upgraded")
 
-	os.Exit(0)
 	logger.Banner(na, "Initialise", "Done")
 
 	logger.Banner(na, "Routes", "Setup")

@@ -144,3 +144,6 @@ name = "English (UK)"
 [[Locales]]
 key = "jp_JP"
 name = "Japanese (Japan)"
+[[Locales]]
+key = "fr_FR"
+name = "French (France)"
