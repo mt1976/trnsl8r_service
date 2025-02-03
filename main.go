@@ -73,6 +73,15 @@ func main() {
 
 	logger.Banner(na, "Texts", "Imported")
 
+	logger.Banner(na, "Texts", "Upgrading")
+	err = jobs.LocaleUpdate.Run()
+	if err != nil {
+		logger.ErrorLogger.Fatal(err.Error())
+	}
+
+	logger.Banner(na, "Texts", "Upgraded")
+
+	os.Exit(0)
 	logger.Banner(na, "Initialise", "Done")
 
 	logger.Banner(na, "Routes", "Setup")

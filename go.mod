@@ -13,7 +13,7 @@ require (
 
 require (
 	github.com/jsuar/go-cron-descriptor v0.1.0
-	github.com/mt1976/frantic-plum v0.0.10
+	github.com/mt1976/frantic-plum v0.0.11
 )
 
 require (

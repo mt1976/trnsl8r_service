@@ -60,6 +60,8 @@ github.com/mt1976/frantic-plum v0.0.9 h1:TRYjbdcK5afx8d5LwOwDq4nI9YCPuhGNZt7A5zb
 github.com/mt1976/frantic-plum v0.0.9/go.mod h1:0aZ8YOrZ0YfjMdOwevB8zI8+lFLd+5zQGIafiu5Fh/k=
 github.com/mt1976/frantic-plum v0.0.10 h1:8gRrHQOP9ImAkqPoi9oqCcMO+1M2jZxUBVTvDfhNyfI=
 github.com/mt1976/frantic-plum v0.0.10/go.mod h1:0aZ8YOrZ0YfjMdOwevB8zI8+lFLd+5zQGIafiu5Fh/k=
+github.com/mt1976/frantic-plum v0.0.11 h1:UOwEwE+j7EJ/GCiTg6lsDfjKqKM5kz++lInVYbaE/TU=
+github.com/mt1976/frantic-plum v0.0.11/go.mod h1:0aZ8YOrZ0YfjMdOwevB8zI8+lFLd+5zQGIafiu5Fh/k=
 github.com/mt1976/trnsl8r_connect v0.0.4 h1:+2z2SpunhsAvDjh2d/4Vbqt+5h9IQQjYs72njrNGOSY=
 github.com/mt1976/trnsl8r_connect v0.0.4/go.mod h1:kjG7Xu/0KAZo/Zo0M4StojjhjqkDTFzmnONkKkJ0mn4=
 github.com/mt1976/trnsl8r_connect v0.0.5 h1:4QdwWp+UocUEqIbL+OS90PwpnnEtcAVkY60wY9c02pE=

@@ -137,3 +137,10 @@ name = "demon_pear"
 name = "trnsl8r_connect"
 [[Origins]]
 name = "cosmic-orange"
+
+[[Locales]]
+key = "en_GB"
+name = "English (UK)"
+[[Locales]]
+key = "jp_JP"
+name = "Japanese (Japan)"
