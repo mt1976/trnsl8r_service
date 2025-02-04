@@ -60,10 +60,10 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		pg.PageAction = messageAction
 	}
 
-	pg.MessageType = translation.Get(pg.MessageType)
-	pg.PageTitle = translation.Get(pg.PageTitle)
-	pg.Message = translation.Get(pg.Message)
-	pg.PageAction = translation.Get(pg.PageAction)
+	pg.MessageType = translation.Get(pg.MessageType, "")
+	pg.PageTitle = translation.Get(pg.PageTitle, "")
+	pg.Message = translation.Get(pg.Message, "")
+	pg.PageAction = translation.Get(pg.PageAction, "")
 
 	err := t.Execute(w, pg) // merge.
 	if err != nil {
@@ -73,9 +73,9 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 func buildFailPS(msg string, title string, content string, action string) httprouter.Params {
 	ps := httprouter.Params{}
-	ps = append(ps, httprouter.Param{Key: settings.MessageTitleKey(), Value: translation.Get(msg)})
-	ps = append(ps, httprouter.Param{Key: settings.MessageTitleKey(), Value: translation.Get(title)})
-	ps = append(ps, httprouter.Param{Key: settings.MessageContentKey(), Value: translation.Get(content)})
-	ps = append(ps, httprouter.Param{Key: settings.MessageActionKey(), Value: translation.Get(action)})
+	ps = append(ps, httprouter.Param{Key: settings.MessageTitleKey(), Value: translation.Get(msg, "")})
+	ps = append(ps, httprouter.Param{Key: settings.MessageTitleKey(), Value: translation.Get(title, "")})
+	ps = append(ps, httprouter.Param{Key: settings.MessageContentKey(), Value: translation.Get(content, "")})
+	ps = append(ps, httprouter.Param{Key: settings.MessageActionKey(), Value: translation.Get(action, "")})
 	return ps
 }

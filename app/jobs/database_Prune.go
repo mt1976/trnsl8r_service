@@ -35,7 +35,7 @@ func (p databasePrune) Schedule() string {
 }
 
 func (p databasePrune) Name() string {
-	return translation.Get("Scheduled Database Maintenance - Prune Old Backups")
+	return translation.Get("Scheduled Database Maintenance - Prune Old Backups", "")
 }
 
 func jobPruneBackups() {

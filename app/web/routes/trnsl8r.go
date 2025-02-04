@@ -24,13 +24,32 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	itemToTranslate := ps.ByName("message")
 	originOfRequest := ps.ByName("origin")
+	localesList := getLocalesList(c)
+
+	filterLocale := r.URL.Query().Get("locale")
+	if filterLocale != "" {
+		filterLocale, err := h.FromPathSafe(filterLocale)
+		if err != nil {
+			logger.ErrorLogger.Println(err.Error())
+			oops(w, r, nil, "error", err.Error())
+			return
+		}
+		logger.TranslationLogger.Println("Filtering by locale [", filterLocale, "]")
+		// Check that this is a valid locale
+		if !slices.Contains(localesList, filterLocale) {
+			err := fmt.Errorf("invalid locale [%v]", filterLocale)
+			logger.ErrorLogger.Println(err.Error())
+			oops(w, r, nil, "error", err.Error())
+			return
+		}
+	}
 
 	watch := timing.Start("Trnsl8r", "Translate", itemToTranslate)
 
 	logger.TranslationLogger.Println("Request to translate message [", itemToTranslate, "]")
 
 	if itemToTranslate == "" {
-		err := fmt.Errorf("No message to translate")
+		err := fmt.Errorf("no message to translate")
 		logger.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
 		oops(w, r, nil, "error", err.Error())
@@ -48,7 +67,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	realOrigin := id.GetUUIDv2Payload(originOfRequest)
 
 	if originOfRequest == "" || realOrigin == "" {
-		err := fmt.Errorf("No origin of request, a valid origin is required %v", originOfRequest)
+		err := fmt.Errorf("no origin of request, a valid origin is required %v", originOfRequest)
 		logger.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
 		oops(w, r, nil, "error", err.Error())
@@ -56,17 +75,17 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	if !slices.Contains(c.GetValidOrigins(), realOrigin) {
-		err := fmt.Errorf("Invalid origin of request [%v]", realOrigin)
+		err := fmt.Errorf("invalid origin of request [%v]", realOrigin)
 		logger.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
 		oops(w, r, nil, "error", err.Error())
 		return
 	}
 
-	translatedItem := translation.Get(itemToTranslate)
+	translatedItem := translation.Get(itemToTranslate, filterLocale)
 
 	if translatedItem == "" {
-		err := fmt.Errorf("No translation available")
+		err := fmt.Errorf("no translation available")
 		logger.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
 		oops(w, r, nil, "error", err.Error())
@@ -152,4 +171,13 @@ func Trnsl8r_Rebuild(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 	logger.Banner(domains.TEXT.String(), "Texts", "Imported")
 	successMessage(w, r, nil, "success - translations imported")
+}
+
+func getLocalesList(c *common.Settings) []string {
+	locales := []string{}
+	all := c.GetLocales()
+	for _, item := range all {
+		locales = append(locales, item.Key)
+	}
+	return locales
 }

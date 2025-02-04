@@ -146,5 +146,5 @@ func (job localeUpdate) Schedule() string {
 }
 
 func (job localeUpdate) Name() string {
-	return translation.Get("Update Locales")
+	return translation.Get("Update Locales", "")
 }

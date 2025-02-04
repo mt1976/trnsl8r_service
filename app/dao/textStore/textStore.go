@@ -74,7 +74,7 @@ func New(signature, message string) (TextStore, error) {
 
 	//u.Dump(!,fmt.Sprintf("PostNew_dest_%d", u.ID))
 	msg := fmt.Sprintf("New text translation available Id=[%v] Message=[%v]", signature, message)
-	logger.TranslationLogger.Printf(msg)
+	logger.TranslationLogger.Println(msg)
 	// Return the created dest and nil error
 	logger.AuditLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", strings.ToUpper(tableName), audit.CREATE.Code(), signature, msg)
 
@@ -424,7 +424,7 @@ func GetBySignature(signature string) (TextStore, error) {
 	return txt, nil
 }
 
-func Get(signature string) (TextStore, error) {
+func Get(signature, localeFilter string) (TextStore, error) {
 
 	watch := stopwatch.Start(tableName, "Get", signature)
 	// Log the start of the retrieval operation

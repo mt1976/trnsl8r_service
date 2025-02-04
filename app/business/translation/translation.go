@@ -6,12 +6,12 @@ import (
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
-func Get(in string) string {
+func Get(in, localeFilter string) string {
 	// Validate the input data
 
 	id := id.Encode(in)
 
-	text, err := textStore.Get(id)
+	text, err := textStore.Get(id, localeFilter)
 	if err != nil {
 		logger.TranslationLogger.Printf("New text translation available Id=[%v], for [%v]", id, in)
 		text, err := textStore.New(id, in)
@@ -23,6 +23,15 @@ func Get(in string) string {
 		logger.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
 		return text.Message
 	}
+
+	if localeFilter != "" {
+		localisedText := text.Localised[localeFilter]
+		if localisedText != "" {
+			// If the locale is found, return it, otherwise proceed to the default
+			return localisedText
+		}
+	}
+
 	logger.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
 	return text.Message
 }

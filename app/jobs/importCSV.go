@@ -41,5 +41,5 @@ func (job importCSVData) Schedule() string {
 }
 
 func (job importCSVData) Name() string {
-	return translation.Get("Import Translation CSV")
+	return translation.Get("Import Translation CSV", "")
 }

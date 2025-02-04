@@ -26,7 +26,7 @@ func (job template) Schedule() string {
 }
 
 func (job template) Name() string {
-	return translation.Get("Template Job")
+	return translation.Get("Template Job", "")
 }
 
 func jobNotifications() {

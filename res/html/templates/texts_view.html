@@ -38,20 +38,45 @@
         <label class="uk-form-label" for="Original">Original</label>
         <div class="uk-form-controls">
           <textarea class="uk-input" id="Original" name="Original"type="text" placeholder="Origin Text" value="{{.TextItem.Original}}"
-            disabled rows="5"  style="width:100%;height:150px;">{{.TextItem.Original}}</textarea>
+            disabled rows="5"  style="width:100%;height:100px;">{{.TextItem.Original}}</textarea>
         </div>
       </div>
       <div class="uk-margin">
         <label class="uk-form-label" for="Message">Message</label>
         <div class="uk-form-controls">
-          <textarea class="uk-input" id="Message" name="Message" type="text" placeholder="Message" value="{{.TextItem.Message}}" style="width:100%;height:150px;" disabled>{{.TextItem.Message}}</textarea>
+          <textarea class="uk-input" id="Message" name="Message" type="text" placeholder="Message" value="{{.TextItem.Message}}" style="width:100%;height:100px;" disabled>{{.TextItem.Message}}</textarea>
         </div>
       </div>
 
      
-      <br>
 
+      <ul uk-accordion="multiple: true">
+        <li>
+          <a class="uk-accordion-title" href>Localisation/Translation</a>
+          <div class="uk-accordion-content">
+            <table
+              class="uk-table uk-table-small uk-table-divider uk-table-justify  uk-table-responsive uk-table-hover">
+              <thead>
+                <tr>
+                  <th>Locale</th>
+                  <th>Text</th>
+                </tr>
+              </thead>
+             <tbody>
+                {{ range $key, $value := .TextItem.Localised }}
+                <tr>
+                  <td class="uk-text-bold" id="{{$key}}">{{$key}}</td>
+                  <td>
+                    <textarea class="uk-input" id="{{$key}}" name="{{$key}}" type="text" placeholder="Message" value="{{$value}}" style="width:100%;height:100px;" disabled>{{$value}}</textarea></td>
+                </tr>
+                {{end}}
+              </tbody>
+            </table>
 
+          </div>
+        </li>
+
+      </ul>
 
 
       <ul uk-accordion="multiple: true">

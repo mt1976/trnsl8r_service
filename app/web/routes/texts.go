@@ -102,20 +102,20 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	id, err := getIDString(ps)
 	if err != nil {
 		logger.ErrorLogger.Printf("Error=[%v]", err.Error())
-		oops(w, r, ps, translation.Get("error"), err.Error())
+		oops(w, r, ps, translation.Get("error", ""), err.Error())
 		return
 	}
 	if id == "" {
-		msg := translation.Get("Invalid ID: ID is required")
+		msg := translation.Get("Invalid ID: ID is required", "")
 		logger.InfoLogger.Print(msg)
-		oops(w, r, ps, translation.Get("error"), msg)
+		oops(w, r, ps, translation.Get("error", ""), msg)
 		return
 	}
 
 	t, err := textStore.GetBySignature(id)
 	if err != nil {
 		logger.ErrorLogger.Printf("Error=[%v]", err.Error())
-		oops(w, r, ps, translation.Get("error"), err.Error())
+		oops(w, r, ps, translation.Get("error", ""), err.Error())
 		return
 	}
 
@@ -124,23 +124,23 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	oldMessage := t.Message
 
 	if newMessage == "" {
-		msg := translation.Get("Invalid Name: Message is required")
+		msg := translation.Get("Invalid Name: Message is required", "")
 		logger.InfoLogger.Print(msg)
-		oops(w, r, ps, translation.Get("error"), msg)
+		oops(w, r, ps, translation.Get("error", ""), msg)
 		return
 	}
 
 	if newMessage == oldMessage {
-		msg := translation.Get("No Change: Message is the same")
+		msg := translation.Get("No Change: Message is the same", "")
 		logger.InfoLogger.Print(msg)
-		oops(w, r, ps, translation.Get("error"), msg)
+		oops(w, r, ps, translation.Get("error", ""), msg)
 		return
 	}
 
 	t.Message = newMessage
 
 	msg := "Message updated from [%v]->[%v]"
-	msg = translation.Get(msg)
+	msg = translation.Get(msg, "")
 	msg = fmt.Sprintf(msg, oldMessage, newMessage)
 	msg2 := msg
 	logmsg := "[TEXT] " + msg
@@ -148,10 +148,10 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	err = t.Update(nil, msg)
 	if err != nil {
-		oops(w, r, ps, translation.Get("error"), err.Error())
+		oops(w, r, ps, translation.Get("error", ""), err.Error())
 		return
 	}
 	//winmsg := "Zone %v"
-	winmsg := fmt.Sprintf(translation.Get("Text %v : "), t.Signature) + msg2
+	winmsg := fmt.Sprintf(translation.Get("Text %v : ", ""), t.Signature) + msg2
 	successMessage(w, r, ps, winmsg)
 }

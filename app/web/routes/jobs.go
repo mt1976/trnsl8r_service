@@ -17,8 +17,8 @@ func PruneBackups(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 
 	jobs.DatabasePrune.Run()
 
-	msg := name + " " + translation.Get("Complete")
-	msg = translation.Get(msg)
+	msg := name + " " + translation.Get("Complete", "")
+	msg = translation.Get(msg, "")
 
 	successMessage(w, r, ps, msg)
 }

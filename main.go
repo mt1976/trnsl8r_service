@@ -89,7 +89,7 @@ func main() {
 
 	// ANNOUNCE ROUTES ABOVE
 	router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, translation.Get("404 page not found"), http.StatusNotFound)
+		http.Error(w, translation.Get("404 page not found", ""), http.StatusNotFound)
 	})
 
 	//logger.InfoLogger.Println("APP: Routes Setup")

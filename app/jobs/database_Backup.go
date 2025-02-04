@@ -59,5 +59,5 @@ func (job databaseBackup) Schedule() string {
 }
 
 func (job databaseBackup) Name() string {
-	return translation.Get("Scheduled Database Backup")
+	return translation.Get("Scheduled Database Backup", "")
 }

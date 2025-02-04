@@ -7,8 +7,8 @@ import (
 func Generic(title, action string) *Page {
 
 	p := New(title, action)
-	p.PageAction = translation.Get(action)
-	p.PageTitle = translation.Get(title)
+	p.PageAction = translation.Get(action, "")
+	p.PageTitle = translation.Get(title, "")
 
 	////spew.Dump(p
 	return p

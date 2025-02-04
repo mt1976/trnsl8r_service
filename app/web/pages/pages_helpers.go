@@ -19,9 +19,9 @@ func New(title, action string) *Page {
 
 	p := Page{}
 	p.ApplicationLogo = settings.AssetsLogo()
-	p.ApplicationName = translation.Get(settings.ApplicationName())
-	p.ApplicationDescription = translation.Get(settings.ApplicationDescription())
-	p.ApplicationPrefix = translation.Get(settings.ApplicationPrefix())
+	p.ApplicationName = translation.Get(settings.ApplicationName(), "")
+	p.ApplicationDescription = translation.Get(settings.ApplicationDescription(), "")
+	p.ApplicationPrefix = translation.Get(settings.ApplicationPrefix(), "")
 	p.ApplicationFavicon = settings.AssetsFavicon()
 
 	p.Message = ""
@@ -41,8 +41,8 @@ func New(title, action string) *Page {
 	p.ApplicationPath = paths.Application().String()
 	p.ApplicationOS = application.OS()
 
-	p.PageAction = translation.Get(action)
-	p.PageTitle = translation.Get(title)
+	p.PageAction = translation.Get(action, "")
+	p.PageTitle = translation.Get(title, "")
 
 	return &p
 }

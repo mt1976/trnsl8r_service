@@ -32,8 +32,8 @@ func NextRun(j Job) string {
 }
 
 func announceJob(j Job, action string) {
-	name := translation.Get(j.Name())
-	action = translation.Get(action)
+	name := translation.Get(j.Name(), "")
+	action = translation.Get(action, "")
 	//support.ServiceBanner("Service", name, action)
 	logger.ServiceLogger.Printf("[%v] [%v] %v", domain.String(), name, action)
 }
