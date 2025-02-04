@@ -14,7 +14,6 @@ import (
 	"github.com/mt1976/frantic-plum/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 	"github.com/mt1976/trnsl8r_service/app/dao"
-	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 	"github.com/mt1976/trnsl8r_service/app/jobs"
 	"github.com/mt1976/trnsl8r_service/app/web/routes"
 )
@@ -66,7 +65,7 @@ func main() {
 
 	// Preload the text store
 	logger.Banner(na, "Texts", "Importing")
-	err = textStore.ImportCSV()
+	err = jobs.ImportCSV.Run()
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 	}

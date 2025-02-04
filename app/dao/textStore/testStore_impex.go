@@ -84,14 +84,14 @@ func ImportCSV() error {
 	if _, err := csvFile.Seek(0, 0); err != nil { // Go to the start of the file
 		panic(err)
 	}
-
-	for _, textEntry := range texts {
+	noTexts := len(texts)
+	for thisPos, textEntry := range texts {
 		//fmt.Printf("% 3v)[%v][%v][%v]\n", i, textEntry.Original, textEntry.Message, textEntry)
-		logger.EventLogger.Printf("Importing text [%v] [%v]", textEntry.Original, textEntry.Message)
+		logger.ServiceLogger.Printf("Importing text (%v/%v) [%v]", thisPos+1, noTexts, textEntry.Message)
 
 		existingText, _ := GetBySignature(id.Encode(textEntry.Original))
 		if existingText.Signature != "" {
-			logger.InfoLogger.Printf("Text already exists: [%v] [%v]", textEntry.Original, textEntry.Message)
+			//logger.InfoLogger.Printf("Text already exists: [%v]", textEntry.Message)
 			continue
 		}
 
@@ -99,10 +99,10 @@ func ImportCSV() error {
 		if err != nil {
 			logger.ErrorLogger.Printf("Error importing text: %v", err.Error())
 		}
-		logger.EventLogger.Printf("Imported text [%v] [%v]", textEntry.Original, textEntry.Message)
+		logger.ServiceLogger.Printf("Imported text [%v] [%v]", textEntry.Original, textEntry.Message)
 	}
 
-	logger.EventLogger.Printf("Imported %v texts", len(texts))
+	logger.ServiceLogger.Printf("Imported %v texts", len(texts))
 
 	return nil
 }
