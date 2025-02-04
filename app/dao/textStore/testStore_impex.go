@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gocarina/gocsv"
 	"github.com/mt1976/frantic-plum/commonErrors"
@@ -16,6 +17,8 @@ import (
 	"github.com/mt1976/frantic-plum/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 )
+
+var COMMA = '|'
 
 func ExportCSV() error {
 
@@ -29,32 +32,34 @@ func ExportCSV() error {
 
 	gocsv.SetCSVWriter(func(out io.Writer) *gocsv.SafeCSVWriter {
 		writer := csv.NewWriter(out)
-		writer.Comma = '§' // Use tab-delimited format
+		writer.Comma = COMMA // Use tab-delimited format
 		writer.UseCRLF = true
-
 		return gocsv.NewSafeCSVWriter(writer)
 	})
 
-	op, err := gocsv.MarshalString(texts) // Get all texts as CSV string
+	_, err = gocsv.MarshalString(texts) // Get all texts as CSV string
+	if err != nil {
+		logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
+	}
+	err = gocsv.MarshalFile(&texts, textsFile) // Get all texts as CSV string
 	if err != nil {
 		logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
 	}
 
-	fmt.Printf("Exported texts: %+v", op)
+	msg := fmt.Sprintf("# Generated (%v) texts at %v on %v", len(texts), time.Now().Format("15:04:05"), time.Now().Format("2006-01-02"))
+	textsFile.WriteString(msg)
 
-	// err = gocsv.MarshalFile(&texts, textsFile) // Get all texts as CSV string
-	// if err != nil {
-	// 	logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
-	// }
 	textsFile.Close()
+
+	logger.EventLogger.Printf("Exported (%v) texts", len(texts))
 
 	return nil
 }
 
 func openTextsFile(in string) *os.File {
 	exportPath := paths.Defaults()
-	textsFileName := fmt.Sprintf("%s%s/%s", paths.Application().String(), exportPath, "translations"+in+".csv")
-	logger.InfoLogger.Printf("Import/Export File=[%v]", textsFileName)
+	textsFileName := fmt.Sprintf("%s%s/%s", paths.Application().String(), exportPath, "translations.csv")
+
 	// fmt.Printf("exportPath: %v\n", exportPath)
 	// fmt.Printf("textsFile: %v\n", textsFileName)
 
@@ -62,7 +67,8 @@ func openTextsFile(in string) *os.File {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("textsFile.Name(): %v\n", textsFile.Name())
+	//fmt.Printf("textsFile.Name(): %v\n", textsFile.Name())
+	logger.InfoLogger.Printf("Import/Export=[%v] File=[%v]", in, textsFile.Name())
 	return textsFile
 }
 
@@ -73,9 +79,11 @@ func ImportCSV() error {
 	// fmt.Printf("textsFile: %v\n", csvFile.Name())
 
 	gocsv.SetCSVReader(func(in io.Reader) gocsv.CSVReader {
-		r := csv.NewReader(in)
-		r.Comma = '±'
-		return r // Allows use pipe as delimiter
+		r := csv.NewReader(in)    // Allows use pipe as delimiter
+		r.Comma = COMMA           // Use tab-delimited format
+		r.Comment = '#'           // Ignore comment lines
+		r.TrimLeadingSpace = true // Trim leading space
+		return r                  // Allows use pipe as delimiter
 	})
 
 	texts := []*TextImportModel{}
@@ -107,7 +115,7 @@ func ImportCSV() error {
 		logger.ServiceLogger.Printf("Imported text [%v] [%v]", textEntry.Original, textEntry.Message)
 	}
 
-	logger.ServiceLogger.Printf("Imported %v texts", len(texts))
+	logger.ServiceLogger.Printf("Imported (%v) texts", len(texts))
 	csvFile.Close()
 	return nil
 }

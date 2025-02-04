@@ -145,6 +145,10 @@ func startup() error {
 		if entry.Name() == ".DS_Store" {
 			continue
 		}
+		if entry.Name() == ".keep" {
+			continue
+		}
+
 		//logger.InfoLogger.Printf("Copying %v", entry.Name())
 		from := "./defaults" + string(os.PathSeparator) + entry.Name()
 		to := "./data" + string(os.PathSeparator) + "defaults" + string(os.PathSeparator) + entry.Name()
@@ -197,6 +201,7 @@ func startupCopyFile(src, dst string) (err error) {
 // destination file exists, all it's contents will be replaced by the contents
 // of the source file.
 func startupCopyFileContents(src, dst string) (err error) {
+	logger.EventLogger.Printf("Copying [%v] to [%v]", src, dst)
 	in, err := os.Open(src)
 	if err != nil {
 		return
