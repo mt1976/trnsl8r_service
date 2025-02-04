@@ -19,7 +19,7 @@ import (
 
 func ExportCSV() error {
 
-	textsFile := openTextsFile()
+	textsFile := openTextsFile("export")
 	defer textsFile.Close()
 
 	texts, err := GetAll()
@@ -27,29 +27,34 @@ func ExportCSV() error {
 		logger.ErrorLogger.Printf("Error Getting all texts: %v", err.Error())
 	}
 
-	_, err = gocsv.MarshalString(&texts) // Get all texts as CSV string
-	if err != nil {
-		logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
-	}
-
 	gocsv.SetCSVWriter(func(out io.Writer) *gocsv.SafeCSVWriter {
 		writer := csv.NewWriter(out)
-		writer.Comma = '|' // Use tab-delimited format
+		writer.Comma = '§' // Use tab-delimited format
+		writer.UseCRLF = true
+
 		return gocsv.NewSafeCSVWriter(writer)
 	})
 
-	err = gocsv.MarshalFile(&texts, textsFile) // Get all texts as CSV string
+	op, err := gocsv.MarshalString(texts) // Get all texts as CSV string
 	if err != nil {
 		logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
 	}
+
+	fmt.Printf("Exported texts: %+v", op)
+
+	// err = gocsv.MarshalFile(&texts, textsFile) // Get all texts as CSV string
+	// if err != nil {
+	// 	logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
+	// }
+	textsFile.Close()
 
 	return nil
 }
 
-func openTextsFile() *os.File {
+func openTextsFile(in string) *os.File {
 	exportPath := paths.Defaults()
-	textsFileName := fmt.Sprintf("%s%s/%s", paths.Application().String(), exportPath, "translations.csv")
-	logger.InfoLogger.Printf("Export File: [%v]", textsFileName)
+	textsFileName := fmt.Sprintf("%s%s/%s", paths.Application().String(), exportPath, "translations"+in+".csv")
+	logger.InfoLogger.Printf("Import/Export File=[%v]", textsFileName)
 	// fmt.Printf("exportPath: %v\n", exportPath)
 	// fmt.Printf("textsFile: %v\n", textsFileName)
 
@@ -57,19 +62,19 @@ func openTextsFile() *os.File {
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Printf("textsFile.Name(): %v\n", textsFile.Name())
 	return textsFile
 }
 
 func ImportCSV() error {
 
-	csvFile := openTextsFile()
+	csvFile := openTextsFile("import")
 	defer csvFile.Close()
 	// fmt.Printf("textsFile: %v\n", csvFile.Name())
 
 	gocsv.SetCSVReader(func(in io.Reader) gocsv.CSVReader {
 		r := csv.NewReader(in)
-		r.Comma = '|'
+		r.Comma = '±'
 		return r // Allows use pipe as delimiter
 	})
 
@@ -103,7 +108,7 @@ func ImportCSV() error {
 	}
 
 	logger.ServiceLogger.Printf("Imported %v texts", len(texts))
-
+	csvFile.Close()
 	return nil
 }
 

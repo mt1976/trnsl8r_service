@@ -25,11 +25,18 @@ func Get(in, localeFilter string) string {
 	}
 
 	if localeFilter != "" {
-		localisedText := text.Localised[localeFilter]
-		if localisedText != "" {
-			// If the locale is found, return it, otherwise proceed to the default
-			return localisedText
+		logger.TranslationLogger.Printf("Locale filter [%v] for [%v]", localeFilter, in)
+		localisedText, ok := text.Localised[localeFilter]
+		if !ok {
+			logger.TranslationLogger.Printf("Locale [%v] not found for [%v]", localeFilter, in)
+			logger.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
+			return text.Message
 		}
+
+		// If the locale is found, return it, otherwise proceed to the default
+		logger.TranslationLogger.Printf("Translated [%v] to [%v]", in, localisedText)
+		return localisedText
+
 	}
 
 	logger.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)

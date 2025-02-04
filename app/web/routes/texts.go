@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/logger"
 	"github.com/mt1976/frantic-plum/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
@@ -88,6 +89,7 @@ func TextEdit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
+	set := common.Get()
 	//title := "Texts"
 	//action := "Update"
 
@@ -106,7 +108,7 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	if id == "" {
-		msg := translation.Get("Invalid ID: ID is required", "")
+		msg := translation.Get("invalid ID: ID is required", "")
 		logger.InfoLogger.Print(msg)
 		oops(w, r, ps, translation.Get("error", ""), msg)
 		return
@@ -124,20 +126,47 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	oldMessage := t.Message
 
 	if newMessage == "" {
-		msg := translation.Get("Invalid Name: Message is required", "")
+		msg := translation.Get("invalid Name: Message is required", "")
 		logger.InfoLogger.Print(msg)
 		oops(w, r, ps, translation.Get("error", ""), msg)
 		return
 	}
 
-	if newMessage == oldMessage {
-		msg := translation.Get("No Change: Message is the same", "")
-		logger.InfoLogger.Print(msg)
-		oops(w, r, ps, translation.Get("error", ""), msg)
-		return
+	// Deal with any possible localised translations
+	//
+	// Get the current valid locales
+	msgUpdated := false
+	locales := getLocalesList(set)
+	for _, locale := range locales {
+		if locale == "" {
+			continue
+		}
+
+		localText := r.FormValue(locale)
+
+		logger.EventLogger.Printf("Update Locale=[%v] Text=[%v] Original=[%v]", locale, localText, t.Localised[locale])
+
+		if t.Localised[locale] != localText {
+			t.Localised[locale] = localText
+			msgUpdated = true
+		}
+
+	}
+
+	logger.EventLogger.Printf("newMessage=[%v] oldMessage=[%v] msgUpdated=[%v]", newMessage, oldMessage, msgUpdated)
+
+	if !msgUpdated {
+		if newMessage == oldMessage {
+			msg := translation.Get("no change: Message is the same", "")
+			logger.InfoLogger.Print(msg)
+			oops(w, r, ps, translation.Get("error", ""), msg)
+			return
+		}
 	}
 
 	t.Message = newMessage
+
+	// Get the current valid locales
 
 	msg := "Message updated from [%v]->[%v]"
 	msg = translation.Get(msg, "")

@@ -12,7 +12,6 @@ var Template Job = template{} // This is a template for other jobs.
 var DatabaseBackup Job = databaseBackup{}
 var DatabasePrune Job = databasePrune{}
 var LocaleUpdate Job = localeUpdate{}
-var ImportCSV Job = importCSVData{}
 var scheduledTasks *cron3.Cron
 var cfg *common.Settings
 var domain = domains.JOBS
