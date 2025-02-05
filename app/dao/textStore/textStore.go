@@ -27,21 +27,23 @@ func New(signature, message string) (TextStore, error) {
 	t.Signature = signature
 	t.Message = message
 	t.Original = message
-	t.Source = settings.ApplicationName()
-	t.Locale = settings.ApplicationLocale()
+	t.SourceApplication = settings.ApplicationName()
+	t.SourceLocale = settings.ApplicationLocale()
 
 	t.ConsumedBy = addConsumer(t.ConsumedBy, settings.ApplicationName())
 
 	if t.Localised == nil {
 		t.Localised = make(map[string]string)
 	}
-	t.Localised["en_GB"] = "reserved"
-	t.Localised["eu_ES"] = "reserved"
-
-	// Add basic attributes
+	// Get the current locales
+	locales := settings.GetLocales()
+	// Add the message to the localised map for each locale
+	for _, locale := range locales {
+		t.Localised[locale.Key] = ""
+	}
 
 	// Record the create action in the audit data
-	_ = t.Audit.Action(nil, audit.CREATE.WithMessage(fmt.Sprintf("New text [%v]", message)))
+	_ = t.Audit.Action(nil, audit.CREATE.WithMessage(fmt.Sprintf("New [%v]", message)))
 
 	// Log the dest instance before the creation
 	xtext, err := t.prepare()

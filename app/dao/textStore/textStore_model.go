@@ -8,25 +8,25 @@ const (
 
 // TextStore represents a TextStore entity.
 type TextStore struct {
-	ID         int               `storm:"id,increment" csv:"-"` // primary key with auto increment
-	Signature  string            `csv:"-"`                      // secondary key (used a unique identifier)
-	Source     string            `csv:"-"`                      // Saved for future use
-	Domain     string            `csv:"-"`                      // Saved for future use
-	Type       string            `csv:"-"`                      // Saved for future use
-	Locale     string            `csv:"-"`                      // Saved for future use
-	Original   string            `csv:"original"`               // Holds the original text, unformated.
-	Message    string            `csv:"message"`                // Holds the translated text, formated.
-	ConsumedBy []string          `csv:"-"`                      // Saved for future use
-	Localised  map[string]string `csv:"-"`                      // Saved for future use
-	Audit      audit.Audit       `csv:"-"`                      // Audit holds the audit information
+	ID                int               `storm:"id,increment" csv:"-"` // primary key with auto increment
+	Signature         string            `csv:"-"`                      // secondary key (used a unique identifier)
+	Domain            string            `csv:"-"`                      // Saved for future use
+	Type              string            `csv:"-"`                      // Saved for future use
+	Original          string            `csv:"original"`               // Holds the original text, unformated.
+	Message           string            `csv:"message"`                // Holds the translated text, formated.
+	SourceApplication string            `csv:"-"`                      // Saved for future use
+	SourceLocale      string            `csv:"-"`                      // Saved for future use
+	ConsumedBy        []string          `csv:"-"`                      // Saved for future use
+	Localised         map[string]string `csv:"-"`                      // Saved for future use
+	Audit             audit.Audit       `csv:"-"`                      // Audit holds the audit information
 }
 
 var Field_ID = "ID"
 var Field_Signature = "Signature"
-var Field_Source = "Source"
+var Field_SourceApplication = "SourceApplication"
 var Field_Domain = "Domain"
 var Field_Type = "Type"
-var Field_Locale = "Locale"
+var Field_SourceLocale = "SourceLocale"
 var Field_Original = "Original"
 var Field_Message = "Message"
 var Field_ConsumedBy = "ConsumedBy"
