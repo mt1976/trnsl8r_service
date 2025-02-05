@@ -105,7 +105,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Build a URI query string
-	tl8 := trnsl8r.NewRequest().WithProtocol(settings.TranslationProtocol()).WithHost(settings.TranslationHost()).WithPort(settings.TranslationPort()).WithLogger(logger.InfoLogger).WithOriginOf("trnsl8r_connect")
+	tl8 := trnsl8r.NewRequest().WithProtocol(settings.TranslationProtocol()).WithHost(settings.TranslationHost()).WithPort(settings.TranslationPort()).WithLogger(logger.InfoLogger).FromOrigin("trnsl8r_connect")
 
 	tl8.Spew()
 
