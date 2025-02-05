@@ -26,7 +26,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o ./trnsl8r_service
 # But we can document in the Dockerfile what ports
 # the application is going to listen on by default.
 # https://docs.docker.com/reference/dockerfile/#expose
-EXPOSE 7076
+EXPOSE 5050
 
 # Run
 CMD ["./trnsl8r_service"]
