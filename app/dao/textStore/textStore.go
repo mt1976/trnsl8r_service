@@ -46,7 +46,7 @@ func New(signature, message string) (TextStore, error) {
 	_ = t.Audit.Action(nil, audit.CREATE.WithMessage(fmt.Sprintf("New [%v]", message)))
 
 	// Log the dest instance before the creation
-	xtext, err := t.prepare()
+	xtext, err := t.validateRecord()
 	if err == commonErrors.ErrorDuplicate {
 		// This is OK, do nothing as this is a duplicate record
 		// we ignore duplicate destinations.
@@ -131,16 +131,16 @@ func (u *TextStore) Update(ctx context.Context, note string) error {
 	}
 
 	// Run record level validation/business processing
-	calculationError := u.calculate()
-	if calculationError != nil {
-		logger.ErrorLogger.Printf("[%v] Calculating %e", strings.ToUpper(tableName), calculationError)
-		return calculationError
+	preValidationError := u.preValidate()
+	if preValidationError != nil {
+		logger.ErrorLogger.Printf("[%v] Calculating %e", strings.ToUpper(tableName), preValidationError)
+		return preValidationError
 	}
 
 	// Run record level validation/business processing
-	_, validationError := u.prepare()
-	if validationError != nil {
-		logger.ErrorLogger.Printf("[%v] Validating %v", strings.ToUpper(tableName), validationError.Error())
+	_, validationError := u.validateRecord()
+	if validationError != nil && validationError != commonErrors.ErrorDuplicate {
+		logger.ErrorLogger.Printf("[%v] Validating [%v]", strings.ToUpper(tableName), validationError.Error())
 		return validationError
 	}
 

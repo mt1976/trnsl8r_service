@@ -123,10 +123,8 @@ func ImportCSV() error {
 func load(original, message string) (TextStore, error) {
 
 	//logger.InfoLogger.Printf("ACT: NEW New %v %v %v", tableName, name, destination)
-
-	// Create a new d
 	u := TextStore{}
-	u.Signature = id.Encode(original)
+	u.Signature = id.Encode(strings.ToUpper(original))
 	u.Message = message
 	u.Original = message
 	// Add basic attributes
@@ -135,11 +133,11 @@ func load(original, message string) (TextStore, error) {
 	_ = u.Audit.Action(nil, audit.IMPORT.WithMessage(fmt.Sprintf("Imported text [%v]", message)))
 
 	// Log the dest instance before the creation
-	xtext, err := u.prepare()
+	xtext, err := u.validateRecord()
 	if err == commonErrors.ErrorDuplicate {
 		// This is OK, do nothing as this is a duplicate record
 		// we ignore duplicate destinations.
-		logger.WarningLogger.Printf("[%v] DUPLICATE %v already in use", strings.ToUpper(tableName), message)
+		logger.WarningLogger.Printf("DUPLICATE %v available in use as [%v]", message, u.Signature)
 		return xtext, nil
 	}
 

@@ -11,6 +11,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/frantic-plum/common"
 	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-plum/stringHelpers"
 	"github.com/mt1976/frantic-plum/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 	"github.com/mt1976/trnsl8r_service/app/dao"
@@ -102,10 +103,9 @@ func main() {
 	// test get of "🙁 ERROR [%v]"
 
 	msg := "🙁 ERROR [%v]"
-	logger.InfoLogger.Println(translation.Get(msg, ""))
-	logger.InfoLogger.Println(translation.Get(msg, "test"))
-	logger.InfoLogger.Println(translation.Get(msg, "en_GB"))
-	logger.InfoLogger.Println(translation.Get(msg, "jp_JP"))
+	newFunction(msg)
+	newFunction(settings.ApplicationDescription())
+	newFunction(settings.ApplicationName())
 
 	port := settings.ApplicationPortString()
 	hostMachine := "localhost"
@@ -117,6 +117,16 @@ func main() {
 
 	logger.InfoLogger.Printf("[%v] Listening on %v://%v:%v/", na, protocol, hostMachine, port)
 	logger.ErrorLogger.Fatal(http.ListenAndServe(":"+port, router))
+}
+
+func newFunction(msg string) {
+	logger.InfoLogger.Println(stringHelpers.DChevrons(translation.Get(msg, "")))
+
+	// Get a list of the locales
+	localList := settings.GetLocales()
+	for _, locale := range localList {
+		logger.InfoLogger.Println(locale.Name + " " + stringHelpers.SBracket(translation.Get(msg, locale.Key)))
+	}
 }
 
 func setupSystemUser() {
