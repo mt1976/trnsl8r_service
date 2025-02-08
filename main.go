@@ -63,28 +63,28 @@ func main() {
 
 	timer := timing.Start(na, "Initialise", "Service")
 
-	logger.Banner(na, "Initialise", "Start...")
+	logger.InfoBanner(na, "Initialise", "Start...")
 
 	// Preload the text store
-	logger.Banner(na, "Texts", "Importing")
+	logger.InfoBanner(na, "Texts", "Importing")
 	err = textStore.ImportCSV()
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 	}
 
-	logger.Banner(na, "Texts", "Imported")
+	logger.InfoBanner(na, "Texts", "Imported")
 
-	logger.Banner(na, "Texts", "Upgrading")
+	logger.InfoBanner(na, "Texts", "Upgrading")
 	err = jobs.LocaleUpdate.Run()
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 	}
 
-	logger.Banner(na, "Texts", "Upgraded")
+	logger.InfoBanner(na, "Texts", "Upgraded")
 
-	logger.Banner(na, "Initialise", "Done")
+	logger.InfoBanner(na, "Initialise", "Done")
 
-	logger.Banner(na, "Routes", "Setup")
+	logger.InfoBanner(na, "Routes", "Setup")
 
 	router := httprouter.New()
 	router = routes.Setup(router)
@@ -95,7 +95,7 @@ func main() {
 	})
 
 	//logger.InfoLogger.Println("APP: Routes Setup")
-	logger.Banner(na, "Routes", "Done")
+	logger.InfoBanner(na, "Routes", "Done")
 
 	// Start the job processor
 	jobs.Start()
@@ -130,7 +130,7 @@ func newFunction(msg string) {
 }
 
 func setupSystemUser() {
-	logger.Banner("System", "Users", "Setup")
+	logger.InfoBanner("System", "Users", "Setup")
 	// Create the system user
 
 	sysUCode := "sys"

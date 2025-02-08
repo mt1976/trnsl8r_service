@@ -142,14 +142,14 @@ func Trnsl8r_Export(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 
 func Trnsl8r_Refresh(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
-	logger.Banner(domains.TEXT.String(), "Texts", "Importing")
+	logger.InfoBanner(domains.TEXT.String(), "Texts", "Importing")
 	err := textStore.ImportCSV()
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 		oops(w, r, nil, "error", err.Error())
 	}
 
-	logger.Banner(domains.TEXT.String(), "Texts", "Imported")
+	logger.InfoBanner(domains.TEXT.String(), "Texts", "Imported")
 	successMessage(w, r, nil, "success - translations imported")
 }
 
@@ -162,14 +162,14 @@ func Trnsl8r_Rebuild(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 		oops(w, r, nil, "error", err.Error())
 	}
 
-	logger.Banner(domains.TEXT.String(), "Texts", "Importing")
+	logger.InfoBanner(domains.TEXT.String(), "Texts", "Importing")
 	err = textStore.ImportCSV()
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 		oops(w, r, nil, "error", err.Error())
 	}
 
-	logger.Banner(domains.TEXT.String(), "Texts", "Imported")
+	logger.InfoBanner(domains.TEXT.String(), "Texts", "Imported")
 	successMessage(w, r, nil, "success - translations imported")
 }
 
