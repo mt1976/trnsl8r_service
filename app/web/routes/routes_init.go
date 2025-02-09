@@ -34,4 +34,7 @@ func init() {
 	serverPort = settings.GetServerPortAsString()
 	serverHost = settings.GetServerHost()
 	serverProtocol = settings.GetServerProtocol()
+
+	//io.Dump("settings", paths.Dumps(), "test", "common", settings)
+
 }
