@@ -46,7 +46,7 @@ func jobPruneBackups() {
 	j := timing.Start(strings.ToUpper(name), "Prune", "Old Backups")
 	// Get Settings
 
-	retainBackupDays := settings.MaxEntries()
+	retainBackupDays := settings.GetMaxHistoryEntries()
 
 	logger.ServiceLogger.Printf("[%v] RetainBackupDays=[%v]", strings.ToUpper(name), retainBackupDays)
 	today := StartOfDay(time.Now())

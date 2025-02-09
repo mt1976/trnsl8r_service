@@ -22,15 +22,16 @@ func New(signature, message string) (TextStore, error) {
 
 	//logger.InfoLogger.Printf("ACT: NEW New %v %v %v", tableName, name, destination)
 	settings := common.Get()
+	appName := settings.GetApplicationName()
 	// Create a new d
 	t := TextStore{}
 	t.Signature = signature
 	t.Message = message
 	t.Original = message
-	t.SourceApplication = settings.ApplicationName()
-	t.SourceLocale = settings.ApplicationLocale()
+	t.SourceApplication = appName
+	t.SourceLocale = settings.GetApplicationLocale()
 
-	t.ConsumedBy = addConsumer(t.ConsumedBy, settings.ApplicationName())
+	t.ConsumedBy = addConsumer(t.ConsumedBy, appName)
 
 	if t.Localised == nil {
 		t.Localised = make(map[string]string)

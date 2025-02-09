@@ -10,13 +10,6 @@ import (
 	"github.com/mt1976/frantic-plum/logger"
 )
 
-var settings *common.Settings
-
-func init() {
-	logger.EventLogger.Println("Loading Routes")
-	settings = common.Get()
-}
-
 func Setup(router *httprouter.Router) *httprouter.Router {
 
 	//sessionID := "sessionID"
@@ -50,7 +43,7 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 	router.GET(announceInsecure("/rebuild"), Trnsl8r_Rebuild)
 
 	// Special Routes
-	if settings.ApplicationModeIs(common.MODE_DEVELOPMENT) {
+	if settings.IsApplicationMode(common.MODE_DEVELOPMENT) {
 		router.GET(announceInsecure("/test"), Test)
 	}
 
@@ -59,16 +52,13 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 }
 
 func announceInsecure(route string) string {
-	port := settings.ApplicationPortString()
-	hostMachine := "localhost"
-	protocol := settings.ServerProtocol()
 
 	prefix := fmt.Sprintf("[ROUTE] Path=[%v]", route)
 	padTo := 50
 	if len(prefix) < padTo {
 		prefix = prefix + strings.Repeat(" ", padTo-len(prefix))
 	}
-	logger.ApiLogger.Printf("%s %v://%v:%v%v", prefix, protocol, hostMachine, port, route)
+	logger.ApiLogger.Printf("%s %v://%v:%v%v", prefix, serverProtocol, serverHost, serverPort, route)
 	return route
 }
 

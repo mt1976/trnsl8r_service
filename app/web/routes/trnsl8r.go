@@ -94,7 +94,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Respond with the translated item and a success status
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Add("Application", settings.ApplicationName())
+	w.Header().Add("Application", appName)
 
 	fmt.Fprintf(w, "{\"message\":\"%v\"}", translatedItem)
 	w.WriteHeader(http.StatusOK)
@@ -105,7 +105,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Build a URI query string
-	tl8 := trnsl8r.NewRequest().WithProtocol(settings.TranslationProtocol()).WithHost(settings.TranslationHost()).WithPort(settings.TranslationPort()).WithLogger(logger.InfoLogger).FromOrigin("trnsl8r_connect")
+	tl8 := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logger.InfoLogger).FromOrigin("trnsl8r_connect")
 
 	tl8.Spew()
 

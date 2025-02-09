@@ -34,15 +34,15 @@ func main() {
 	}
 
 	err = error(nil)
-
-	logger.InfoLogger.Printf("[%v] Starting...", settings.ApplicationName())
-	logger.InfoLogger.Printf("[%v] Connecting...", settings.ApplicationName())
+	appName := settings.GetApplicationName()
+	logger.InfoLogger.Printf("[%v] Starting...", appName)
+	logger.InfoLogger.Printf("[%v] Connecting...", appName)
 	err = dao.Initialise(settings)
 	if err != nil {
 		logger.ErrorLogger.Fatal(err.Error())
 	}
-	logger.InfoLogger.Printf("[%v] Connected", settings.ApplicationName())
-	logger.ServiceLogger.Printf("[%v] Backup Starting...", settings.ApplicationName())
+	logger.InfoLogger.Printf("[%v] Connected", appName)
+	logger.ServiceLogger.Printf("[%v] Backup Starting...", appName)
 
 	err = jobs.DatabaseBackup.Run()
 	if err != nil {
@@ -54,12 +54,12 @@ func main() {
 		logger.PanicLogger.Fatal(err.Error())
 	}
 
-	logger.ServiceLogger.Printf("[%v] Backup Done", settings.ApplicationName())
+	logger.ServiceLogger.Printf("[%v] Backup Done", appName)
 
-	logger.InfoLogger.Printf("[%v] Starting...", settings.ApplicationName())
+	logger.InfoLogger.Printf("[%v] Starting...", appName)
 	setupSystemUser()
 
-	na := strings.ToUpper(settings.ApplicationName())
+	na := strings.ToUpper(appName)
 
 	timer := timing.Start(na, "Initialise", "Service")
 
@@ -104,12 +104,12 @@ func main() {
 
 	msg := "🙁 ERROR [%v]"
 	newFunction(msg)
-	newFunction(settings.ApplicationDescription())
-	newFunction(settings.ApplicationName())
+	newFunction(settings.GetApplicationDescription())
+	newFunction(appName)
 
-	port := settings.ApplicationPortString()
+	port := settings.GetServerPortAsString()
 	hostMachine := "localhost"
-	protocol := settings.ServerProtocol()
+	protocol := settings.GetServerProtocol()
 
 	logger.InfoLogger.Printf("[%v] Starting Server Port=[%v]", na, port)
 

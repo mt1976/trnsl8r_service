@@ -50,6 +50,8 @@ github.com/mt1976/frantic-plum v1.0.2 h1:hqlTqyjM1KccQuV/lBjFMMQ3KEVERulmggeZA5x
 github.com/mt1976/frantic-plum v1.0.2/go.mod h1:uxQNdQv2CcLfsqKGEseBppACiEVn0N1HDrYsnIZh5X0=
 github.com/mt1976/frantic-plum v1.1.0 h1:WyKVQsYoQNln46R6fO/H/e0ZeUdb4DV3KhajN1AcXBU=
 github.com/mt1976/frantic-plum v1.1.0/go.mod h1:uxQNdQv2CcLfsqKGEseBppACiEVn0N1HDrYsnIZh5X0=
+github.com/mt1976/frantic-plum v1.1.1 h1:gcoUZ5UOcA26zRqo1dkr5vqUc6Pw/QE433PkVihLz+U=
+github.com/mt1976/frantic-plum v1.1.1/go.mod h1:uxQNdQv2CcLfsqKGEseBppACiEVn0N1HDrYsnIZh5X0=
 github.com/mt1976/trnsl8r_connect v1.0.1 h1:8s5goti6JbD2u9HrtqMm3Qhvx3JYg8aSlGoW4d80Nko=
 github.com/mt1976/trnsl8r_connect v1.0.1/go.mod h1:7THZUBmpFbjbcikF012zrg/vJwJ5GC+QBt0vku0fCng=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
