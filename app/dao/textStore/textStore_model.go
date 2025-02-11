@@ -1,6 +1,6 @@
 package textStore
 
-import "github.com/mt1976/frantic-plum/dao/audit"
+import "github.com/mt1976/frantic-core/dao/audit"
 
 const (
 	tableName = "TextStore" // table name in the database

@@ -9,11 +9,11 @@ import (
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 
-	"github.com/mt1976/frantic-plum/common"
-	h "github.com/mt1976/frantic-plum/html"
-	"github.com/mt1976/frantic-plum/id"
-	"github.com/mt1976/frantic-plum/logger"
-	"github.com/mt1976/frantic-plum/timing"
+	"github.com/mt1976/frantic-core/common"
+	h "github.com/mt1976/frantic-core/html"
+	"github.com/mt1976/frantic-core/id"
+	"github.com/mt1976/frantic-core/logger"
+	"github.com/mt1976/frantic-core/timing"
 	trnsl8r "github.com/mt1976/trnsl8r_connect"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )

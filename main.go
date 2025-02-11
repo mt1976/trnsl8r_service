@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/common"
-	"github.com/mt1976/frantic-plum/logger"
-	"github.com/mt1976/frantic-plum/stringHelpers"
-	"github.com/mt1976/frantic-plum/timing"
+	"github.com/mt1976/frantic-core/common"
+	"github.com/mt1976/frantic-core/logger"
+	"github.com/mt1976/frantic-core/stringHelpers"
+	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 	"github.com/mt1976/trnsl8r_service/app/dao"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
@@ -120,12 +120,12 @@ func main() {
 }
 
 func newFunction(msg string) {
-	logger.InfoLogger.Println(stringHelpers.DChevrons(translation.Get(msg, "")))
+	logger.TranslationLogger.Println("Translating: ", stringHelpers.DChevrons(translation.Get(msg, "")))
 
 	// Get a list of the locales
 	localList := settings.GetLocales()
 	for _, locale := range localList {
-		logger.InfoLogger.Println(locale.Name + " " + stringHelpers.SBracket(translation.Get(msg, locale.Key)))
+		logger.TranslationLogger.Println(locale.Name + " " + stringHelpers.SBracket(translation.Get(msg, locale.Key)))
 	}
 }
 

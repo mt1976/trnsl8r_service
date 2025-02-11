@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-core/logger"
 	"github.com/mt1976/trnsl8r_service/app/jobs"
 )
 

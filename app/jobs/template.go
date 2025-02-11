@@ -1,7 +1,7 @@
 package jobs
 
 import (
-	"github.com/mt1976/frantic-plum/timing"
+	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 )

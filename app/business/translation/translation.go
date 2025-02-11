@@ -3,14 +3,14 @@ package translation
 import (
 	"strings"
 
-	"github.com/mt1976/frantic-plum/id"
-	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-core/id"
+	"github.com/mt1976/frantic-core/logger"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
 func Get(in, localeFilter string) string {
 	// Validate the input data
-	logger.InfoLogger.Printf("Translating [%v][%v] locale=[%v]", in, strings.ToUpper(in), localeFilter)
+	logger.TranslationLogger.Printf("Translating [%v] locale=[%v]", in, localeFilter)
 	id := id.Encode(strings.ToUpper(in))
 
 	text, err := textStore.Get(id, localeFilter)

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/common"
-	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-core/common"
+	"github.com/mt1976/frantic-core/logger"
 )
 
 func Setup(router *httprouter.Router) *httprouter.Router {

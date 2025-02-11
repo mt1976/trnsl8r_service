@@ -3,9 +3,9 @@ package jobs
 import (
 	"fmt"
 
-	"github.com/mt1976/frantic-plum/common"
-	"github.com/mt1976/frantic-plum/logger"
-	"github.com/mt1976/frantic-plum/timing"
+	"github.com/mt1976/frantic-core/common"
+	"github.com/mt1976/frantic-core/logger"
+	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"

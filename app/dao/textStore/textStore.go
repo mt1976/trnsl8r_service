@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mt1976/frantic-plum/common"
-	"github.com/mt1976/frantic-plum/commonErrors"
-	"github.com/mt1976/frantic-plum/dao/audit"
-	"github.com/mt1976/frantic-plum/dao/database"
-	"github.com/mt1976/frantic-plum/io"
-	"github.com/mt1976/frantic-plum/logger"
-	"github.com/mt1976/frantic-plum/paths"
-	"github.com/mt1976/frantic-plum/timing"
-	stopwatch "github.com/mt1976/frantic-plum/timing"
+	"github.com/mt1976/frantic-core/common"
+	"github.com/mt1976/frantic-core/commonErrors"
+	"github.com/mt1976/frantic-core/dao/audit"
+	"github.com/mt1976/frantic-core/dao/database"
+	"github.com/mt1976/frantic-core/io"
+	"github.com/mt1976/frantic-core/logger"
+	"github.com/mt1976/frantic-core/paths"
+	"github.com/mt1976/frantic-core/timing"
+	stopwatch "github.com/mt1976/frantic-core/timing"
 )
 
 // New creates a New dest with the given name and saves it to the database

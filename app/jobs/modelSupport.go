@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/jsuar/go-cron-descriptor/pkg/crondescriptor"
-	"github.com/mt1976/frantic-plum/date"
-	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-core/date"
+	"github.com/mt1976/frantic-core/logger"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 )
 

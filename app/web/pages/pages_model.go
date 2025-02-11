@@ -1,7 +1,7 @@
 package pages
 
 import (
-	dao "github.com/mt1976/frantic-plum/dao/lookup"
+	dao "github.com/mt1976/frantic-core/dao/lookup"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 

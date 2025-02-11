@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/logger"
-	"github.com/mt1976/frantic-plum/timing"
+	"github.com/mt1976/frantic-core/logger"
+	"github.com/mt1976/frantic-core/timing"
 )
 
 func Health(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

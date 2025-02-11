@@ -9,12 +9,13 @@ import (
 	"time"
 
 	"github.com/gocarina/gocsv"
-	"github.com/mt1976/frantic-plum/commonErrors"
-	"github.com/mt1976/frantic-plum/dao/audit"
-	"github.com/mt1976/frantic-plum/dao/database"
-	"github.com/mt1976/frantic-plum/id"
-	"github.com/mt1976/frantic-plum/logger"
-	"github.com/mt1976/frantic-plum/paths"
+	"github.com/mt1976/frantic-core/common"
+	"github.com/mt1976/frantic-core/commonErrors"
+	"github.com/mt1976/frantic-core/dao/audit"
+	"github.com/mt1976/frantic-core/dao/database"
+	"github.com/mt1976/frantic-core/id"
+	"github.com/mt1976/frantic-core/logger"
+	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 )
 
@@ -153,6 +154,25 @@ func load(original, message string) (TextStore, error) {
 		logger.WarningLogger.Printf("[%v] ID is required, skipping", strings.ToUpper(tableName))
 		return TextStore{}, nil
 	}
+
+	set := common.Get()
+
+	locales := set.GetLocales()
+	//noLocales := len(locales)
+
+	newTextLocalised := make(map[string]string)
+
+	for _, locale := range locales {
+
+		// if the locale map is empty create it
+		if u.Localised == nil {
+			u.Localised = make(map[string]string)
+		}
+
+		newTextLocalised[locale.Key] = u.Localised[locale.Key]
+
+	}
+	u.Localised = newTextLocalised
 
 	err = database.Create(&u)
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-plum/logger"
+	"github.com/mt1976/frantic-core/logger"
 )
 
 func Oops(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
