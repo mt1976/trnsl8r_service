@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-core/common"
-	"github.com/mt1976/frantic-core/logger"
+	common "github.com/mt1976/frantic-core/commonConfig"
+	logger "github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"

@@ -3,8 +3,8 @@ package jobs
 import (
 	"fmt"
 
-	"github.com/mt1976/frantic-core/common"
-	"github.com/mt1976/frantic-core/logger"
+	common "github.com/mt1976/frantic-core/commonConfig"
+	logger "github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"

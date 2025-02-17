@@ -3,7 +3,7 @@ package permissions
 import (
 	"fmt"
 
-	"github.com/mt1976/frantic-core/logger"
+	logger "github.com/mt1976/frantic-core/logHandler"
 )
 
 type Rights struct {

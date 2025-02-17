@@ -9,10 +9,11 @@ import (
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 
-	"github.com/mt1976/frantic-core/common"
-	h "github.com/mt1976/frantic-core/html"
-	"github.com/mt1976/frantic-core/id"
-	"github.com/mt1976/frantic-core/logger"
+	common "github.com/mt1976/frantic-core/commonConfig"
+	"github.com/mt1976/frantic-core/htmlHelpers"
+	id "github.com/mt1976/frantic-core/idHelpers"
+	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/stringHelpers"
 	"github.com/mt1976/frantic-core/timing"
 	trnsl8r "github.com/mt1976/trnsl8r_connect"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
@@ -28,7 +29,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	filterLocale := r.URL.Query().Get("locale")
 	if filterLocale != "" {
-		filterLocale, err := h.FromPathSafe(filterLocale)
+		filterLocale, err := htmlHelpers.FromPathSafe(filterLocale)
 		if err != nil {
 			logger.ErrorLogger.Println(err.Error())
 			oops(w, r, nil, "error", err.Error())
@@ -57,7 +58,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	// Needs to be decoded from the URL
-	itemToTranslate, err := h.FromPathSafe(itemToTranslate)
+	itemToTranslate, err := htmlHelpers.FromPathSafe(itemToTranslate)
 	if err != nil {
 		logger.ErrorLogger.Println(err.Error())
 		oops(w, r, nil, "error", err.Error())
@@ -109,7 +110,7 @@ func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 
 	tl8.Spew()
 
-	logger.TranslationLogger.Println("Request to translate message {{", tl8.String(), "}}")
+	logger.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(tl8.String()))
 
 	all, err := textStore.GetAll()
 	if err != nil {
@@ -117,12 +118,12 @@ func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	}
 
 	for _, item := range all {
-		logger.TranslationLogger.Println("Original: {{", item.Original, "}}")
+		logger.TranslationLogger.Println("Original: ", stringHelpers.DCurlies(item.Original))
 		translation, err := tl8.Get(item.Original)
 		if err != nil {
 			logger.ErrorLogger.Println(err.Error())
 		}
-		logger.InfoLogger.Println("Original: {{", item.Original, "}} Translation: {{", translation.String(), "}}", "Information: {{", translation.Information, "}}")
+		logger.InfoLogger.Println("Original: ", stringHelpers.DCurlies(item.Original), " Translation: ", stringHelpers.DCurlies(translation.String()), "}}", "Information: ", stringHelpers.DCurlies(translation.Information))
 	}
 }
 

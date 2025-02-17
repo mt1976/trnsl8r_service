@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/mt1976/frantic-core/common"
-	"github.com/mt1976/frantic-core/logger"
+	common "github.com/mt1976/frantic-core/commonConfig"
+	logger "github.com/mt1976/frantic-core/logHandler"
 )
 
 var settings *common.Settings

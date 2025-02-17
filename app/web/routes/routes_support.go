@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/mt1976/frantic-core/html"
-	"github.com/mt1976/frantic-core/logger"
+	html "github.com/mt1976/frantic-core/htmlHelpers"
+	logger "github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 )

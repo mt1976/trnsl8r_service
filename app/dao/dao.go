@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	storm "github.com/asdine/storm/v3"
-	"github.com/mt1976/frantic-core/common"
+	common "github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/dao/database"
-	"github.com/mt1976/frantic-core/logger"
+	logger "github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/trnsl8r_service/app/web/routes"
 )
 

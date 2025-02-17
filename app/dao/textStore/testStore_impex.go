@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/gocarina/gocsv"
-	"github.com/mt1976/frantic-core/common"
+	common "github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/commonErrors"
 	"github.com/mt1976/frantic-core/dao/audit"
 	"github.com/mt1976/frantic-core/dao/database"
-	"github.com/mt1976/frantic-core/id"
-	"github.com/mt1976/frantic-core/logger"
+	id "github.com/mt1976/frantic-core/idHelpers"
+	logger "github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 )

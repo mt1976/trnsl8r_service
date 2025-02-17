@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/mt1976/frantic-core/commonErrors"
-	"github.com/mt1976/frantic-core/logger"
+	logger "github.com/mt1976/frantic-core/logHandler"
 )
 
 func (u *TextStore) validateRecord() (TextStore, error) {

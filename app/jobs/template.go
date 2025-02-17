@@ -1,6 +1,7 @@
 package jobs
 
 import (
+	"github.com/mt1976/frantic-core/jobs"
 	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
@@ -11,7 +12,7 @@ type template struct {
 
 func (job template) Run() error {
 	jobNotifications()
-	NextRun(job)
+	jobs.NextRun(job)
 	return nil
 }
 
