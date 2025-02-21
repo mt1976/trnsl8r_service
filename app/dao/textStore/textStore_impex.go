@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -12,11 +13,11 @@ import (
 	"github.com/gocarina/gocsv"
 	"github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/commonErrors"
-	"github.com/mt1976/frantic-core/dao/actions"
 	"github.com/mt1976/frantic-core/dao/audit"
 	"github.com/mt1976/frantic-core/idHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
+	"github.com/mt1976/frantic-core/stringHelpers"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 )
 
@@ -28,13 +29,15 @@ type TextImportModel struct {
 var COMMA = '|'
 
 func ExportCSV() error {
+	logHandler.ExportLogger.Printf("Exporting texts")
+	Initialise(context.TODO())
 
-	textsFile := openTextsFile("export")
+	textsFile := openTextsFile("export", logHandler.ExportLogger)
 	defer textsFile.Close()
 
 	texts, err := GetAll()
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error Getting all texts: %v", err.Error())
+		logHandler.ExportLogger.Printf("Error Getting all texts: %v", err.Error())
 	}
 
 	gocsv.SetCSVWriter(func(out io.Writer) *gocsv.SafeCSVWriter {
@@ -46,11 +49,11 @@ func ExportCSV() error {
 
 	_, err = gocsv.MarshalString(texts) // Get all texts as CSV string
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
+		logHandler.ExportLogger.Printf("Error exporting texts: %v", err.Error())
 	}
 	err = gocsv.MarshalFile(&texts, textsFile) // Get all texts as CSV string
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
+		logHandler.ExportLogger.Printf("Error exporting texts: %v", err.Error())
 	}
 
 	msg := fmt.Sprintf("# Generated (%v) texts at %v on %v", len(texts), time.Now().Format("15:04:05"), time.Now().Format("2006-01-02"))
@@ -58,12 +61,12 @@ func ExportCSV() error {
 
 	textsFile.Close()
 
-	logHandler.EventLogger.Printf("Exported (%v) texts", len(texts))
+	logHandler.ExportLogger.Printf("Exported (%v) texts", len(texts))
 
 	return nil
 }
 
-func openTextsFile(in string) *os.File {
+func openTextsFile(in string, log *log.Logger) *os.File {
 	exportPath := paths.Defaults()
 	textsFileName := fmt.Sprintf("%s%s/%s", paths.Application().String(), exportPath, "translations.csv")
 
@@ -72,16 +75,18 @@ func openTextsFile(in string) *os.File {
 
 	textsFile, err := os.OpenFile(textsFileName, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
+		log.Panicf("Error opening file: %v", err)
 		panic(err)
 	}
 	//fmt.Printf("textsFile.Name(): %v\n", textsFile.Name())
-	logHandler.InfoLogger.Printf("Import/Export=[%v] File=[%v]", in, textsFile.Name())
+	log.Printf("Import/Export=[%v] File=[%v]", in, textsFile.Name())
 	return textsFile
 }
 
 func ImportCSV() error {
+	logHandler.ImportLogger.Printf("Importing texts")
 	Initialise(context.TODO())
-	csvFile := openTextsFile("import")
+	csvFile := openTextsFile("import", logHandler.ImportLogger)
 	defer csvFile.Close()
 	// fmt.Printf("textsFile: %v\n", csvFile.Name())
 
@@ -96,7 +101,7 @@ func ImportCSV() error {
 	texts := []*TextImportModel{}
 
 	if err := gocsv.UnmarshalFile(csvFile, &texts); err != nil { // Load clients from file
-		logHandler.WarningLogger.Printf("Importing %v: %v - No Content", domains.TEXT.String(), err.Error())
+		logHandler.ImportLogger.Printf("Importing %v: %v - No Content", domains.TEXT.String(), err.Error())
 		csvFile.Close()
 		return nil
 	}
@@ -107,7 +112,7 @@ func ImportCSV() error {
 	noTexts := len(texts)
 	for thisPos, textEntry := range texts {
 		//fmt.Printf("% 3v)[%v][%v][%v]\n", i, textEntry.Original, textEntry.Message, textEntry)
-		logHandler.ServiceLogger.Printf("Importing text (%v/%v) [%v]", thisPos+1, noTexts, textEntry.Message)
+		logHandler.ImportLogger.Printf("importing text (%v/%v) [%v]", thisPos+1, noTexts, textEntry.Message)
 
 		existingText, _ := GetBySignature(idHelpers.Encode(textEntry.Original))
 		if existingText.Signature != "" {
@@ -117,12 +122,12 @@ func ImportCSV() error {
 
 		_, err := load(textEntry.Original, textEntry.Message)
 		if err != nil {
-			logHandler.ErrorLogger.Printf("Error importing text: %v", err.Error())
+			logHandler.ImportLogger.Panicf("importing text: %v", err.Error())
 		}
-		logHandler.ServiceLogger.Printf("Imported text [%v] [%v]", textEntry.Original, textEntry.Message)
+		logHandler.ImportLogger.Printf("imported text [%v] [%v]", textEntry.Original, textEntry.Message)
 	}
 
-	logHandler.ServiceLogger.Printf("Imported (%v) texts", len(texts))
+	logHandler.ImportLogger.Printf("imported (%v) texts", len(texts))
 	csvFile.Close()
 	return nil
 }
@@ -141,23 +146,28 @@ func load(original, message string) (Text_Store, error) {
 
 	dupe, err := u.dup(u.Signature)
 	// Log the dest instance before the creation
-	if u.Validate() == commonErrors.ErrorDuplicate {
+	if err == commonErrors.ErrorDuplicate {
 		// This is OK, do nothing as this is a duplicate record
 		// we ignore duplicate destinations.
-		logHandler.WarningLogger.Printf("DUPLICATE %v available in use as [%v]", message, u.Signature)
+		logHandler.ImportLogger.Printf("[DUPLICATE] %v already available", stringHelpers.DQuote(message))
 		return dupe, nil
 	}
 
 	//u.Dump(!,"Post-Prepare-DupCheck")
 
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%s]", err.Error())
+		if err != commonErrors.ErrorDuplicate {
+			// Log and return the error if there is an error checking for duplicates
+			logHandler.ImportLogger.Panicf("Duplicated Detected=[%s]", err.Error())
+			return Text_Store{}, err
+		}
+		logHandler.ImportLogger.Panicf("Error=[%s]", err.Error())
 		return Text_Store{}, err
 	}
 
 	// Save the dest instance to the database
 	if u.Signature == "" {
-		logHandler.WarningLogger.Printf("[%v] ID is required, skipping", strings.ToUpper(domain))
+		logHandler.ImportLogger.Printf("[%v] ID is required, skipping", strings.ToUpper(domain))
 		return Text_Store{}, nil
 	}
 
@@ -183,15 +193,13 @@ func load(original, message string) (Text_Store, error) {
 	err = activeDB.Create(&u)
 	if err != nil {
 		// Log and panic if there is an error creating the dest instance
-		logHandler.ErrorLogger.Printf("[%v] Create %s", strings.ToUpper(domain), err.Error())
+		logHandler.ImportLogger.Panicf("[%v] Create %s", strings.ToUpper(domain), err.Error())
 		panic(err)
 	}
 
 	//u.Dump(!,fmt.Sprintf("PostNew_dest_%d", u.ID))
 	msg := fmt.Sprintf("Imported text translation available Id=[%v] Message=[%v]", original, message)
-	logHandler.TranslationLogger.Println(msg)
+	logHandler.ImportLogger.Println(msg)
 	// Return the created dest and nil error
-	logHandler.ServiceLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", domain, actions.IMPORT.GetCode(), original, msg)
-
 	return u, nil
 }

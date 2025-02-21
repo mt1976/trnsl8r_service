@@ -173,9 +173,9 @@ func GetLocalised(signature, localeFilter string) (Text_Store, error) {
 }
 
 func GetDB() func() (*database.DB, error) {
-	logHandler.InfoLogger.Println("GETDB")
+	//logHandler.InfoLogger.Println("GETDB")
 	return func() (*database.DB, error) {
-		logHandler.InfoLogger.Printf("GETDB2")
+		//logHandler.InfoLogger.Printf("GETDB2")
 		return database.Connect(), nil
 	}
 }

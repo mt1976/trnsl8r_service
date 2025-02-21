@@ -1,11 +1,10 @@
 package jobs
 
 import (
-	"fmt"
-
 	"github.com/mt1976/frantic-core/dao/maintenance"
 	"github.com/mt1976/frantic-core/jobs"
 	"github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/stringHelpers"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
 	cron3 "github.com/robfig/cron/v3"
@@ -27,9 +26,8 @@ func init() {
 func Start() {
 	// Start the job
 	logHandler.ServiceLogger.Printf("[%v] Queue - Starting", domain.String())
-	// Add the functions to the jobs
+	// Add the functions to the jobs, one for each table/domain that required a backup
 	DatabaseBackup.AddFunction(textstore.GetDB())
-	fmt.Printf("DatabaseBackup: %+v\n", DatabaseBackup)
 	// Database Backup
 	Schedule(DatabaseBackup)
 	// Prune the archive of backups
@@ -46,7 +44,8 @@ func Schedule(j jobs.Job) {
 		logHandler.ErrorLogger.Printf("[%v] Job [%v] Schedule [%v] Error [%v]", domain.String(), j.Name(), j.Schedule(), err.Error())
 		return
 	}
-	logHandler.ServiceLogger.Printf("[%v] Job [%v] Scheduled [%v] ID [%v]", domain.String(), j.Name(), j.Schedule(), id)
-	jobs.Announce(j.Name(), "Scheduled")
-	jobs.NextRun(j.Name(), j.Schedule())
+	nextRun := jobs.GetHumanReadableCronFreq(j.Schedule())
+	logHandler.ServiceLogger.Printf("[%v] Job %v Scheduled [%v] [%v] (id=%v)", domain.String(), stringHelpers.DQuote(j.Name()), j.Schedule(), nextRun, id)
+	//jobs.Announce(j.Name(), "Scheduled")
+	//jobs.NextRun(j.Name(), j.Schedule())
 }
