@@ -6,17 +6,17 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	common "github.com/mt1976/frantic-core/commonConfig"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/commonConfig"
+	"github.com/mt1976/frantic-core/logHandler"
 )
 
 func Setup(router *httprouter.Router) *httprouter.Router {
 
 	//sessionID := "sessionID"
 
-	logger.EventLogger.Println("Declare Behaviours ")
+	logHandler.EventLogger.Println("Declare Behaviours ")
 
-	logger.EventLogger.Println("Setup Routes ")
+	logHandler.EventLogger.Println("Setup Routes ")
 
 	// router.GET(announce("/"), Launch)
 	router.ServeFiles(announceInsecure("/static/*filepath"), http.Dir("res/html/static"))
@@ -43,7 +43,7 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 	router.GET(announceInsecure("/rebuild"), Trnsl8r_Rebuild)
 
 	// Special Routes
-	if settings.IsApplicationMode(common.MODE_DEVELOPMENT) {
+	if settings.IsApplicationMode(commonConfig.MODE_DEVELOPMENT) {
 		router.GET(announceInsecure("/test"), Test)
 	}
 
@@ -58,7 +58,7 @@ func announceInsecure(route string) string {
 	if len(prefix) < padTo {
 		prefix = prefix + strings.Repeat(" ", padTo-len(prefix))
 	}
-	logger.ApiLogger.Printf("%s %v://%v:%v%v", prefix, serverProtocol, serverHost, serverPort, route)
+	logHandler.ApiLogger.Printf("%s %v://%v:%v%v", prefix, serverProtocol, serverHost, serverPort, route)
 	return route
 }
 
@@ -67,6 +67,6 @@ func announceInsecure(route string) string {
 // 	return announceInsecure(route)
 // }
 
-func Initialise(cfg *common.Settings) {
-	logger.EventLogger.Println("Initialise Routes")
+func Initialise(cfg *commonConfig.Settings) {
+	logHandler.EventLogger.Println("Initialise Routes")
 }

@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 	"github.com/mt1976/trnsl8r_service/app/jobs"
 )
 
 func PruneBackups(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	name := "Database Backup Housekeeping"
-	logger.EventLogger.Println(name)
+	logHandler.EventLogger.Println(name)
 
 	trace(r)
 

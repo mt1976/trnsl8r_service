@@ -1,13 +1,15 @@
-package textStore
+package textstore
 
-import "github.com/mt1976/frantic-core/dao/audit"
+// Data Access Object Template
+// Version: 0.2.0
+// Updated on: 2021-09-10
 
-const (
-	tableName = "TextStore" // table name in the database
+import (
+	audit "github.com/mt1976/frantic-core/dao/audit"
 )
 
-// TextStore represents a TextStore entity.
-type TextStore struct {
+// Text_Store represents a Text_Store entity.
+type Text_Store struct {
 	ID                int               `storm:"id,increment" csv:"-"` // primary key with auto increment
 	Signature         string            `csv:"-"`                      // secondary key (used a unique identifier)
 	Domain            string            `csv:"-"`                      // Saved for future use
@@ -21,19 +23,19 @@ type TextStore struct {
 	Audit             audit.Audit       `csv:"-"`                      // Audit holds the audit information
 }
 
-var Field_ID = "ID"
-var Field_Signature = "Signature"
-var Field_SourceApplication = "SourceApplication"
-var Field_Domain = "Domain"
-var Field_Type = "Type"
-var Field_SourceLocale = "SourceLocale"
-var Field_Original = "Original"
-var Field_Message = "Message"
-var Field_ConsumedBy = "ConsumedBy"
-var Field_Localised = "Localised"
-var Field_Audit = "Audit"
+// Define the field set as names
+var (
+	FIELD_ID                = "ID"
+	FIELD_Signature         = "Signature"
+	FIELD_Domain            = "Domain"
+	FIELD_Type              = "Type"
+	FIELD_Original          = "Original"
+	FIELD_Message           = "Message"
+	FIELD_SourceApplication = "SourceApplication"
+	FIELD_SourceLocale      = "SourceLocale"
+	FIELD_ConsumedBy        = "ConsumedBy"
+	FIELD_Localised         = "Localised"
+	FIELD_Audit             = "Audit"
+)
 
-type TextImportModel struct {
-	Original string `csv:"original"`
-	Message  string `csv:"message"`
-}
+var domain = "Text"

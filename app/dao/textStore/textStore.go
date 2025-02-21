@@ -1,469 +1,323 @@
-package textStore
+package textstore
+
+// Data Access Object Template
+// Version: 0.2.0
+// Updated on: 2021-09-10
 
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"strings"
 
-	common "github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/commonErrors"
+	"github.com/mt1976/frantic-core/dao"
+	"github.com/mt1976/frantic-core/dao/actions"
 	"github.com/mt1976/frantic-core/dao/audit"
-	"github.com/mt1976/frantic-core/dao/database"
-	io "github.com/mt1976/frantic-core/ioHelpers"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/dao/lookup"
+	"github.com/mt1976/frantic-core/ioHelpers"
+	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/frantic-core/timing"
-	stopwatch "github.com/mt1976/frantic-core/timing"
 )
 
-// New creates a New dest with the given name and saves it to the database
-// It returns the created dest and an error if any occurreu.
-func New(signature, message string) (TextStore, error) {
-
-	//logger.InfoLogger.Printf("ACT: NEW New %v %v %v", tableName, name, destination)
-	settings := common.Get()
-	appName := settings.GetApplicationName()
-	// Create a new d
-	t := TextStore{}
-	t.Signature = signature
-	t.Message = message
-	t.Original = message
-	t.SourceApplication = appName
-	t.SourceLocale = settings.GetApplicationLocale()
-
-	t.ConsumedBy = addConsumer(t.ConsumedBy, appName)
-
-	if t.Localised == nil {
-		t.Localised = make(map[string]string)
-	}
-	// Get the current locales
-	locales := settings.GetLocales()
-	// Add the message to the localised map for each locale
-	for _, locale := range locales {
-		t.Localised[locale.Key] = ""
-	}
-
-	// Record the create action in the audit data
-	_ = t.Audit.Action(nil, audit.CREATE.WithMessage(fmt.Sprintf("New [%v]", message)))
-
-	// Log the dest instance before the creation
-	xtext, err := t.validateRecord()
-	if err == commonErrors.ErrorDuplicate {
-		// This is OK, do nothing as this is a duplicate record
-		// we ignore duplicate destinations.
-		logger.WarningLogger.Printf("[%v] DUPLICATE %v already in use", strings.ToUpper(tableName), message)
-		return xtext, nil
-	}
-
-	//u.Dump(!,"Post-Prepare-DupCheck")
-
-	if err != nil {
-		logger.ErrorLogger.Printf("Error=[%s]", err.Error())
-		return TextStore{}, err
-	}
-
-	// Save the dest instance to the database
-	if t.Signature == "" {
-		logger.WarningLogger.Printf("[%v] ID is required, skipping", strings.ToUpper(tableName))
-		return TextStore{}, nil
-	}
-
-	err = database.Create(&t)
-	if err != nil {
-		// Log and panic if there is an error creating the dest instance
-		logger.ErrorLogger.Printf("[%v] Create [%v] %s", strings.ToUpper(tableName), t.Original, err.Error())
-		panic(err)
-	}
-
-	//u.Dump(!,fmt.Sprintf("PostNew_dest_%d", u.ID))
-	msg := fmt.Sprintf("New text translation available Id=[%v] Message=[%v]", signature, message)
-	logger.TranslationLogger.Println(msg)
-	// Return the created dest and nil error
-	logger.AuditLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", strings.ToUpper(tableName), audit.CREATE.Code(), signature, msg)
-
-	return t, nil
+func Count() (int, error) {
+	logHandler.InfoLogger.Printf("Count %v", domain)
+	return activeDB.Count(&Text_Store{})
 }
 
-// addConsumer adds the given appName to the list of consumers if it is not already present.
-// If the input list is nil, it initializes a new list with the appName.
-// Parameters:
-// - u: A slice of strings representing the list of consumers.
-// - appName: A string representing the name of the application to be added to the list.
-// Returns:
-// - A slice of strings with the appName added if it was not already present.
-func addConsumer(u []string, appName string) []string {
-
-	if u == nil {
-		u = []string{}
-		u = append(u, appName)
-		return u
+func CountWhere(field string, value any) (int, error) {
+	logHandler.InfoLogger.Printf("Count %v where (%v=%v)", domain, field, value)
+	clock := timing.Start(domain, actions.COUNT.GetCode(), fmt.Sprintf("%v=%v", field, value))
+	list, err := GetAllWhere(field, value)
+	if err != nil {
+		clock.Stop(0)
+		return 0, err
 	}
-
-	inList := false
-
-	for _, v := range u {
-		if v == appName {
-			// Already in the list
-			inList = true
-		}
-	}
-
-	if !inList {
-		u = append(u, appName)
-	}
-
-	return u
+	clock.Stop(len(list))
+	return len(list), nil
 }
 
-// update updates the current dest instance in the database
-// It logs the update operation and records the audit data.
-//
-// Parameters:
-// - dest: A pointer to the dest instance to be updateu.
-//
-// Returns:
-// - error: An error if any occurred during the update operation.
-func (u *TextStore) Update(ctx context.Context, note string) error {
-	//logger.InfoLogger.Printf("ACT: UPD Update")
-
-	err := u.validate()
-	if err != nil {
-		return err
-	}
-
-	// Run record level validation/business processing
-	preValidationError := u.preValidate()
-	if preValidationError != nil {
-		logger.ErrorLogger.Printf("[%v] Calculating %e", strings.ToUpper(tableName), preValidationError)
-		return preValidationError
-	}
-
-	// Run record level validation/business processing
-	_, validationError := u.validateRecord()
-	if validationError != nil && validationError != commonErrors.ErrorDuplicate {
-		logger.ErrorLogger.Printf("[%v] Validating [%v]", strings.ToUpper(tableName), validationError.Error())
-		return validationError
-	}
-
-	// Record the update action in the audit data
-	_ = u.Audit.Action(ctx, audit.UPDATE.WithMessage(note))
-
-	// Log the dest instance before the update
-	//u.Spew()
-
-	//u.Dump(!,fmt.Sprintf("PreUpdate_dest_%d", u.ID))
-
-	// Update the dest instance in the database
-	err = database.Update(u)
-	if err != nil {
-		// Log and panic if there is an error updating the dest instance
-		logger.ErrorLogger.Printf("[%v] Updating %e", strings.ToUpper(tableName), err)
-		panic(err)
-	}
-
-	// Log the completion of the update operation
-	//logger.InfoLogger.Printf("Update %v: [%v][%v] ", tableName, u.ID, u.Name)
-
-	//	logger.InfoLogger.Printf("Update [%v] ID=[%v] Message=[%v]", strings.ToUpper(tableName), u.ID, u.Message)
-	logger.AuditLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", audit.UPDATE, strings.ToUpper(tableName), u.Signature, note)
-
-	// Return nil if the update operation is successful
-	return nil
+func GetById(id any) (Text_Store, error) {
+	return GetBy(FIELD_ID, id)
 }
 
-// Get retrieves a dest object from the database based on the given Iu.
-// It returns the retrieved dest object and an error if any occurreu.
-//
-// Parameters:
-// - id: The unique identifier of the dest object to retrieve.
-//
-// Returns:
-// - dest: The retrieved dest object.
-// - error: An error if any occurred during the retrieval operation.
-func get(signature string) (TextStore, error) {
+func GetBy(field string, value any) (Text_Store, error) {
 
-	get := stopwatch.Start(tableName, "get", signature)
-	// Log the start of the retrieval operation
-	//logger.InfoLogger.Printf("GET: [%v] Id=[%v]", strings.ToUpper(tableName), id)
+	clock := timing.Start(domain, actions.GET.GetCode(), fmt.Sprintf("%v=%v", field, value))
 
-	// Log the ID of the dest object being retrieved
-	//logger.InfoLogger.Printf("GET: %v Object: %v", tableName, fmt.Sprintf("%+v", id))
+	dao.CheckDAOReadyState(domain, audit.GET, initialised) // Check the DAO has been initialised, Mandatory.
 
-	// Initialize an empty d object
-	u := TextStore{}
-
-	// Retrieve the dest object from the database based on the given ID
-	err := database.Retrieve(Field_Signature, signature, &u)
-	if err != nil {
-		// Log and panic if there is an error reading the dest object
-		//logger.InfoLogger.Printf("Reading %v: [%v] %v ", tableName, id, err.Error())
-		return TextStore{}, fmt.Errorf("[%v] Error Reading Id=[%v] %v ", strings.ToUpper(tableName), signature, err.Error())
-		//	panic(err)
+	if err := dao.IsValidFieldInStruct(field, Text_Store{}); err != nil {
+		return Text_Store{}, err
 	}
 
-	// Log the retrieved dest object
-	//u.Spew()
+	record := Text_Store{}
+	logHandler.DatabaseLogger.Printf("Get %v where (%v=%v)", domain, field, value)
 
-	// Log the completion of the retrieval operation
-	//logger.InfoLogger.Printf("GET: [%v] Id=[%v] RealName=[%v] ", strings.ToUpper(tableName), u.ID, u.RealName)
-
-	err = u.postGet()
-	if err != nil {
-		return TextStore{}, err
+	if err := activeDB.Retrieve(field, value, &record); err != nil {
+		clock.Stop(0)
+		return Text_Store{}, commonErrors.WrapRecordNotFoundError(domain, field, fmt.Sprintf("%v", value))
 	}
-	get.Stop(1)
-	//u.Dump(!,"PostGet")
-	// Return the retrieved dest object and nil error
-	return u, nil
+
+	if err := record.PostGet(); err != nil {
+		clock.Stop(0)
+		return Text_Store{}, commonErrors.WrapDAOReadError(domain, field, value, err)
+	}
+
+	clock.Stop(1)
+	return record, nil
 }
 
-// GetAll retrieves all dest objects from the database
-// It returns a slice of dest objects and an error if any occurreu.
-//
-// Parameters:
-//
-//	None
-//
-// Returns:
-//
-//	[]dest: A slice of dest objects.
-//	error: An error if any occurred during the retrieval operation.
-func GetAll() ([]TextStore, error) {
+func GetAll() ([]Text_Store, error) {
 
-	uList := []TextStore{}
+	dao.CheckDAOReadyState(domain, audit.GET, initialised) // Check the DAO has been initialised, Mandatory.
 
-	//logger.InfoLogger.Printf("GTA: [%v] Get All", strings.ToUpper(tableName))
+	recordList := []Text_Store{}
 
-	gall := stopwatch.Start(tableName, "Get All", "Get")
-	errG := database.GetAll(&uList)
-	if errG != nil {
-		logger.ErrorLogger.Printf("[%v] Reading Id=[%v] %v ", strings.ToUpper(tableName), "ALL", errG.Error())
-		panic(errG)
+	clock := timing.Start(domain, actions.GETALL.GetCode(), "ALL")
+
+	if errG := activeDB.GetAll(&recordList); errG != nil {
+		clock.Stop(0)
+		return []Text_Store{}, commonErrors.WrapNotFoundError(domain, errG)
 	}
-	gall.Stop(len(uList))
 
-	//logger.InfoLogger.Printf("GTA: [%v] Count=[%v]", strings.ToUpper(tableName), len(dList))
-
-	dList, errPost := postGet(&uList)
-	if errPost != nil {
+	if _, errPost := PostGet(&recordList); errPost != nil {
+		clock.Stop(0)
 		return nil, errPost
 	}
 
-	return dList, nil
+	clock.Stop(len(recordList))
+
+	return recordList, nil
 }
 
-// delete deletes the current dest instance from the database
-// It logs the deletion operation and records the audit data.
-//
-// Parameters:
-// - dest: A pointer to the dest instance to be deleteu.
-//
-// Returns:
-// - error: An error if any occurred during the deletion operation.
-func (u *TextStore) delete(ctx context.Context, note string) error {
+func GetAllWhere(field string, value any) ([]Text_Store, error) {
 
-	// Log the start of the deletion operation
-	logger.InfoLogger.Printf("DEL: [%v] Id=[%v] Message=[%v]", strings.ToUpper(tableName), u.Signature, u.Message)
+	dao.CheckDAOReadyState(domain, audit.GET, initialised) // Check the DAO has been initialised, Mandatory.
 
-	// Record the delete action in the audit data
-	_ = u.Audit.Action(ctx, audit.DELETE.WithMessage(note))
+	recordList := []Text_Store{}
+	resultList := []Text_Store{}
 
-	// Log the dest instance before the deletion
-	//u.Spew()
-	u.Dump("DEL")
+	clock := timing.Start(domain, actions.GETALL.GetCode(), fmt.Sprintf("%v=%v", field, value))
 
-	// Delete the dest instance from the database
-	err := database.Drop(u)
-	if err != nil {
-		// Log and panic if there is an error deleting the dest instance
-		logger.ErrorLogger.Printf("[%v] Deleting %e ", strings.ToUpper(tableName), err)
-		panic(err)
+	if err := dao.IsValidFieldInStruct(field, Text_Store{}); err != nil {
+		return recordList, err
 	}
 
-	// Log the completion of the deletion operation
-	logger.AuditLogger.Printf("DEL: [%v] ID=[%04v] RealName=[%v] ", strings.ToUpper(tableName), u.Signature, u.Message)
-
-	// Return nil if the deletion operation is successful
-	return nil
-}
-
-// deleteBySignature deletes a dest instance from the database based on the given Iu.
-// It logs the deletion operation and records the audit data.
-//
-// Parameters:
-// - id: The unique identifier of the dest instance to delete.
-//
-// Returns:
-// - error: An error if any occurred during the deletion operation.
-func deleteBySignature(ctx context.Context, signature string, note string) error {
-	// Log the start of the deletion operation
-	logger.InfoLogger.Printf("DLI: [%v] Id=[%v]", tableName, signature)
-
-	// Log the dest instance before the deletion
-	dest, err := get(signature)
+	recordList, err := GetAll()
 	if err != nil {
-		// Log and panic if there is an error reading the dest instance
-		logger.ErrorLogger.Printf("[%v] Reading Id=[%v] %v", strings.ToUpper(tableName), signature, err.Error())
-		panic(err)
+		return []Text_Store{}, err
+	}
+	count := 0
+
+	for _, record := range recordList {
+		if reflect.ValueOf(record).FieldByName(field).Interface() == value {
+			count++
+			resultList = append(resultList, record)
+		}
 	}
 
-	// Record the delete action in the audit data
-	_ = dest.Audit.Action(ctx, audit.DELETE.WithMessage(note))
-	dest.Dump("DEL")
-
-	// Delete the dest instance from the database
-	err = database.Drop(dest)
-	if err != nil {
-		// Log and panic if there is an error deleting the dest instance
-		logger.ErrorLogger.Printf("[%v] Deleting  %e ", strings.ToUpper(tableName), err)
-		panic(err)
+	if _, errPost := PostGet(&resultList); errPost != nil {
+		clock.Stop(0)
+		return nil, errPost
 	}
 
-	// Log the completion of the deletion operation
-	logger.AuditLogger.Printf("DLI: [%v] Id=[%04v] ", strings.ToUpper(tableName), signature)
+	clock.Stop(len(resultList))
 
-	// Return nil if the deletion operation is successful
-	return nil
+	return resultList, nil
 }
 
-// Spew prints the dest instance details along with the audit data.
-// It logs the dest instance details and the number of updates.
-// If there are updates, it logs each update action along with the timestamp,
-// the text who made the update, and the date of the update.
-//
-// Parameters:
-// - dest: A pointer to the dest instance to be printeu.
-//
-// Returns:
-// - None
-func (u *TextStore) Spew() {
-	logger.InfoLogger.Printf(" [%v] ID=[%v] Message=[%v] Original=[%v]", strings.ToUpper(tableName), u.Signature, u.Message, u.Original)
-}
+func (record *Text_Store) Update(ctx context.Context, note string) error {
 
-func (u *TextStore) validate() error {
-	//logger.InfoLogger.Printf("ACT: VAL Validate")
+	dao.CheckDAOReadyState(domain, audit.UPDATE, initialised) // Check the DAO has been initialised, Mandatory.
 
-	//make sure the DIsplay ID is populated
+	clock := timing.Start(domain, actions.UPDATE.GetCode(), fmt.Sprintf("%v", record.ID))
+
+	if err := record.Validate(); err != nil {
+		clock.Stop(0)
+		return err
+	}
+
+	if calculationError := record.calculate(); calculationError != nil {
+		rtnErr := commonErrors.WrapDAOCaclulationError(domain, calculationError)
+		logHandler.ErrorLogger.Print(rtnErr.Error())
+		clock.Stop(0)
+		return rtnErr
+	}
+
+	if _, validationError := record.prepare(); validationError != nil {
+		valErr := commonErrors.WrapDAOValidationError(domain, validationError)
+		logHandler.ErrorLogger.Print(valErr.Error())
+		clock.Stop(0)
+		return valErr
+	}
+
+	auditErr := record.Audit.Action(ctx, audit.UPDATE.WithMessage(note))
+	if auditErr != nil {
+		audErr := commonErrors.WrapDAOUpdateAuditError(domain, record.ID, auditErr)
+		logHandler.ErrorLogger.Print(audErr.Error())
+		clock.Stop(0)
+		return audErr
+	}
+
+	if err := activeDB.Update(record); err != nil {
+		updErr := commonErrors.WrapDAOUpdateError(domain, err)
+		logHandler.ErrorLogger.Panic(updErr.Error(), err)
+		clock.Stop(0)
+		return updErr
+	}
+
+	//logHandler.AuditLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", audit.UPDATE, strings.ToUpper(domain), record.ID, note)
+	clock.Stop(1)
 
 	return nil
 }
 
-func postGet(textList *[]TextStore) ([]TextStore, error) {
-	//	logger.InfoLogger.Printf("ACT: PGT PostGet List")
+func Delete(ctx context.Context, id int, note string) error {
+	return DeleteBy(ctx, FIELD_ID, id, note)
+}
 
-	newList := []TextStore{}
+func DeleteBy(ctx context.Context, field string, value any, note string) error {
 
-	for _, text := range *textList {
-		err := text.postGet()
-		if err != nil {
+	dao.CheckDAOReadyState(domain, audit.DELETE, initialised) // Check the DAO has been initialised, Mandatory.
+
+	clock := timing.Start(domain, actions.DELETE.GetCode(), fmt.Sprintf("%v=%v", field, value))
+
+	if err := dao.IsValidFieldInStruct(field, Text_Store{}); err != nil {
+		logHandler.ErrorLogger.Print(commonErrors.WrapDAODeleteError(domain, field, value, err).Error())
+		clock.Stop(0)
+		return commonErrors.WrapDAODeleteError(domain, field, value, err)
+	}
+
+	record, err := GetBy(field, value)
+
+	if err != nil {
+		getErr := commonErrors.WrapDAODeleteError(domain, field, value, err)
+		logHandler.ErrorLogger.Panic(getErr.Error(), err)
+		clock.Stop(0)
+		return getErr
+	}
+
+	auditErr := record.Audit.Action(ctx, audit.DELETE.WithMessage(note))
+	if auditErr != nil {
+		audErr := commonErrors.WrapDAOUpdateAuditError(domain, value, auditErr)
+		logHandler.ErrorLogger.Print(audErr.Error())
+		clock.Stop(0)
+		return audErr
+	}
+
+	record.Export(audit.DELETE.Description())
+
+	if err := activeDB.Delete(&record); err != nil {
+		delErr := commonErrors.WrapDAODeleteError(domain, field, value, err)
+		logHandler.ErrorLogger.Panic(delErr.Error())
+		clock.Stop(0)
+		return delErr
+	}
+
+	//logHandler.AuditLogger.Printf("%v %v (%v=%v) %v", audit.DELETE.Description(), domain, field, value, note)
+
+	clock.Stop(1)
+
+	return nil
+}
+
+func (record *Text_Store) Spew() {
+	logHandler.InfoLogger.Printf(" [%v] Record=[%+v]", strings.ToUpper(domain), record)
+}
+
+func (record *Text_Store) Validate() error {
+	return nil
+}
+
+func PostGet(recordList *[]Text_Store) ([]Text_Store, error) {
+	clock := timing.Start(domain, actions.PROCESS.GetCode(), "POSTGET")
+	returnList := []Text_Store{}
+	for _, record := range *recordList {
+		if err := record.PostGet(); err != nil {
 			return nil, err
 		}
-		newList = append(newList, text)
-		//	u.Spew()
+		returnList = append(returnList, record)
 	}
-
-	return newList, nil
+	clock.Stop(len(returnList))
+	return returnList, nil
 }
 
-func (u *TextStore) postGet() error {
-	//	logger.InfoLogger.Printf("ACT: PGT PostGet")
-
-	//u.Dump(!,fmt.Sprintf("PostGet_dest_%d", u.ID))
-
+func (s *Text_Store) PostGet() error {
+	clock := timing.Start(domain, actions.PROCESS.GetCode(), fmt.Sprintf("%v", s.ID))
+	clock.Stop(1)
 	return nil
 }
 
-func (u *TextStore) Dump(name string) {
-	//output := fmt.Sprintf("%v+", yy)
-	io.Dump(tableName, paths.Dumps(), name, u.Signature, u)
-}
+func Export(message string) {
 
-func DumpAll(ctx context.Context) {
-	dList, _ := GetAll()
-	if len(dList) == 0 {
-		logger.EventLogger.Printf("Backup [%v] no data found", strings.ToUpper(tableName))
+	dao.CheckDAOReadyState(domain, audit.EXPORT, initialised) // Check the DAO has been initialised, Mandatory.
+
+	clock := timing.Start(domain, actions.EXPORT.GetCode(), "ALL")
+	recordList, _ := GetAll()
+	if len(recordList) == 0 {
+		logHandler.WarningLogger.Printf("[%v] %v data not found", strings.ToUpper(domain), domain)
+		clock.Stop(0)
 		return
 	}
-
-	for _, yy := range dList {
-		yy.Dump("EXPORT")
+	SEP := "!"
+	for _, record := range recordList {
+		msg := fmt.Sprintf("%v%v%v", audit.EXPORT.Description(), SEP, message)
+		if message == "" {
+			msg = fmt.Sprintf("%v%v", audit.EXPORT.Description(), SEP)
+		}
+		record.Export(msg)
 	}
+	clock.Stop(len(recordList))
 }
 
-func GetBySignature(signature string) (TextStore, error) {
+func (record *Text_Store) Export(name string) {
 
-	get := timing.Start(tableName, "Get", signature)
-	// Log the start of the retrieval operation
-	//logger.InfoLogger.Printf("GET: [%v] Id=[%v]", strings.ToUpper(tableName), id)
+	ID := reflect.ValueOf(*record).FieldByName(FIELD_ID)
 
-	// Log the ID of the status object being retrieved
-	//logger.InfoLogger.Printf("GET: %v Object: %v", tableName, fmt.Sprintf("%+v", id))
+	clock := timing.Start(domain, actions.EXPORT.GetCode(), fmt.Sprintf("%v", ID))
 
-	// Initialize an empty txt object
-	txt := TextStore{}
+	ioHelpers.Dump(domain, paths.Dumps(), name, fmt.Sprintf("%v", ID), record)
 
-	// Retrieve the status object from the database based on the given ID
-	err := database.Retrieve(Field_Signature, signature, &txt)
-	if err != nil {
-		// Log and panic if there is an error reading the status object
-		msg := fmt.Sprintf("[%v] Reading Id=[%v] %v", strings.ToUpper(tableName), signature, err.Error())
-		logger.WarningLogger.Println(msg)
-		return TextStore{}, fmt.Errorf(msg, "")
-	}
-
-	// Log the retrieved status object
-	//status.Spew()
-
-	// Log the completion of the retrieval operation
-	//logger.InfoLogger.Printf("GET: [%v] Id=[%v] Name=[%v] ", strings.ToUpper(tableName), status.ID, status.Name)
-
-	err = txt.postGet()
-	if err != nil {
-		return TextStore{}, err
-	}
-
-	get.Stop(1)
-	// Return the retrieved status object and nil error
-	return txt, nil
+	clock.Stop(1)
 }
 
-func Get(signature, localeFilter string) (TextStore, error) {
+func GetDefaultLookup() (lookup.Lookup, error) {
+	return GetLookup(FIELD_Signature, FIELD_Message)
+}
 
-	watch := stopwatch.Start(tableName, "Get", signature)
-	// Log the start of the retrieval operation
-	//logger.InfoLogger.Printf("GET: [%v] Id=[%v]", strings.ToUpper(tableName), id)
+func GetLookup(field, value string) (lookup.Lookup, error) {
 
-	// Log the ID of the dest object being retrieved
-	//logger.InfoLogger.Printf("GET: %v Object: %v", tableName, fmt.Sprintf("%+v", id))
+	dao.CheckDAOReadyState(domain, audit.PROCESS, initialised) // Check the DAO has been initialised, Mandatory.
 
-	// Initialize an empty d object
-	u := TextStore{}
+	clock := timing.Start(domain, actions.LOOKUP.GetCode(), "BUILD")
 
-	// Retrieve the dest object from the database based on the given ID
-	err := database.Retrieve(Field_Signature, signature, &u)
+	// Get all status
+	recordList, err := GetAll()
 	if err != nil {
-		// Log and panic if there is an error reading the dest object
-		//logger.InfoLogger.Printf("Reading %v: [%v] %v ", tableName, id, err.Error())
-		return TextStore{}, fmt.Errorf("[%v] Reading Id=[%v] %v ", strings.ToUpper(tableName), signature, err.Error())
-		//	panic(err)
+		lkpErr := commonErrors.WrapDAOLookupError(domain, field, value, err)
+		logHandler.ErrorLogger.Print(lkpErr.Error())
+		clock.Stop(0)
+		return lookup.Lookup{}, lkpErr
 	}
 
-	// Log the retrieved dest object
-	//u.Spew()
+	// Create a new Lookup
+	var rtnLookup lookup.Lookup
+	rtnLookup.Data = make([]lookup.LookupData, 0)
 
-	// Log the completion of the retrieval operation
-	//logger.InfoLogger.Printf("GET: [%v] Id=[%v] RealName=[%v] ", strings.ToUpper(tableName), u.ID, u.RealName)
-
-	err = u.PostGet()
-	if err != nil {
-		return TextStore{}, err
+	// range through Behaviour list, if status code is found and deletedby is empty then return error
+	for _, a := range recordList {
+		key := reflect.ValueOf(a).FieldByName(field).Interface().(string)
+		val := reflect.ValueOf(a).FieldByName(value).Interface().(string)
+		rtnLookup.Data = append(rtnLookup.Data, lookup.LookupData{Key: key, Value: val})
 	}
-	watch.Stop(1)
-	//u.Dump(!,"PostGet")
-	// Return the retrieved dest object and nil error
-	return u, nil
+
+	clock.Stop(len(rtnLookup.Data))
+
+	return rtnLookup, nil
 }
 
 func Drop() error {
-	return database.Drop(tableName)
+	return activeDB.Drop(Text_Store{})
 }

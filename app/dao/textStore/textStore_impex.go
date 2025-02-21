@@ -1,6 +1,7 @@
-package textStore
+package textstore
 
 import (
+	"context"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -9,15 +10,20 @@ import (
 	"time"
 
 	"github.com/gocarina/gocsv"
-	common "github.com/mt1976/frantic-core/commonConfig"
+	"github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/commonErrors"
+	"github.com/mt1976/frantic-core/dao/actions"
 	"github.com/mt1976/frantic-core/dao/audit"
-	"github.com/mt1976/frantic-core/dao/database"
-	id "github.com/mt1976/frantic-core/idHelpers"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/idHelpers"
+	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 )
+
+type TextImportModel struct {
+	Original string `csv:"original"`
+	Message  string `csv:"message"`
+}
 
 var COMMA = '|'
 
@@ -28,7 +34,7 @@ func ExportCSV() error {
 
 	texts, err := GetAll()
 	if err != nil {
-		logger.ErrorLogger.Printf("Error Getting all texts: %v", err.Error())
+		logHandler.ErrorLogger.Printf("Error Getting all texts: %v", err.Error())
 	}
 
 	gocsv.SetCSVWriter(func(out io.Writer) *gocsv.SafeCSVWriter {
@@ -40,11 +46,11 @@ func ExportCSV() error {
 
 	_, err = gocsv.MarshalString(texts) // Get all texts as CSV string
 	if err != nil {
-		logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
+		logHandler.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
 	}
 	err = gocsv.MarshalFile(&texts, textsFile) // Get all texts as CSV string
 	if err != nil {
-		logger.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
+		logHandler.ErrorLogger.Printf("Error exporting texts: %v", err.Error())
 	}
 
 	msg := fmt.Sprintf("# Generated (%v) texts at %v on %v", len(texts), time.Now().Format("15:04:05"), time.Now().Format("2006-01-02"))
@@ -52,7 +58,7 @@ func ExportCSV() error {
 
 	textsFile.Close()
 
-	logger.EventLogger.Printf("Exported (%v) texts", len(texts))
+	logHandler.EventLogger.Printf("Exported (%v) texts", len(texts))
 
 	return nil
 }
@@ -69,12 +75,12 @@ func openTextsFile(in string) *os.File {
 		panic(err)
 	}
 	//fmt.Printf("textsFile.Name(): %v\n", textsFile.Name())
-	logger.InfoLogger.Printf("Import/Export=[%v] File=[%v]", in, textsFile.Name())
+	logHandler.InfoLogger.Printf("Import/Export=[%v] File=[%v]", in, textsFile.Name())
 	return textsFile
 }
 
 func ImportCSV() error {
-
+	Initialise(context.TODO())
 	csvFile := openTextsFile("import")
 	defer csvFile.Close()
 	// fmt.Printf("textsFile: %v\n", csvFile.Name())
@@ -90,7 +96,7 @@ func ImportCSV() error {
 	texts := []*TextImportModel{}
 
 	if err := gocsv.UnmarshalFile(csvFile, &texts); err != nil { // Load clients from file
-		logger.WarningLogger.Printf("Importing %v: %v - No Content", domains.TEXT.String(), err.Error())
+		logHandler.WarningLogger.Printf("Importing %v: %v - No Content", domains.TEXT.String(), err.Error())
 		csvFile.Close()
 		return nil
 	}
@@ -101,9 +107,9 @@ func ImportCSV() error {
 	noTexts := len(texts)
 	for thisPos, textEntry := range texts {
 		//fmt.Printf("% 3v)[%v][%v][%v]\n", i, textEntry.Original, textEntry.Message, textEntry)
-		logger.ServiceLogger.Printf("Importing text (%v/%v) [%v]", thisPos+1, noTexts, textEntry.Message)
+		logHandler.ServiceLogger.Printf("Importing text (%v/%v) [%v]", thisPos+1, noTexts, textEntry.Message)
 
-		existingText, _ := GetBySignature(id.Encode(textEntry.Original))
+		existingText, _ := GetBySignature(idHelpers.Encode(textEntry.Original))
 		if existingText.Signature != "" {
 			//logger.InfoLogger.Printf("Text already exists: [%v]", textEntry.Message)
 			continue
@@ -111,51 +117,51 @@ func ImportCSV() error {
 
 		_, err := load(textEntry.Original, textEntry.Message)
 		if err != nil {
-			logger.ErrorLogger.Printf("Error importing text: %v", err.Error())
+			logHandler.ErrorLogger.Printf("Error importing text: %v", err.Error())
 		}
-		logger.ServiceLogger.Printf("Imported text [%v] [%v]", textEntry.Original, textEntry.Message)
+		logHandler.ServiceLogger.Printf("Imported text [%v] [%v]", textEntry.Original, textEntry.Message)
 	}
 
-	logger.ServiceLogger.Printf("Imported (%v) texts", len(texts))
+	logHandler.ServiceLogger.Printf("Imported (%v) texts", len(texts))
 	csvFile.Close()
 	return nil
 }
 
-func load(original, message string) (TextStore, error) {
+func load(original, message string) (Text_Store, error) {
 
 	//logger.InfoLogger.Printf("ACT: NEW New %v %v %v", tableName, name, destination)
-	u := TextStore{}
-	u.Signature = id.Encode(strings.ToUpper(original))
+	u := Text_Store{}
+	u.Signature = idHelpers.Encode(strings.ToUpper(original))
 	u.Message = message
 	u.Original = message
 	// Add basic attributes
 
 	// Record the create action in the audit data
-	_ = u.Audit.Action(nil, audit.IMPORT.WithMessage(fmt.Sprintf("Imported text [%v]", message)))
+	_ = u.Audit.Action(context.TODO(), audit.IMPORT.WithMessage(fmt.Sprintf("Imported text [%v]", message)))
 
+	dupe, err := u.dup(u.Signature)
 	// Log the dest instance before the creation
-	xtext, err := u.validateRecord()
-	if err == commonErrors.ErrorDuplicate {
+	if u.Validate() == commonErrors.ErrorDuplicate {
 		// This is OK, do nothing as this is a duplicate record
 		// we ignore duplicate destinations.
-		logger.WarningLogger.Printf("DUPLICATE %v available in use as [%v]", message, u.Signature)
-		return xtext, nil
+		logHandler.WarningLogger.Printf("DUPLICATE %v available in use as [%v]", message, u.Signature)
+		return dupe, nil
 	}
 
 	//u.Dump(!,"Post-Prepare-DupCheck")
 
 	if err != nil {
-		logger.ErrorLogger.Printf("Error=[%s]", err.Error())
-		return TextStore{}, err
+		logHandler.ErrorLogger.Printf("Error=[%s]", err.Error())
+		return Text_Store{}, err
 	}
 
 	// Save the dest instance to the database
 	if u.Signature == "" {
-		logger.WarningLogger.Printf("[%v] ID is required, skipping", strings.ToUpper(tableName))
-		return TextStore{}, nil
+		logHandler.WarningLogger.Printf("[%v] ID is required, skipping", strings.ToUpper(domain))
+		return Text_Store{}, nil
 	}
 
-	set := common.Get()
+	set := commonConfig.Get()
 
 	locales := set.GetLocales()
 	//noLocales := len(locales)
@@ -174,18 +180,18 @@ func load(original, message string) (TextStore, error) {
 	}
 	u.Localised = newTextLocalised
 
-	err = database.Create(&u)
+	err = activeDB.Create(&u)
 	if err != nil {
 		// Log and panic if there is an error creating the dest instance
-		logger.ErrorLogger.Printf("[%v] Create %s", strings.ToUpper(tableName), err.Error())
+		logHandler.ErrorLogger.Printf("[%v] Create %s", strings.ToUpper(domain), err.Error())
 		panic(err)
 	}
 
 	//u.Dump(!,fmt.Sprintf("PostNew_dest_%d", u.ID))
 	msg := fmt.Sprintf("Imported text translation available Id=[%v] Message=[%v]", original, message)
-	logger.TranslationLogger.Println(msg)
+	logHandler.TranslationLogger.Println(msg)
 	// Return the created dest and nil error
-	logger.AuditLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", strings.ToUpper(tableName), audit.CREATE.Code(), original, msg)
+	logHandler.ServiceLogger.Printf("[%v] [%v] ID=[%v] Notes[%v]", domain, actions.IMPORT.GetCode(), original, msg)
 
 	return u, nil
 }

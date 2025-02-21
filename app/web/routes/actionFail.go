@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	common "github.com/mt1976/frantic-core/commonConfig"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/commonConfig"
+	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
@@ -14,9 +14,9 @@ import (
 )
 
 func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	logger.EventLogger.Printf("[%v] [FAIL] [View] Fail", domains.ROUTE.String())
+	logHandler.EventLogger.Printf("[%v] [FAIL] [View] Fail", domains.ROUTE.String())
 
-	settings := common.Get()
+	settings := commonConfig.Get()
 
 	title := "Fail"
 	action := "Message"
@@ -28,10 +28,10 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	messageContent := r.URL.Query().Get(msgContentKey)
 	messageAction := r.URL.Query().Get(msgActionKey)
 
-	logger.ErrorLogger.Printf("[%v] [FAIL] message Type: [%v]=[%v]\n", domains.ROUTE.String(), msgTypeKey, messageType)
-	logger.ErrorLogger.Printf("[%v] [FAIL] message title: [%v]=[%v]\n", domains.ROUTE.String(), msgTitleKey, messageTitle)
-	logger.ErrorLogger.Printf("[%v] [FAIL] message content: [%v]=[%v]\n", domains.ROUTE.String(), msgContentKey, messageContent)
-	logger.ErrorLogger.Printf("[%v] [FAIL] message action: [%v]=[%v]\n", domains.ROUTE.String(), msgActionKey, messageAction)
+	logHandler.ErrorLogger.Printf("[%v] [FAIL] message Type: [%v]=[%v]\n", domains.ROUTE.String(), msgTypeKey, messageType)
+	logHandler.ErrorLogger.Printf("[%v] [FAIL] message title: [%v]=[%v]\n", domains.ROUTE.String(), msgTitleKey, messageTitle)
+	logHandler.ErrorLogger.Printf("[%v] [FAIL] message content: [%v]=[%v]\n", domains.ROUTE.String(), msgContentKey, messageContent)
+	logHandler.ErrorLogger.Printf("[%v] [FAIL] message action: [%v]=[%v]\n", domains.ROUTE.String(), msgActionKey, messageAction)
 
 	t := template.Must(template.ParseFiles(getTemplate(title, action), paths.HTMLTemplate())) // Create a template.
 
@@ -67,7 +67,7 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	err := t.Execute(w, pg) // merge.
 	if err != nil {
-		logger.ErrorLogger.Print(err.Error())
+		logHandler.ErrorLogger.Print(err.Error())
 	}
 }
 

@@ -11,6 +11,18 @@ author = "Cervical Hamster"
 license= "MIT"
 locale = "en_GB"
 
+[Database]
+version = 2
+type = "storm"
+host = ""
+port = 0
+name = ""
+user = ""
+pass = ""
+path = ""
+poolsize = 0
+timeout = 0
+
 [Server]
 host = "127.0.0.1"
 port = 8080
@@ -171,15 +183,15 @@ admin = "babs@babs.com"
 
 [Logging.Disable]
 general = "false"
-timing = "true"
+timing = "false"
 service = "false"
-audit = "true"
+audit = "false"
 translation = "false"
-trace = "true"
+trace = "false"
 warning = "false"
 event = "false"
 security = "false"
-database = "true"
+database = "false"
 api = "false"
 all = ""
 

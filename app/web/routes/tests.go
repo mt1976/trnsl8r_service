@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/web/pages"
 )
@@ -22,6 +22,6 @@ func Test(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	err := t.Execute(w, pages.Generic(title, action)) // merge.
 	if err != nil {
-		logger.ErrorLogger.Print(err.Error())
+		logHandler.ErrorLogger.Print(err.Error())
 	}
 }

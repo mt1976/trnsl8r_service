@@ -2,7 +2,7 @@ package pages
 
 import (
 	dao "github.com/mt1976/frantic-core/dao/lookup"
-	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
 )
 
 type Page struct {
@@ -30,8 +30,8 @@ type Page struct {
 	DumpLocation     string
 	DatabaseLocation string
 
-	TextList    []textStore.TextStore
-	TextItem    textStore.TextStore
+	TextList    []textstore.Text_Store
+	TextItem    textstore.Text_Store
 	NoTextItems int
 	HostsSelect dao.Lookup
 }

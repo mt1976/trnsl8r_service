@@ -65,6 +65,18 @@ github.com/mt1976/frantic-core v1.2.10 h1:oacAmzQ4FWfEiY+LRQ/9P12j0BaebrIRSXhfSA
 github.com/mt1976/frantic-core v1.2.10/go.mod h1:gojOAHA4O77ofPA9BsrEMUpMKdTVMkPbiN4xcneO6cs=
 github.com/mt1976/frantic-core v1.2.11 h1:Mdv6wEFlHiqkVvYwpy1+xEMHtjGCc/e9XH0+U3yYk5o=
 github.com/mt1976/frantic-core v1.2.11/go.mod h1:gojOAHA4O77ofPA9BsrEMUpMKdTVMkPbiN4xcneO6cs=
+github.com/mt1976/frantic-core v1.2.25 h1:TmVWaxot6iAhLK2nkDgRJZCrdmUj2N2B9dMkJmi+OEU=
+github.com/mt1976/frantic-core v1.2.25/go.mod h1:LAuLHL3qe+bO1z68056W/4ZdqDjYVOwsjGgvjS5VpLA=
+github.com/mt1976/frantic-core v1.2.26 h1:tp0CHLm41DKQhYB/wGKqQWOSTU19z8x7CZ6sLkFSHP8=
+github.com/mt1976/frantic-core v1.2.26/go.mod h1:LAuLHL3qe+bO1z68056W/4ZdqDjYVOwsjGgvjS5VpLA=
+github.com/mt1976/frantic-core v1.2.27 h1:4RjY+HnwwwNbBBQK6nRA5bqIvesGPoruPjJyzUNC5P0=
+github.com/mt1976/frantic-core v1.2.27/go.mod h1:LAuLHL3qe+bO1z68056W/4ZdqDjYVOwsjGgvjS5VpLA=
+github.com/mt1976/frantic-core v1.2.28 h1:dlHqYUUtb5CAYt7Dua7g3i4XRsTVw8aR/sAJxt9Aqbw=
+github.com/mt1976/frantic-core v1.2.28/go.mod h1:LAuLHL3qe+bO1z68056W/4ZdqDjYVOwsjGgvjS5VpLA=
+github.com/mt1976/frantic-core v1.2.29 h1:/UGLNNsuJq3vCpBdt6UhPFWs8xtv4VATCoam5C4jYCM=
+github.com/mt1976/frantic-core v1.2.29/go.mod h1:LAuLHL3qe+bO1z68056W/4ZdqDjYVOwsjGgvjS5VpLA=
+github.com/mt1976/frantic-core v1.2.30 h1:fsEA4xE4rxCIjmgHc6gUAS/BGWPyoRWPsmOvfHHovYI=
+github.com/mt1976/frantic-core v1.2.30/go.mod h1:LAuLHL3qe+bO1z68056W/4ZdqDjYVOwsjGgvjS5VpLA=
 github.com/mt1976/trnsl8r_connect v1.2.2 h1:SqZdb2b8VbbLI1yyN8gsiR6DLgWGvgoa0/MTj34rcq8=
 github.com/mt1976/trnsl8r_connect v1.2.2/go.mod h1:180FdFJeXEgpse6zHSMAJB4Gv6hXXWW23M9nJH+zBBs=
 github.com/mt1976/trnsl8r_connect v1.2.3 h1:dx49syn7EfFnQOVpo5J5oQcOxDrjNWZjedrETbJPJ28=
@@ -130,6 +142,8 @@ golang.org/x/exp v0.0.0-20250210185358-939b2ce775ac h1:l5+whBCLH3iH2ZNHYLbAe58bo
 golang.org/x/exp v0.0.0-20250210185358-939b2ce775ac/go.mod h1:hH+7mtFmImwwcMvScyxUhjuVHR3HGaDPMn9rMSUUbxo=
 golang.org/x/exp v0.0.0-20250215185904-eff6e970281f h1:oFMYAjX0867ZD2jcNiLBrI9BdpmEkvPyi5YrBGXbamg=
 golang.org/x/exp v0.0.0-20250215185904-eff6e970281f/go.mod h1:BHOTPb3L19zxehTsLoJXVaTktb06DFgmdW6Wb9s8jqk=
+golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa h1:t2QcU6V556bFjYgu4L6C+6VrCPyJZ+eyRsABUPs1mz4=
+golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa/go.mod h1:BHOTPb3L19zxehTsLoJXVaTktb06DFgmdW6Wb9s8jqk=
 golang.org/x/lint v0.0.0-20190930215403-16217165b5de/go.mod h1:6SW0HCj/g11FgYtHlgUYUwCkIfeOF89ocIRzGO/8vkc=
 golang.org/x/mod v0.0.0-20190513183733-4bf6d317e70e/go.mod h1:mXi4GBBbnImb6dmsKGUJ2LatrhH/nqhxcFungHvyanc=
 golang.org/x/net v0.0.0-20190311183353-d8887717615a/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=

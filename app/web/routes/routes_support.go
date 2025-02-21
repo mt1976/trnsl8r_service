@@ -8,15 +8,15 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
-	html "github.com/mt1976/frantic-core/htmlHelpers"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/htmlHelpers"
+	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/translation"
 )
 
 func trace(r *http.Request) {
 	mesg := translation.Get("Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]", "")
-	logger.TraceLogger.Printf(mesg, r.Method, r.URL, r.Header, r.Context(), r.RequestURI)
+	logHandler.TraceLogger.Printf(mesg, r.Method, r.URL, r.Header, r.Context(), r.RequestURI)
 }
 
 func getID(ps httprouter.Params) (int, error) {
@@ -70,11 +70,11 @@ func iconv(arg interface{}) (int, error) {
 // If s is "false", the function returns false.
 // If s is neither "true" nor "false", the function behavior is undefined.
 func htmlToBool(s string) bool {
-	return html.ValueToBool(s)
+	return htmlHelpers.ValueToBool(s)
 }
 
 func htmlToInt(s string) int {
-	return html.ValueToInt(s)
+	return htmlHelpers.ValueToInt(s)
 }
 
 func up(in string) string {

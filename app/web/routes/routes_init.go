@@ -1,11 +1,11 @@
 package routes
 
 import (
-	common "github.com/mt1976/frantic-core/commonConfig"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/commonConfig"
+	"github.com/mt1976/frantic-core/logHandler"
 )
 
-var settings *common.Settings
+var settings *commonConfig.Settings
 var appName string
 var msgTypeKey string
 var msgTitleKey string
@@ -20,8 +20,8 @@ var serverHost string
 var serverProtocol string
 
 func init() {
-	logger.EventLogger.Println("Loading Routes")
-	settings = common.Get()
+	logHandler.EventLogger.Println("Loading Routes")
+	settings = commonConfig.Get()
 	appName = settings.GetApplicationName()
 	msgTypeKey = settings.GetMessageTypeKey()
 	msgTitleKey = settings.GetMessageTitleKey()

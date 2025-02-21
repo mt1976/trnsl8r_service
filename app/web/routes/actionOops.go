@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	logger "github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/logHandler"
 )
 
 func Oops(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -25,5 +25,5 @@ func oops(w http.ResponseWriter, r *http.Request, ps httprouter.Params, msgType,
 	w.Header().Add("Application", appName)
 	w.WriteHeader(http.StatusNotFound)
 	fmt.Fprintf(w, "{\"message\":\"%v\"}", msg)
-	logger.ErrorLogger.Printf("[ACTION] Oops - %s %v", msgType, msg)
+	logHandler.ErrorLogger.Printf("[ACTION] Oops - %s %v", msgType, msg)
 }
