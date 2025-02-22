@@ -152,7 +152,7 @@ func (job *localeUpdate) Name() string {
 	return translation.Get("Update Locales", "")
 }
 
-func (job *localeUpdate) AddFunction(fn func() (*database.DB, error)) {
+func (job *localeUpdate) AddDatabaseAccessFunctions(fn func() ([]*database.DB, error)) {
 	// do nothing
 }
 

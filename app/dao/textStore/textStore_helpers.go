@@ -172,10 +172,8 @@ func GetLocalised(signature, localeFilter string) (Text_Store, error) {
 	return u, nil
 }
 
-func GetDB() func() (*database.DB, error) {
-	//logHandler.InfoLogger.Println("GETDB")
-	return func() (*database.DB, error) {
-		//logHandler.InfoLogger.Printf("GETDB2")
-		return database.Connect(), nil
+func FetchDatabaseInstances() func() ([]*database.DB, error) {
+	return func() ([]*database.DB, error) {
+		return []*database.DB{activeDB}, nil
 	}
 }

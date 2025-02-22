@@ -39,7 +39,7 @@ func jobNotifications() {
 	j.Stop(0)
 }
 
-func (job *template) AddFunction(fn func() (*database.DB, error)) {
+func (job *template) AddDatabaseAccessFunctions(fn func() ([]*database.DB, error)) {
 	// do nothing
 }
 

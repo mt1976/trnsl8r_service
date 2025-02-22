@@ -29,7 +29,7 @@ func Start() {
 	// Start the job
 	logHandler.ServiceLogger.Printf("[%v] Queue - Starting", domain.String())
 	// Add the functions to the jobs, one for each table/domain that required a backup
-	DatabaseBackup.AddFunction(textstore.GetDB())
+	DatabaseBackup.AddDatabaseAccessFunctions(textstore.FetchDatabaseInstances())
 	// Database Backup
 	jobs.AddJobToScheduler(DatabaseBackup)
 	// Prune the archive of backups

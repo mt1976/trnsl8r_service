@@ -35,6 +35,7 @@ func main() {
 	err = error(nil)
 	appName := settings.GetApplicationName()
 	logHandler.InfoLogger.Printf("[%v] Starting...", appName)
+
 	logHandler.InfoLogger.Printf("[%v] Connecting...", appName)
 	err = dao.Initialise(settings)
 	if err != nil {
@@ -52,7 +53,7 @@ func main() {
 	logHandler.ServiceLogger.Printf("[%v] Backup Starting...", appName)
 
 	// Add the functions DBs to the job before running
-	jobs.DatabaseBackup.AddFunction(textstore.GetDB())
+	jobs.DatabaseBackup.AddDatabaseAccessFunctions(textstore.FetchDatabaseInstances())
 
 	err = jobs.DatabaseBackup.Run()
 	if err != nil {

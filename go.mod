@@ -7,13 +7,13 @@ require (
 	github.com/go-playground/validator/v10 v10.25.0 // indirect
 	github.com/gocarina/gocsv v0.0.0-20240520201108-78e41c74b4b1
 	github.com/julienschmidt/httprouter v1.3.0
-	github.com/mt1976/trnsl8r_connect v1.2.4
+	github.com/mt1976/trnsl8r_connect v1.2.6
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 )
 
 require (
 	github.com/jsuar/go-cron-descriptor v0.1.0 // indirect
-	github.com/mt1976/frantic-core v1.2.34
+	github.com/mt1976/frantic-core v1.2.38
 )
 
 require (
