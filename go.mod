@@ -13,7 +13,7 @@ require (
 
 require (
 	github.com/jsuar/go-cron-descriptor v0.1.0 // indirect
-	github.com/mt1976/frantic-core v1.2.32
+	github.com/mt1976/frantic-core v1.2.34
 )
 
 require (
@@ -31,7 +31,7 @@ require (
 	go.etcd.io/bbolt v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/crypto v0.34.0 // indirect
 	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect

@@ -123,7 +123,7 @@ func (job *localeUpdate) Run() error {
 			text.Localised = newTextLocalised
 			// Update the text in the database
 			msg := fmt.Sprintf("Localisation Upgrade, update to [%v]", locales)
-			err = text.Update(nil, msg)
+			err = text.Update(context.TODO(), msg)
 			if err != nil {
 				logHandler.ErrorLogger.Println(err)
 				j.Stop(thisPos)
