@@ -11,7 +11,7 @@ import (
 
 	"github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/htmlHelpers"
-	id "github.com/mt1976/frantic-core/idHelpers"
+	"github.com/mt1976/frantic-core/idHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/stringHelpers"
 	"github.com/mt1976/frantic-core/timing"
@@ -65,7 +65,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	realOrigin := id.GetUUIDv2Payload(originOfRequest)
+	realOrigin := idHelpers.GetUUIDv2Payload(originOfRequest)
 
 	if originOfRequest == "" || realOrigin == "" {
 		err := fmt.Errorf("no origin of request, a valid origin is required %v", originOfRequest)
@@ -106,11 +106,11 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Build a URI query string
-	tl8 := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logHandler.InfoLogger).FromOrigin("trnsl8r_connect")
+	req := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logHandler.InfoLogger).WithOriginOf("trnsl8r_connect")
 
-	tl8.Spew()
+	req.Spew()
 
-	logHandler.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(tl8.String()))
+	logHandler.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(req.String()))
 
 	all, err := textstore.GetAll()
 	if err != nil {
@@ -119,7 +119,7 @@ func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 
 	for _, item := range all {
 		logHandler.TranslationLogger.Println("Original: ", stringHelpers.DCurlies(item.Original))
-		translation, err := tl8.Get(item.Original)
+		translation, err := req.Get(item.Original)
 		if err != nil {
 			logHandler.ErrorLogger.Println(err.Error())
 		}
