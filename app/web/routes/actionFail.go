@@ -36,7 +36,7 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	t := template.Must(template.ParseFiles(getTemplate(title, action), paths.HTMLTemplate())) // Create a template.
 
 	w.Header().Set("Content-Type", "text/html")
-	w.Header().Add("Application", settings.GetApplicationName())
+	w.Header().Add("Application", settings.GetApplication_Name())
 
 	pg := pages.Generic(title, action)
 

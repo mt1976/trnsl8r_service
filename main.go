@@ -33,7 +33,7 @@ func main() {
 	}
 
 	err = error(nil)
-	appName := settings.GetApplicationName()
+	appName := settings.GetApplication_Name()
 	logHandler.InfoLogger.Printf("[%v] Starting...", appName)
 
 	logHandler.InfoLogger.Printf("[%v] Connecting...", appName)
@@ -131,12 +131,12 @@ func main() {
 
 	msg := "🙁 ERROR [%v]"
 	newFunction(msg)
-	newFunction(settings.GetApplicationDescription())
+	newFunction(settings.GetApplication_Description())
 	newFunction(appName)
 
-	port := settings.GetServerPortAsString()
+	port := settings.GetServer_PortString()
 	hostMachine := "localhost"
-	protocol := settings.GetServerProtocol()
+	protocol := settings.GetServer_Protocol()
 
 	logHandler.InfoLogger.Printf("[%v] Starting Server Port=[%v]", na, port)
 
@@ -150,7 +150,7 @@ func newFunction(msg string) {
 	logHandler.TranslationLogger.Println("Translating: ", stringHelpers.DChevrons(translation.Get(msg, "")))
 
 	// Get a list of the locales
-	localList := settings.GetLocales()
+	localList := settings.GetTranslation_PermittedLocales()
 	for _, locale := range localList {
 		logHandler.TranslationLogger.Println(locale.Name + " " + stringHelpers.SBracket(translation.Get(msg, locale.Key)))
 	}

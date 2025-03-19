@@ -25,14 +25,14 @@ timeout = 0
 
 [Server]
 host = "127.0.0.1"
-port = 8080
+port = 5050
 protocol = "http"
 environment = "development"
 
 [Translation]
 locale = "en-GB"
 host = "localhost"
-port = 8080
+port = 5050
 protocol = "http"
 
 [Assets]
@@ -147,14 +147,31 @@ warning = "WARN"
 [[Origins]]
 name = "demon_pear"
 [[Origins]]
+name = "demon-pear"
+[[Origins]]
 name = "trnsl8r_connect"
+[[Origins]]
+name = "trnsl8r_server"
 [[Origins]]
 name = "cosmic-orange"
 [[Origins]]
 name = "frantic-aegis"
 [[Origins]]
 name = "frantic-core"
-
+[[Origins]]
+name = "frantic-cat"
+[[Origins]]
+name = "frantic-aegis"
+[[Origins]]
+name = "frantic-agentis"
+[[Origins]]
+name = "frantic-aliquid"
+[[Origins]]
+name = "frantic-template"
+[[Origins]]
+name = "frantic-webcore"
+[[Origins]]
+name = "imalive"
 
 [[Locales]]
 key = "jp_JP"

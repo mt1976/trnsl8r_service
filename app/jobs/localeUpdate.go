@@ -23,7 +23,7 @@ func (job *localeUpdate) Run() error {
 	textstore.Initialise(context.TODO())
 	set := commonConfig.Get()
 
-	locales := set.GetLocales()
+	locales := set.GetTranslation_PermittedLocales()
 	noLocales := len(locales)
 
 	logHandler.ServiceLogger.Printf("[%v] Number of Locales=[%v]", domain.String(), noLocales)

@@ -75,7 +75,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	if !slices.Contains(c.GetValidOrigins(), realOrigin) {
+	if !slices.Contains(c.GetTranslation_PermittedOrigins(), realOrigin) {
 		err := fmt.Errorf("invalid origin of request [%v]", realOrigin)
 		logHandler.ErrorLogger.Println(err.Error())
 		watch.Stop(0)
@@ -176,7 +176,7 @@ func Trnsl8r_Rebuild(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 func getLocalesList(c *commonConfig.Settings) []string {
 	locales := []string{}
-	all := c.GetLocales()
+	all := c.GetTranslation_PermittedLocales()
 	for _, item := range all {
 		locales = append(locales, item.Key)
 	}

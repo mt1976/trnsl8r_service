@@ -173,7 +173,7 @@ func load(original, message string) (Text_Store, error) {
 
 	set := commonConfig.Get()
 
-	locales := set.GetLocales()
+	locales := set.GetTranslation_PermittedLocales()
 	//noLocales := len(locales)
 
 	newTextLocalised := make(map[string]string)

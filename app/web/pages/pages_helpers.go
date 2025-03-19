@@ -18,11 +18,11 @@ func New(title, action string) *Page {
 	logger.EventLogger.Printf("Create New Page [%v],[%v]", title, action)
 
 	p := Page{}
-	p.ApplicationLogo = settings.GetLogoPath()
-	p.ApplicationName = translation.Get(settings.GetApplicationName(), "")
-	p.ApplicationDescription = translation.Get(settings.GetApplicationDescription(), "")
-	p.ApplicationPrefix = translation.Get(settings.GetApplicationPrefix(), "")
-	p.ApplicationFavicon = settings.GetFaviconPath()
+	p.ApplicationLogo = settings.GetAssets_LogoPath()
+	p.ApplicationName = translation.Get(settings.GetApplication_Name(), "")
+	p.ApplicationDescription = translation.Get(settings.GetApplication_Description(), "")
+	p.ApplicationPrefix = translation.Get(settings.GetApplication_Prefix(), "")
+	p.ApplicationFavicon = settings.GetAssets_FaviconPath()
 
 	p.Message = ""
 	p.MessageType = ""
@@ -30,10 +30,10 @@ func New(title, action string) *Page {
 	p.ID = ""
 
 	p.Delimiter = settings.GetDisplayDelimiter()
-	p.ApplicationVersion = settings.GetApplicationVersion()
-	p.ApplicationEnvironment = settings.GetApplicationEnvironment()
-	p.ApplicationBuildDate = settings.GetApplicationReleaseDate()
-	p.ApplicationCopyriteDate = settings.GetApplicationCopyright()
+	p.ApplicationVersion = settings.GetApplication_Version()
+	p.ApplicationEnvironment = settings.GetApplication_Environment()
+	p.ApplicationBuildDate = settings.GetApplication_ReleaseDate()
+	p.ApplicationCopyriteDate = settings.GetApplication_Copyright()
 	p.OSSeperator = paths.Seperator()
 	p.BackupLocation = paths.Backups().String()
 	p.DumpLocation = paths.Dumps().String()

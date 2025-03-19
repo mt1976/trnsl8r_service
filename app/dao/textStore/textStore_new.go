@@ -17,14 +17,14 @@ func New(signature, message string) (Text_Store, error) {
 
 	//logger.InfoLogger.Printf("ACT: NEW New %v %v %v", tableName, name, destination)
 	settings := commonConfig.Get()
-	appName := settings.GetApplicationName()
+	appName := settings.GetApplication_Name()
 	// Create a new d
 	t := Text_Store{}
 	t.Signature = signature
 	t.Message = message
 	t.Original = message
 	t.SourceApplication = appName
-	t.SourceLocale = settings.GetApplicationLocale()
+	t.SourceLocale = settings.GetApplication_Locale()
 
 	t.ConsumedBy = addConsumer(t.ConsumedBy, appName)
 
@@ -32,7 +32,7 @@ func New(signature, message string) (Text_Store, error) {
 		t.Localised = make(map[string]string)
 	}
 	// Get the current locales
-	locales := settings.GetLocales()
+	locales := settings.GetTranslation_PermittedLocales()
 	// Add the message to the localised map for each locale
 	for _, locale := range locales {
 		t.Localised[locale.Key] = ""
