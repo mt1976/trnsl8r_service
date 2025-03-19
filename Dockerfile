@@ -1,26 +1,25 @@
 # syntax=docker/dockerfile:1
-
-FROM golang:1.24.0 AS build
-
+# TODO: reduce size of image 
+FROM golang:1.24.0
+ 
 # Set destination for COPY
 WORKDIR /app
 
 # Download Go modules
-COPY go.mod ./
-COPY go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
-COPY . ./
-# Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./trnsl8r_service.run
 
-# Deploy
-FROM alpine:latest
-WORKDIR /app
-COPY --from=build /app/trnsl8r_service.run .
-COPY res ./res/
+# Copy the source code. Note the slash at the end, as explained in
+# https://docs.docker.com/reference/dockerfile/#copy
+COPY main.go ./
+COPY res ./res
+COPY app ./app/
 COPY data ./data/
 COPY startupPayload ./startupPayload/
 COPY README.md ./
+
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./trnsl8r_service.runner
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -30,4 +29,4 @@ COPY README.md ./
 EXPOSE 5050
 
 # Run
-CMD ["./trnsl8r_service.run"]
+CMD ["./trnsl8r_service.runner"]

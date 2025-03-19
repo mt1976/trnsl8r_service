@@ -14,5 +14,5 @@ services:
       - /Users/matttownsend/Docker/shared/logs:/app/data/logs
       - /Users/matttownsend/Docker/trnsl8r_service/defaults:/app/data/defaults
     ports:
-      - 5050:8080
+      - 5050:5050
     restart: unless-stopped
