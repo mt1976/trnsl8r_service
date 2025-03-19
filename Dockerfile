@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.24.0
+FROM golang:1.24.0 AS build
 
 # Set destination for COPY
 WORKDIR /app
@@ -9,18 +9,18 @@ WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
+COPY . ./
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./trnsl8r_service.run
 
-# Copy the source code. Note the slash at the end, as explained in
-# https://docs.docker.com/reference/dockerfile/#copy
-COPY main.go ./
+# Deploy
+FROM alpine:latest
+WORKDIR /app
+COPY --from=build /app/trnsl8r_service.run .
 COPY res ./res/
-COPY app ./app/
 COPY data ./data/
 COPY startupPayload ./startupPayload/
 COPY README.md ./
-
-# Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./trnsl8r_service
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -30,4 +30,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o ./trnsl8r_service
 EXPOSE 5050
 
 # Run
-CMD ["./trnsl8r_service"]
+CMD ["./trnsl8r_service.run"]
