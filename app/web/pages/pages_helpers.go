@@ -5,7 +5,7 @@ import (
 	common "github.com/mt1976/frantic-core/commonConfig"
 	logger "github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 )
 
 var settings *common.Settings
@@ -19,9 +19,9 @@ func New(title, action string) *Page {
 
 	p := Page{}
 	p.ApplicationLogo = settings.GetAssets_LogoPath()
-	p.ApplicationName = translation.Get(settings.GetApplication_Name(), "")
-	p.ApplicationDescription = translation.Get(settings.GetApplication_Description(), "")
-	p.ApplicationPrefix = translation.Get(settings.GetApplication_Prefix(), "")
+	p.ApplicationName = translate.Get(settings.GetApplication_Name(), "")
+	p.ApplicationDescription = translate.Get(settings.GetApplication_Description(), "")
+	p.ApplicationPrefix = translate.Get(settings.GetApplication_Prefix(), "")
 	p.ApplicationFavicon = settings.GetAssets_FaviconPath()
 
 	p.Message = ""
@@ -41,8 +41,8 @@ func New(title, action string) *Page {
 	p.ApplicationPath = paths.Application().String()
 	p.ApplicationOS = application.OS()
 
-	p.PageAction = translation.Get(action, "")
-	p.PageTitle = translation.Get(title, "")
+	p.PageAction = translate.Get(action, "")
+	p.PageTitle = translate.Get(title, "")
 
 	return &p
 }

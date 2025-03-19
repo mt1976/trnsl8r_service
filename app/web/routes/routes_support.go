@@ -11,11 +11,11 @@ import (
 	"github.com/mt1976/frantic-core/htmlHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 )
 
 func trace(r *http.Request) {
-	mesg := translation.Get("Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]", "")
+	mesg := translate.Get("Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]", "")
 	logHandler.TraceLogger.Printf(mesg, r.Method, r.URL, r.Header, r.Context(), r.RequestURI)
 }
 
@@ -35,7 +35,7 @@ func getIDString(ps httprouter.Params) (string, error) {
 func getItemName(ps httprouter.Params) (string, error) {
 	itemName := ps.ByName("item")
 	if itemName == "" {
-		msg := translation.Get("Invalid Item Name [%s]", "")
+		msg := translate.Get("Invalid Item Name [%s]", "")
 		return "", fmt.Errorf(msg, itemName)
 	}
 	return itemName, nil
@@ -48,12 +48,12 @@ func iconv(arg interface{}) (int, error) {
 	case string:
 		i, er := strconv.Atoi(x)
 		if er != nil {
-			msg := translation.Get("Invalid ID [%s]", "")
+			msg := translate.Get("Invalid ID [%s]", "")
 			return 0, fmt.Errorf(msg, arg.(string))
 		}
 		return i, er
 	}
-	msg := translation.Get("Invalid trip argument [%s]", "")
+	msg := translate.Get("Invalid trip argument [%s]", "")
 	return 0, fmt.Errorf(msg, arg.(string))
 }
 

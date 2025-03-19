@@ -15,7 +15,6 @@ import (
 	"github.com/mt1976/frantic-core/dao/audit"
 	"github.com/mt1976/frantic-core/dao/database"
 	"github.com/mt1976/frantic-core/logHandler"
-	logger "github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/timing"
 )
 
@@ -35,34 +34,34 @@ func (record *Text_Store) calculate() error {
 	return nil
 }
 
-func (record *Text_Store) isDuplicateOf(id string) (Text_Store, error) {
+// func (record *Text_Store) isDuplicateOf(id string) (Text_Store, error) {
 
-	dao.CheckDAOReadyState(domain, audit.PROCESS, initialised) // Check the DAO has been initialised, Mandatory.
+// 	dao.CheckDAOReadyState(domain, audit.PROCESS, initialised) // Check the DAO has been initialised, Mandatory.
 
-	//TODO: Could be replaced with a simple read...
+// 	//TODO: Could be replaced with a simple read...
 
-	// Get all status
-	recordList, err := GetAll()
-	if err != nil {
-		logHandler.ErrorLogger.Printf("Getting all %v failed %v", domain, err.Error())
-		return Text_Store{}, err
-	}
+// 	// Get all status
+// 	recordList, err := GetAll()
+// 	if err != nil {
+// 		logHandler.ErrorLogger.Printf("Getting all %v failed %v", domain, err.Error())
+// 		return Text_Store{}, err
+// 	}
 
-	// range through status list, if status code is found and deletedby is empty then return error
-	for _, checkRecord := range recordList {
-		//s.Dump(!,strings.ToUpper(code) + "-uchk-" + s.Code)
-		testValue := strings.ToUpper(id)
-		checkValue := strings.ToUpper(checkRecord.Signature)
-		//logger.InfoLogger.Printf("CHK: TestValue:[%v] CheckValue:[%v]", testValue, checkValue)
-		//logger.InfoLogger.Printf("CHK: Code:[%v] s.Code:[%v] s.Audit.DeletedBy:[%v]", testCode, s.Code, s.Audit.DeletedBy)
-		if checkValue == testValue && checkRecord.Audit.DeletedBy == "" {
-			logHandler.WarningLogger.Printf("Duplicate %v, %v already in use", strings.ToUpper(domain), record.ID)
-			return checkRecord, commonErrors.ErrorDuplicate
-		}
-	}
+// 	// range through status list, if status code is found and deletedby is empty then return error
+// 	for _, checkRecord := range recordList {
+// 		//s.Dump(!,strings.ToUpper(code) + "-uchk-" + s.Code)
+// 		testValue := strings.ToUpper(id)
+// 		checkValue := strings.ToUpper(checkRecord.Signature)
+// 		//logger.InfoLogger.Printf("CHK: TestValue:[%v] CheckValue:[%v]", testValue, checkValue)
+// 		//logger.InfoLogger.Printf("CHK: Code:[%v] s.Code:[%v] s.Audit.DeletedBy:[%v]", testCode, s.Code, s.Audit.DeletedBy)
+// 		if checkValue == testValue && checkRecord.Audit.DeletedBy == "" {
+// 			logHandler.WarningLogger.Printf("Duplicate %v, %v already in use", strings.ToUpper(domain), record.ID)
+// 			return checkRecord, commonErrors.ErrorDuplicate
+// 		}
+// 	}
 
-	return Text_Store{}, nil
-}
+// 	return Text_Store{}, nil
+// }
 
 func ClearDown(ctx context.Context) error {
 	logHandler.InfoLogger.Printf("Clearing %v", domain)
@@ -104,7 +103,7 @@ func (u *Text_Store) dup(name string) (Text_Store, error) {
 	// Get all status
 	statusList, err := GetAll()
 	if err != nil {
-		logger.ErrorLogger.Printf("Error Getting all status: %v", err.Error())
+		logHandler.ErrorLogger.Printf("Error Getting all status: %v", err.Error())
 		return Text_Store{}, err
 	}
 

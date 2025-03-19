@@ -9,7 +9,7 @@ import (
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 	"github.com/mt1976/trnsl8r_service/app/web/pages"
 )
 
@@ -60,10 +60,10 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		pg.PageAction = messageAction
 	}
 
-	pg.MessageType = translation.Get(pg.MessageType, "")
-	pg.PageTitle = translation.Get(pg.PageTitle, "")
-	pg.Message = translation.Get(pg.Message, "")
-	pg.PageAction = translation.Get(pg.PageAction, "")
+	pg.MessageType = translate.Get(pg.MessageType, "")
+	pg.PageTitle = translate.Get(pg.PageTitle, "")
+	pg.Message = translate.Get(pg.Message, "")
+	pg.PageAction = translate.Get(pg.PageAction, "")
 
 	err := t.Execute(w, pg) // merge.
 	if err != nil {
@@ -73,9 +73,9 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 func buildFailPS(msg string, title string, content string, action string) httprouter.Params {
 	ps := httprouter.Params{}
-	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translation.Get(msg, "")})
-	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translation.Get(title, "")})
-	ps = append(ps, httprouter.Param{Key: msgContentKey, Value: translation.Get(content, "")})
-	ps = append(ps, httprouter.Param{Key: msgActionKey, Value: translation.Get(action, "")})
+	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translate.Get(msg, "")})
+	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translate.Get(title, "")})
+	ps = append(ps, httprouter.Param{Key: msgContentKey, Value: translate.Get(content, "")})
+	ps = append(ps, httprouter.Param{Key: msgActionKey, Value: translate.Get(action, "")})
 	return ps
 }

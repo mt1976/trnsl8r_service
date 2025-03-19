@@ -6,13 +6,14 @@ FROM golang:1.24.0
 WORKDIR /app
 
 # Download Go modules
-COPY go.mod go.sum ./
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
 
 # Copy the source code. Note the slash at the end, as explained in
 # https://docs.docker.com/reference/dockerfile/#copy
 COPY main.go ./
-COPY res ./res
+COPY res ./res/
 COPY app ./app/
 COPY data ./data/
 COPY startupPayload ./startupPayload/

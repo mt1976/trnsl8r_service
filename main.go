@@ -11,7 +11,7 @@ import (
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/stringHelpers"
 	"github.com/mt1976/frantic-core/timing"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 	"github.com/mt1976/trnsl8r_service/app/dao"
 	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
 	"github.com/mt1976/trnsl8r_service/app/jobs"
@@ -118,7 +118,7 @@ func main() {
 
 	// ANNOUNCE ROUTES ABOVE
 	router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, translation.Get("404 page not found", ""), http.StatusNotFound)
+		http.Error(w, translate.Get("404 page not found", ""), http.StatusNotFound)
 	})
 
 	//logger.InfoLogger.Println("APP: Routes Setup")
@@ -147,12 +147,12 @@ func main() {
 }
 
 func newFunction(msg string) {
-	logHandler.TranslationLogger.Println("Translating: ", stringHelpers.DChevrons(translation.Get(msg, "")))
+	logHandler.TranslationLogger.Println("Translating: ", stringHelpers.DChevrons(translate.Get(msg, "")))
 
 	// Get a list of the locales
 	localList := settings.GetTranslation_PermittedLocales()
 	for _, locale := range localList {
-		logHandler.TranslationLogger.Println(locale.Name + " " + stringHelpers.SBracket(translation.Get(msg, locale.Key)))
+		logHandler.TranslationLogger.Println(locale.Name + " " + stringHelpers.SBracket(translate.Get(msg, locale.Key)))
 	}
 }
 

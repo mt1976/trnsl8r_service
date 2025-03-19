@@ -7,7 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 
 	"github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/htmlHelpers"
@@ -83,7 +83,7 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	translatedItem := translation.Get(itemToTranslate, filterLocale)
+	translatedItem := translate.Get(itemToTranslate, filterLocale)
 
 	if translatedItem == "" {
 		err := fmt.Errorf("no translation available")

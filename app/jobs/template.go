@@ -5,7 +5,7 @@ import (
 	"github.com/mt1976/frantic-core/jobs"
 	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 )
 
 type template struct {
@@ -28,7 +28,7 @@ func (job *template) Schedule() string {
 }
 
 func (job *template) Name() string {
-	return translation.Get("Template Job", "")
+	return translate.Get("Template Job", "")
 }
 
 func jobNotifications() {

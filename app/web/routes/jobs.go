@@ -5,7 +5,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/frantic-core/logHandler"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 	"github.com/mt1976/trnsl8r_service/app/jobs"
 )
 
@@ -17,8 +17,8 @@ func PruneBackups(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 
 	jobs.DatabasePrune.Run()
 
-	msg := name + " " + translation.Get("Complete", "")
-	msg = translation.Get(msg, "")
+	msg := name + " " + translate.Get("Complete", "")
+	msg = translate.Get(msg, "")
 
 	successMessage(w, r, ps, msg)
 }

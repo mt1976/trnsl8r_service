@@ -10,7 +10,7 @@ import (
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
 )
 
@@ -149,7 +149,7 @@ func (job *localeUpdate) Schedule() string {
 }
 
 func (job *localeUpdate) Name() string {
-	return translation.Get("Update Locales", "")
+	return translate.Get("Update Locales", "")
 }
 
 func (job *localeUpdate) AddDatabaseAccessFunctions(fn func() ([]*database.DB, error)) {

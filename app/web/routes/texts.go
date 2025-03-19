@@ -9,7 +9,7 @@ import (
 	"github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
-	"github.com/mt1976/trnsl8r_service/app/business/translation"
+	"github.com/mt1976/trnsl8r_service/app/business/translate"
 	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
 	"github.com/mt1976/trnsl8r_service/app/web/pages"
 )
@@ -104,20 +104,20 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	id, err := getIDString(ps)
 	if err != nil {
 		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
-		oops(w, r, ps, translation.Get("error", ""), err.Error())
+		oops(w, r, ps, translate.Get("error", ""), err.Error())
 		return
 	}
 	if id == "" {
-		msg := translation.Get("invalid ID: ID is required", "")
+		msg := translate.Get("invalid ID: ID is required", "")
 		logHandler.InfoLogger.Print(msg)
-		oops(w, r, ps, translation.Get("error", ""), msg)
+		oops(w, r, ps, translate.Get("error", ""), msg)
 		return
 	}
 
 	t, err := textstore.GetBySignature(id)
 	if err != nil {
 		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
-		oops(w, r, ps, translation.Get("error", ""), err.Error())
+		oops(w, r, ps, translate.Get("error", ""), err.Error())
 		return
 	}
 
@@ -126,9 +126,9 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	oldMessage := t.Message
 
 	if newMessage == "" {
-		msg := translation.Get("invalid Name: Message is required", "")
+		msg := translate.Get("invalid Name: Message is required", "")
 		logHandler.InfoLogger.Print(msg)
-		oops(w, r, ps, translation.Get("error", ""), msg)
+		oops(w, r, ps, translate.Get("error", ""), msg)
 		return
 	}
 
@@ -157,9 +157,9 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	if !msgUpdated {
 		if newMessage == oldMessage {
-			msg := translation.Get("no change: Message is the same", "")
+			msg := translate.Get("no change: Message is the same", "")
 			logHandler.InfoLogger.Print(msg)
-			oops(w, r, ps, translation.Get("error", ""), msg)
+			oops(w, r, ps, translate.Get("error", ""), msg)
 			return
 		}
 	}
@@ -169,7 +169,7 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Get the current valid locales
 
 	msg := "Message updated from [%v]->[%v]"
-	msg = translation.Get(msg, "")
+	msg = translate.Get(msg, "")
 	msg = fmt.Sprintf(msg, oldMessage, newMessage)
 	msg2 := msg
 	logmsg := "[TEXT] " + msg
@@ -177,10 +177,10 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	err = t.Update(nil, msg)
 	if err != nil {
-		oops(w, r, ps, translation.Get("error", ""), err.Error())
+		oops(w, r, ps, translate.Get("error", ""), err.Error())
 		return
 	}
 	//winmsg := "Zone %v"
-	winmsg := fmt.Sprintf(translation.Get("Text %v : ", ""), t.Signature) + msg2
+	winmsg := fmt.Sprintf(translate.Get("Text %v : ", ""), t.Signature) + msg2
 	successMessage(w, r, ps, winmsg)
 }
