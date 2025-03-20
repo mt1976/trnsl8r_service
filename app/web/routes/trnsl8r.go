@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
@@ -27,27 +28,20 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	originOfRequest := ps.ByName("origin")
 	localesList := getLocalesList(c)
 
-	filterLocale := r.URL.Query().Get("locale")
+	filterLocale := r.URL.Query().Get(trnsl8r.LOCALE.Key())
+	//fmt.Print("filterLocale1: ", filterLocale, "\n")
+
 	if filterLocale != "" {
-		filterLocale, err := htmlHelpers.FromPathSafe(filterLocale)
-		if err != nil {
-			logHandler.ErrorLogger.Println(err.Error())
-			oops(w, r, nil, "error", err.Error())
-			return
-		}
-		logHandler.TranslationLogger.Println("Filtering by locale [", filterLocale, "]")
-		// Check that this is a valid locale
-		if !slices.Contains(localesList, filterLocale) {
-			err := fmt.Errorf("invalid locale [%v]", filterLocale)
-			logHandler.ErrorLogger.Println(err.Error())
-			oops(w, r, nil, "error", err.Error())
-			return
-		}
+		filterLocale = getLocale(filterLocale, w, r, localesList)
 	}
+
+	//fmt.Print("filterLocale5: ", filterLocale, "\n")
+
+	//logHandler.TranslationLogger.Println("Filtering by locale [", filterLocale, "]")
 
 	watch := timing.Start("Trnsl8r", "Translate", itemToTranslate)
 
-	logHandler.TranslationLogger.Println("Request to translate message [", itemToTranslate, "]")
+	logHandler.TranslationLogger.Println("Request to translate message [", itemToTranslate, "], origin [", originOfRequest, "], locale [", filterLocale, "]")
 
 	if itemToTranslate == "" {
 		err := fmt.Errorf("no message to translate")
@@ -97,33 +91,75 @@ func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("Application", appName)
 
-	fmt.Fprintf(w, "{\"message\":\"%v\"}", translatedItem)
+	//	fmt.Fprintf(w, "{\"message\":\"%v\"}", translatedItem)
+	htmlResp := fmt.Sprintf("{\"message\":\"%v\"}", translatedItem)
+	w.Write([]byte(htmlResp))
 	w.WriteHeader(http.StatusOK)
-	logHandler.InfoLogger.Println(fmt.Sprintf("Translated message [%v] to [%v]", itemToTranslate, translatedItem))
+	logHandler.TranslationLogger.Println("Response to translate message [", htmlResp, "] Status=", http.StatusOK)
+	//logHandler.InfoLogger.Printf("Translated message [%v] to [%v]", itemToTranslate, translatedItem)
 	watch.Stop(1)
+}
+
+func getLocale(filterLocale string, w http.ResponseWriter, r *http.Request, localesList []string) string {
+	//fmt.Print("filterLocale2: ", filterLocale, "\n")
+
+	filterLocale = strings.Trim(filterLocale, " ")
+	filterLocale, err := htmlHelpers.FromPathSafe(filterLocale)
+	if err != nil {
+		logHandler.ErrorLogger.Println(err.Error())
+		oops(w, r, nil, "error", err.Error())
+		return ""
+	}
+	//fmt.Print("filterLocale3: ", filterLocale, "\n")
+
+	// Check that this is a valid locale
+	if !slices.Contains(localesList, filterLocale) {
+		err := fmt.Errorf("invalid locale [%v]", filterLocale)
+		logHandler.ErrorLogger.Println(err.Error())
+		oops(w, r, nil, "error", err.Error())
+		return ""
+	}
+	//fmt.Print("filterLocale4: ", filterLocale, "\n")
+	return filterLocale
 }
 
 func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Build a URI query string
-	req := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logHandler.InfoLogger).WithOriginOf("trnsl8r_connect")
+	baseReq := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logHandler.ServiceLogger).FromOrigin("trnsl8r_connect")
 
-	req.Spew()
+	baseReq.Spew()
 
-	logHandler.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(req.String()))
+	logHandler.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(baseReq.String()))
 
 	all, err := textstore.GetAll()
 	if err != nil {
 		logHandler.ErrorLogger.Println(err.Error())
 	}
 
+	locales := getLocalesList(commonConfig.Get())
+
 	for _, item := range all {
-		logHandler.TranslationLogger.Println("Original: ", stringHelpers.DCurlies(item.Original))
-		translation, err := req.Get(item.Original)
+		//	logHandler.TranslationLogger.Println("Original: ", stringHelpers.DCurlies(item.Original))
+
+		translation, err := baseReq.Get(item.Original)
 		if err != nil {
 			logHandler.ErrorLogger.Println(err.Error())
 		}
-		logHandler.InfoLogger.Println("Original: ", stringHelpers.DCurlies(item.Original), " Translation: ", stringHelpers.DCurlies(translation.String()), "}}", "Information: ", stringHelpers.DCurlies(translation.Information))
+		logHandler.EventLogger.Println("Original:", stringHelpers.DCurlies(item.Original), " Translation:", stringHelpers.DCurlies(translation.String()), "Information:", stringHelpers.DCurlies(translation.Information), "Locale:", stringHelpers.DCurlies(""))
+
+		for _, locale := range locales {
+			useReq, err := baseReq.WithLocale(locale)
+			if err != nil {
+				logHandler.ErrorLogger.Println(err.Error())
+			}
+			//useReq.Spew()
+			translation, err := useReq.Get(item.Original)
+			if err != nil {
+				logHandler.ErrorLogger.Println(err.Error())
+			}
+			logHandler.EventLogger.Println("Original:", stringHelpers.DCurlies(item.Original), " Translation:", stringHelpers.DCurlies(translation.String()), "Information:", stringHelpers.DCurlies(translation.Information), "Locale:", stringHelpers.DCurlies(locale))
+		}
 	}
 }
 

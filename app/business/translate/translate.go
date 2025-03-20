@@ -10,7 +10,7 @@ import (
 
 func Get(in, localeFilter string) string {
 	// Validate the input data
-	logHandler.TranslationLogger.Printf("Translating [%v] locale=[%v]", in, localeFilter)
+	//logHandler.TranslationLogger.Printf("Translating [%v] locale=[%v]", in, localeFilter)
 	id := idHelpers.Encode(strings.ToUpper(in))
 
 	text, err := textDataAccess.GetLocalised(id, localeFilter)
@@ -27,19 +27,19 @@ func Get(in, localeFilter string) string {
 	}
 
 	if localeFilter != "" {
-		logHandler.TranslationLogger.Printf("Locale filter [%v] for [%v]", localeFilter, in)
+		//	logHandler.TranslationLogger.Printf("Locale filter [%v] for [%v]", localeFilter, in)
 		localisedText, ok := text.Localised[localeFilter]
 		if !ok || localisedText == "" {
 			logHandler.TranslationLogger.Printf("Locale [%v] not found for [%v]", localeFilter, in)
-			logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
+			//logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
 			return text.Message
 		}
 		// If the locale is found, return it, otherwise proceed to the default
-		logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, localisedText)
+		//logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, localisedText)
 		return localisedText
 
 	}
 
-	logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
+	//logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
 	return text.Message
 }
