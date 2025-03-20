@@ -42,6 +42,9 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 	router.GET(announceInsecure("/refresh"), Trnsl8r_Refresh)
 	router.GET(announceInsecure("/rebuild"), Trnsl8r_Rebuild)
 
+	router.GET(announceInsecure("/locales"), Locales)
+	router.GET(announceInsecure("/localestest"), LocaleTest)
+
 	// Special Routes
 	if settings.IsApplicationMode(commonConfig.MODE_DEVELOPMENT) {
 		router.GET(announceInsecure("/test"), Test)

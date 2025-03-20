@@ -128,7 +128,7 @@ func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	// Build a URI query string
 	baseReq := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logHandler.ServiceLogger).FromOrigin("trnsl8r_connect")
 
-	baseReq.Spew()
+	//baseReq.Spew()
 
 	logHandler.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(baseReq.String()))
 
