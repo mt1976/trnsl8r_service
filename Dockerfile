@@ -28,6 +28,6 @@ COPY README.md ./
 # Copy the the application executable
 COPY --from=builder /build/trnsl8r_service /trnsl8r_service
 
-EXPOSE 5052
+EXPOSE 5050
 # Run
 CMD ["./trnsl8r_service"]

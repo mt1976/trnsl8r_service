@@ -1,6 +1,6 @@
 #!/bin/bash
 # Image name
-IMAGE_NAME="mt1976/trnsl8r_service"
+IMAGE_NAME="mt1976/trnsl8r_server"
 VERSION_FILE="version.no"
 VERSION_MAJORMINOR="0.0"
 DOCKERHUB_USERNAME="mt1976"
