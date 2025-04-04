@@ -8,11 +8,11 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /Users/matttownsend/Docker/trnsl8r_service/backups:/app/data/backups
-      - /Users/matttownsend/Docker/shared/database:/app/data/database
-      - /Users/matttownsend/Docker/trnsl8r_service/dumps:/app/data/dumps
-      - /Users/matttownsend/Docker/shared/logs:/app/data/logs
-      - /Users/matttownsend/Docker/trnsl8r_service/defaults:/app/data/defaults
+      - /Volumes/External HD/Docker/Shared/backups/trnsl8r_service:/data/backups
+      - /Volumes/External HD/Docker/Shared/database:/data/database
+      - /Volumes/External HD/Docker/Shared/dumps/trnsl8r_service:/data/dumps
+      - /Volumes/External HD/Docker/Shared/logs:/data/logs
+      - /Volumes/External HD/Docker/Shared/defaults:/data/defaults
     ports:
       - 5050:5050
     restart: unless-stopped
