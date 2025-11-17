@@ -6,7 +6,7 @@ import (
 
 	"github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/logHandler"
-	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 	"github.com/mt1976/trnsl8r_service/app/web/routes"
 )
 
@@ -18,7 +18,7 @@ func Initialise(cfg *commonConfig.Settings) error {
 	logHandler.InfoLogger.Printf("[%v] Initialising...", strings.ToUpper(name))
 
 	//database.Connect()
-	textstore.Initialise(context.TODO())
+	textStore.Initialise(context.TODO())
 
 	routes.Initialise(cfg)
 

@@ -17,7 +17,7 @@ import (
 	"github.com/mt1976/frantic-core/stringHelpers"
 	"github.com/mt1976/frantic-core/timing"
 	trnsl8r "github.com/mt1976/trnsl8r_connect"
-	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
 func Trnsl8r(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -113,7 +113,8 @@ func getLocale(filterLocale string, w http.ResponseWriter, r *http.Request, loca
 	//fmt.Print("filterLocale3: ", filterLocale, "\n")
 
 	// Check that this is a valid locale
-	if !slices.Contains(localesList, filterLocale) {
+	// Check if locale is invalid (not in permitted list, empty, or default English variants)
+	if !slices.Contains(localesList, filterLocale) || filterLocale == "" || filterLocale == "en_GB" || filterLocale == "en_US" {
 		err := fmt.Errorf("invalid locale [%v]", filterLocale)
 		logHandler.ErrorLogger.Println(err.Error())
 		oops(w, r, nil, "error", err.Error())
@@ -132,7 +133,7 @@ func Trnsl8r_Test(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 
 	logHandler.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(baseReq.String()))
 
-	all, err := textstore.GetAll()
+	all, err := textStore.GetAll()
 	if err != nil {
 		logHandler.ErrorLogger.Println(err.Error())
 	}
@@ -168,7 +169,7 @@ func Trnsl8r_Export(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 
 	trace(r)
 
-	err := textstore.ExportCSV()
+	err := textStore.ExportCSV()
 	if err != nil {
 		logHandler.ErrorLogger.Print(err.Error())
 		oops(w, r, nil, "error", err.Error())
@@ -180,7 +181,7 @@ func Trnsl8r_Export(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 func Trnsl8r_Refresh(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	logHandler.InfoBanner(domains.TEXT.String(), "Texts", "Importing")
-	err := textstore.ImportCSV()
+	err := textStore.ImportCSV()
 	if err != nil {
 		logHandler.ErrorLogger.Fatal(err.Error())
 		oops(w, r, nil, "error", err.Error())
@@ -193,14 +194,14 @@ func Trnsl8r_Refresh(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 func Trnsl8r_Rebuild(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Need to drop the existing text store
-	err := textstore.Drop()
+	err := textStore.Drop()
 	if err != nil {
 		logHandler.ErrorLogger.Fatal(err.Error())
 		oops(w, r, nil, "error", err.Error())
 	}
 
 	logHandler.InfoBanner(domains.TEXT.String(), "Texts", "Importing")
-	err = textstore.ImportCSV()
+	err = textStore.ImportCSV()
 	if err != nil {
 		logHandler.ErrorLogger.Fatal(err.Error())
 		oops(w, r, nil, "error", err.Error())

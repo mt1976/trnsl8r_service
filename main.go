@@ -13,7 +13,7 @@ import (
 	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/translate"
 	"github.com/mt1976/trnsl8r_service/app/dao"
-	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 	"github.com/mt1976/trnsl8r_service/app/jobs"
 	"github.com/mt1976/trnsl8r_service/app/web/routes"
 )
@@ -53,7 +53,7 @@ func main() {
 	logHandler.ServiceLogger.Printf("[%v] Backup Starting...", appName)
 
 	// Add the functions DBs to the job before running
-	jobs.DatabaseBackup.AddDatabaseAccessFunctions(textstore.FetchDatabaseInstances())
+	jobs.DatabaseBackup.AddDatabaseAccessFunctions(textStore.FetchDatabaseInstances())
 
 	err = jobs.DatabaseBackup.Run()
 	if err != nil {
@@ -94,7 +94,7 @@ func main() {
 
 	// Preload the text store
 	logHandler.InfoBanner(na, "Texts", "Importing")
-	err = textstore.ImportCSV()
+	err = textStore.ImportCSV()
 	if err != nil {
 		logHandler.ErrorLogger.Fatal(err.Error())
 	}

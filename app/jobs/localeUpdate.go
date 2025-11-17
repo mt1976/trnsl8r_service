@@ -11,7 +11,7 @@ import (
 	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translate"
-	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
 type localeUpdate struct {
@@ -20,7 +20,7 @@ type localeUpdate struct {
 func (job *localeUpdate) Run() error {
 
 	j := timing.Start(domains.JOBS.String(), actions.VALIDATE.GetCode(), "Locales")
-	textstore.Initialise(context.TODO())
+	textStore.Initialise(context.TODO())
 	set := commonConfig.Get()
 
 	locales := set.GetTranslation_PermittedLocales()
@@ -70,7 +70,7 @@ func (job *localeUpdate) Run() error {
 	}
 	logHandler.ServiceLogger.Printf("[%v] Locales are in the correct format", domain.String())
 	// We can assume that all the locales are in the correct format
-	textData, err := textstore.GetAll()
+	textData, err := textStore.GetAll()
 	if err != nil {
 		logHandler.ErrorLogger.Println(err)
 		j.Stop(0)

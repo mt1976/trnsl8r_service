@@ -1,4 +1,4 @@
-package textstore
+package textStore
 
 import (
 	"context"

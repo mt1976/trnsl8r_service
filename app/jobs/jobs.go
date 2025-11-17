@@ -6,7 +6,7 @@ import (
 	"github.com/mt1976/frantic-core/jobs"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
-	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
 var Template jobs.Job = &template{} // This is a template for other jobs.
@@ -29,7 +29,7 @@ func Start() {
 	// Start the job
 	logHandler.ServiceLogger.Printf("[%v] Queue - Starting", domain.String())
 	// Add the functions to the jobs, one for each table/domain that required a backup
-	DatabaseBackup.AddDatabaseAccessFunctions(textstore.FetchDatabaseInstances())
+	DatabaseBackup.AddDatabaseAccessFunctions(textStore.FetchDatabaseInstances())
 	// Database Backup
 	jobs.AddJobToScheduler(DatabaseBackup)
 	// Prune the archive of backups

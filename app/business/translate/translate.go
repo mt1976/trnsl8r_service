@@ -5,7 +5,7 @@ import (
 
 	"github.com/mt1976/frantic-core/idHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
-	textDataAccess "github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	textDataAccess "github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
 func Get(in, localeFilter string) string {
@@ -26,7 +26,7 @@ func Get(in, localeFilter string) string {
 		return text.Message
 	}
 
-	if localeFilter != "" {
+	if localeFilter != "" && localeFilter != "en" && localeFilter != "en_GB" && localeFilter != "en_US" {
 		//	logHandler.TranslationLogger.Printf("Locale filter [%v] for [%v]", localeFilter, in)
 		localisedText, ok := text.Localised[localeFilter]
 		if !ok || localisedText == "" {

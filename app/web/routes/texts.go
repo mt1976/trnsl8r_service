@@ -10,7 +10,7 @@ import (
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/paths"
 	"github.com/mt1976/trnsl8r_service/app/business/translate"
-	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 	"github.com/mt1976/trnsl8r_service/app/web/pages"
 )
 
@@ -114,7 +114,7 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	t, err := textstore.GetBySignature(id)
+	t, err := textStore.GetBySignature(id)
 	if err != nil {
 		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
 		oops(w, r, ps, translate.Get("error", ""), err.Error())

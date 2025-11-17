@@ -2,14 +2,14 @@ package pages
 
 import (
 	"github.com/mt1976/frantic-core/logHandler"
-	"github.com/mt1976/trnsl8r_service/app/dao/textstore"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
 func TextView(title, action, id string) (*Page, error) {
 	logHandler.InfoLogger.Printf("Page: TextView %+v", id)
 	p := New(title, action)
 
-	txt, err := textstore.GetBySignature(id)
+	txt, err := textStore.GetBySignature(id)
 	if err != nil {
 		return p, err
 	}
@@ -23,7 +23,7 @@ func TextList(title, action string) (*Page, error) {
 
 	p := New(title, action)
 
-	TextList, err := textstore.GetAll()
+	TextList, err := textStore.GetAll()
 	if err != nil {
 		return p, err
 	}
@@ -35,7 +35,7 @@ func TextList(title, action string) (*Page, error) {
 func TextEdit(title, action, id string) (*Page, error) {
 	p := New(title, action)
 
-	txt, err := textstore.GetBySignature(id)
+	txt, err := textStore.GetBySignature(id)
 	if err != nil {
 		return p, err
 	}
@@ -48,7 +48,7 @@ func TextEdit(title, action, id string) (*Page, error) {
 func TextUpdate(title, action, id string) (*Page, error) {
 	p := New(title, action)
 
-	txt, err := textstore.GetBySignature(id)
+	txt, err := textStore.GetBySignature(id)
 	if err != nil {
 		return p, err
 	}

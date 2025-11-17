@@ -1,4 +1,4 @@
-package textstore
+package textStore
 
 // Data Access Object Template - templatestore
 // Version: 0.2.0
