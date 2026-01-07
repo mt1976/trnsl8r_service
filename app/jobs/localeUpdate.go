@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/mt1976/frantic-core/commonConfig"
-	"github.com/mt1976/frantic-core/dao/actions"
 	"github.com/mt1976/frantic-core/dao/database"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/timing"
@@ -19,8 +18,8 @@ type localeUpdate struct {
 
 func (job *localeUpdate) Run() error {
 
-	j := timing.Start(domains.JOBS.String(), actions.VALIDATE.GetCode(), "Locales")
-	textStore.Initialise(context.TODO())
+	j := timing.Start(domains.JOBS.String(), "Validate", "Locales")
+	textStore.Initialise(context.Background(), false)
 	set := commonConfig.Get()
 
 	locales := set.GetTranslation_PermittedLocales()

@@ -18,7 +18,7 @@ func Initialise(cfg *commonConfig.Settings) error {
 	logHandler.InfoLogger.Printf("[%v] Initialising...", strings.ToUpper(name))
 
 	//database.Connect()
-	textStore.Initialise(context.TODO())
+	textStore.Initialise(context.TODO(), false)
 
 	routes.Initialise(cfg)
 

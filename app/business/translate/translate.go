@@ -1,6 +1,7 @@
 package translate
 
 import (
+	"context"
 	"strings"
 
 	"github.com/mt1976/frantic-core/idHelpers"
@@ -16,7 +17,7 @@ func Get(in, localeFilter string) string {
 	text, err := textDataAccess.GetLocalised(id, localeFilter)
 	if err != nil {
 		logHandler.TranslationLogger.Printf("New text translation available Id=[%v], for [%v]", id, in)
-		text, err := textDataAccess.New(id, in)
+		text, err := textDataAccess.Create(context.Background(), id, in)
 		if err != nil {
 			logHandler.ErrorLogger.Printf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())
 			logHandler.TranslationLogger.Panicf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())

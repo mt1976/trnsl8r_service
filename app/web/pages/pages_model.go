@@ -30,8 +30,8 @@ type Page struct {
 	DumpLocation     string
 	DatabaseLocation string
 
-	TextList    []textStore.Text_Store
-	TextItem    textStore.Text_Store
+	TextList    []textStore.TextStore
+	TextItem    textStore.TextStore
 	NoTextItems int
 	HostsSelect dao.Lookup
 }

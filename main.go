@@ -6,7 +6,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/frantic-core/commonConfig"
-	"github.com/mt1976/frantic-core/dao/actions"
 	dockerHelpers "github.com/mt1976/frantic-core/dockerHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/stringHelpers"
@@ -80,7 +79,7 @@ func main() {
 
 	na := strings.ToUpper(appName)
 
-	timer := timing.Start("", actions.INITIALISE.GetCode(), appName)
+	timer := timing.Start("", "Initialise", appName)
 
 	//textstore.Initialise(context.TODO())
 
@@ -94,7 +93,7 @@ func main() {
 
 	// Preload the text store
 	logHandler.InfoBanner(na, "Texts", "Importing")
-	err = textStore.ImportCSV()
+	err = textStore.ImportAllFromCSV()
 	if err != nil {
 		logHandler.ErrorLogger.Fatal(err.Error())
 	}

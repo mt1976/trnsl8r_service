@@ -169,7 +169,7 @@ func Trnsl8r_Export(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 
 	trace(r)
 
-	err := textStore.ExportCSV()
+	err := textStore.ExportAllAsCSV("Export")
 	if err != nil {
 		logHandler.ErrorLogger.Print(err.Error())
 		oops(w, r, nil, "error", err.Error())
@@ -181,7 +181,7 @@ func Trnsl8r_Export(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 func Trnsl8r_Refresh(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	logHandler.InfoBanner(domains.TEXT.String(), "Texts", "Importing")
-	err := textStore.ImportCSV()
+	err := textStore.ImportAllFromCSV()
 	if err != nil {
 		logHandler.ErrorLogger.Fatal(err.Error())
 		oops(w, r, nil, "error", err.Error())
@@ -201,7 +201,7 @@ func Trnsl8r_Rebuild(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	}
 
 	logHandler.InfoBanner(domains.TEXT.String(), "Texts", "Importing")
-	err = textStore.ImportCSV()
+	err = textStore.ImportAllFromCSV()
 	if err != nil {
 		logHandler.ErrorLogger.Fatal(err.Error())
 		oops(w, r, nil, "error", err.Error())
