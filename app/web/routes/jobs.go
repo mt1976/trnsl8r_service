@@ -11,14 +11,14 @@ import (
 
 func PruneBackups(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	name := "Database Backup Housekeeping"
-	logHandler.EventLogger.Println(name)
-
+	logHandler.Event.Println(name)
+	ctx := r.Context()
 	trace(r)
 
 	jobs.DatabasePrune.Run()
 
-	msg := name + " " + translate.Get("Complete", "")
-	msg = translate.Get(msg, "")
+	msg := name + " " + translate.Get(ctx, "Complete", "")
+	msg = translate.Get(ctx, msg, "")
 
 	successMessage(w, r, ps, msg)
 }

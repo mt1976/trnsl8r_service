@@ -1,7 +1,7 @@
 package pages
 
 import (
-	dao "github.com/mt1976/frantic-core/dao/lookup"
+	dao "github.com/mt1976/frantic-amphora/dao/lookup"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
@@ -30,8 +30,8 @@ type Page struct {
 	DumpLocation     string
 	DatabaseLocation string
 
-	TextList    []textStore.TextStore
-	TextItem    textStore.TextStore
+	TextList    []*textStore.TextStore
+	TextItem    *textStore.TextStore
 	NoTextItems int
 	HostsSelect dao.Lookup
 }

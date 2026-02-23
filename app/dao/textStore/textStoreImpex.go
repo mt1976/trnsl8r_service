@@ -1,0 +1,104 @@
+// Data Access Object for the TextStore table
+// Template Version: 0.6.00 - 2026-02-14
+// Generated 
+// Date: 23/02/2026 & 12:36
+// Who : matttownsend (orion)
+
+package textStore
+
+import (
+	"context"
+	"fmt"
+	"reflect"
+
+	"github.com/mt1976/frantic-amphora/dao"
+	"github.com/mt1976/frantic-amphora/dao/audit"
+	"github.com/mt1976/frantic-amphora/importExportHelper"
+	"github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/frantic-core/timing"
+)
+
+// ExportRecordToJSON exports the record as a JSON file.
+func (record *TextStore) ExportRecordToJSON(name string) {
+	Key := reflect.ValueOf(*record).FieldByName(Fields.Key.String())
+	clock := timing.Start(tableName, "Export", fmt.Sprintf("%v", Key))
+
+	err := importExportHelper.ExportJSON(name, []*TextStore{record}, Fields.Key)
+	if err != nil {
+		logHandler.Export.Panicf("error exporting %v record %v: %v", tableName, Key, err.Error())
+	}
+
+	clock.Stop(1)
+}
+
+// ExportAllToJSON exports all records as JSON files.
+func ExportAllToJSON(message string) {
+	dao.CheckDAOReadyState(tableName, audit.EXPORT, databaseConnectionActive)
+
+	clock := timing.Start(tableName, "Export", "ALL")
+	recordList, _ := GetAll()
+	if len(recordList) == 0 {
+		logHandler.Warning.Printf("[%v] %v data not found", tableName, tableName)
+		clock.Stop(0)
+		return
+	}
+
+	err := importExportHelper.ExportJSON(message, recordList, Fields.Key)
+	if err != nil {
+		logHandler.Export.Panicf("error exporting all %v's: %v", tableName, err.Error())
+	}
+	clock.Stop(len(recordList))
+}
+
+// ExportRecordToCSV exports the record as a CSV file.
+func (record *TextStore) ExportRecordToCSV(name string) error {
+	Key := reflect.ValueOf(*record).FieldByName(Fields.Key.String())
+	clock := timing.Start(tableName, "Export", fmt.Sprintf("%v", Key))
+
+	err := importExportHelper.ExportCSV(name, []*TextStore{record}, Fields.Key, importExportHelper.SINGLE)
+	if err != nil {
+		logHandler.Export.Printf("Error exporting %v record %v: %v", tableName, Key, err.Error())
+		clock.Stop(0)
+		return err
+	}
+
+	clock.Stop(1)
+	return nil
+}
+
+// ExportAllToCSV exports all records as a CSV file.
+func ExportAllToCSV(msg string) error {
+	exportListData, err := GetAll()
+	if err != nil {
+		logHandler.Export.Panicf("error Getting all %v's: %v", tableName, err.Error())
+	}
+	return importExportHelper.ExportCSV(msg, exportListData, Fields.Key, importExportHelper.BULK)
+}
+
+// ExportDefaults exports all records as a CSV file to the Defaults path.
+func ExportDefaults() error {
+	exportListData, err := GetAll()
+	if err != nil {
+		logHandler.Export.Panicf("error Getting all %v's: %v", tableName, err.Error())
+	}
+	return importExportHelper.ExportDefaults(exportListData, Fields.Key)
+}
+
+// ImportDefaults imports records for this table from a CSV file.
+func ImportDefaults(ctx context.Context) error {
+	return importExportHelper.ImportCSV(ctx, tableName, &TextStore{}, templateImportProcessor)
+}
+
+// templateImportProcessor is called for each CSV row during import.
+func templateImportProcessor(ctx context.Context, inOriginal **TextStore) (string, error) {
+	importedData := **inOriginal
+	stringField1 := importedData.Key
+
+	_, err := importRecord(ctx, &importedData)
+	if err != nil {
+		logHandler.Import.Panicf("Error importing %v: %v", tableName, err.Error())
+		return stringField1, err
+	}
+
+	return stringField1, nil
+}

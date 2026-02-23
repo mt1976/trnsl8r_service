@@ -11,12 +11,11 @@ import (
 )
 
 func Setup(router *httprouter.Router) *httprouter.Router {
+	// sessionID := "sessionID"
 
-	//sessionID := "sessionID"
+	logHandler.Event.Println("Declare Behaviours ")
 
-	logHandler.EventLogger.Println("Declare Behaviours ")
-
-	logHandler.EventLogger.Println("Setup Routes ")
+	logHandler.Event.Println("Setup Routes ")
 
 	// router.GET(announce("/"), Launch)
 	router.ServeFiles(announceInsecure("/static/*filepath"), http.Dir("res/html/static"))
@@ -51,17 +50,15 @@ func Setup(router *httprouter.Router) *httprouter.Router {
 	}
 
 	return router
-
 }
 
 func announceInsecure(route string) string {
-
 	prefix := fmt.Sprintf("[ROUTE] Path=[%v]", route)
 	padTo := 50
 	if len(prefix) < padTo {
 		prefix = prefix + strings.Repeat(" ", padTo-len(prefix))
 	}
-	logHandler.ApiLogger.Printf("%s %v://%v:%v%v", prefix, serverProtocol, serverHost, serverPort, route)
+	logHandler.Api.Printf("%s %v://%v:%v%v", prefix, serverProtocol, serverHost, serverPort, route)
 	return route
 }
 
@@ -71,5 +68,5 @@ func announceInsecure(route string) string {
 // }
 
 func Initialise(cfg *commonConfig.Settings) {
-	logHandler.EventLogger.Println("Initialise Routes")
+	logHandler.Event.Println("Initialise Routes")
 }

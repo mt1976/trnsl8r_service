@@ -15,8 +15,8 @@ func Oops(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func oops(w http.ResponseWriter, r *http.Request, ps httprouter.Params, msgType, msg string) {
-	//	logger.EventLogger.Printf("[ACTION] [View] Oops - %s %v", msgType, msg)
-	//	logger.InfoLogger.Println("Oops " + msgType + " - " + msg)
+	//	logger.Event.Printf("[ACTION] [View] Oops - %s %v", msgType, msg)
+	//	logger.Info.Println("Oops " + msgType + " - " + msg)
 	//msg = text.Get(msg)
 
 	trace(r)
@@ -25,5 +25,5 @@ func oops(w http.ResponseWriter, r *http.Request, ps httprouter.Params, msgType,
 	w.Header().Add("Application", appName)
 	w.WriteHeader(http.StatusNotFound)
 	fmt.Fprintf(w, "{\"message\":\"%v\"}", msg)
-	logHandler.ErrorLogger.Printf("[ACTION] Oops - %s %v", msgType, msg)
+	logHandler.Error.Printf("[ACTION] Oops - %s %v", msgType, msg)
 }

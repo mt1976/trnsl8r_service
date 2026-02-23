@@ -1,6 +1,8 @@
 package pages
 
 import (
+	"context"
+
 	"github.com/mt1976/frantic-core/application"
 	common "github.com/mt1976/frantic-core/commonConfig"
 	logger "github.com/mt1976/frantic-core/logHandler"
@@ -14,14 +16,14 @@ func init() {
 	settings = common.Get()
 }
 
-func New(title, action string) *Page {
-	logger.EventLogger.Printf("Create New Page [%v],[%v]", title, action)
+func New(ctx context.Context, title, action string) *Page {
+	logger.Event.Printf("Create New Page [%v],[%v]", title, action)
 
 	p := Page{}
 	p.ApplicationLogo = settings.GetAssets_LogoPath()
-	p.ApplicationName = translate.Get(settings.GetApplication_Name(), "")
-	p.ApplicationDescription = translate.Get(settings.GetApplication_Description(), "")
-	p.ApplicationPrefix = translate.Get(settings.GetApplication_Prefix(), "")
+	p.ApplicationName = translate.Get(ctx, settings.GetApplication_Name(), "")
+	p.ApplicationDescription = translate.Get(ctx, settings.GetApplication_Description(), "")
+	p.ApplicationPrefix = translate.Get(ctx, settings.GetApplication_Prefix(), "")
 	p.ApplicationFavicon = settings.GetAssets_FaviconPath()
 
 	p.Message = ""
@@ -41,8 +43,8 @@ func New(title, action string) *Page {
 	p.ApplicationPath = paths.Application().String()
 	p.ApplicationOS = application.OS()
 
-	p.PageAction = translate.Get(action, "")
-	p.PageTitle = translate.Get(title, "")
+	p.PageAction = translate.Get(ctx, action, "")
+	p.PageTitle = translate.Get(ctx, title, "")
 
 	return &p
 }

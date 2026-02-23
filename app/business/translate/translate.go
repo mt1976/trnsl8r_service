@@ -6,41 +6,46 @@ import (
 
 	"github.com/mt1976/frantic-core/idHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
-	textDataAccess "github.com/mt1976/trnsl8r_service/app/dao/textStore"
+	textDataAccess "github.com/mt1976/trnsl8r_service/app/business/text"
+	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
 
-func Get(in, localeFilter string) string {
+func Get(ctx context.Context, in, localeFilter string) string {
 	// Validate the input data
-	//logHandler.TranslationLogger.Printf("Translating [%v] locale=[%v]", in, localeFilter)
+	// logHandler.Translation.Printf("Translating [%v] locale=[%v]", in, localeFilter)
 	id := idHelpers.Encode(strings.ToUpper(in))
+
+	inRec := textStore.New()
+	inRec.Signature = id
+	inRec.Message = in
 
 	text, err := textDataAccess.GetLocalised(id, localeFilter)
 	if err != nil {
-		logHandler.TranslationLogger.Printf("New text translation available Id=[%v], for [%v]", id, in)
-		text, err := textDataAccess.Create(context.Background(), id, in)
+		logHandler.Translation.Printf("New text translation available Id=[%v], for [%v]", id, in)
+		text, err := textStore.Create(ctx, inRec)
 		if err != nil {
-			logHandler.ErrorLogger.Printf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())
-			logHandler.TranslationLogger.Panicf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())
+			logHandler.Error.Printf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())
+			logHandler.Translation.Panicf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())
 			return ""
 		}
-		logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
+		logHandler.Translation.Printf("Translated [%v] to [%v]", in, text.Message)
 		return text.Message
 	}
 
 	if localeFilter != "" && localeFilter != "en" && localeFilter != "en_GB" && localeFilter != "en_US" {
-		//	logHandler.TranslationLogger.Printf("Locale filter [%v] for [%v]", localeFilter, in)
+		//	logHandler.Translation.Printf("Locale filter [%v] for [%v]", localeFilter, in)
 		localisedText, ok := text.Localised[localeFilter]
 		if !ok || localisedText == "" {
-			logHandler.TranslationLogger.Printf("Locale [%v] not found for [%v]", localeFilter, in)
-			//logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
+			logHandler.Translation.Printf("Locale [%v] not found for [%v]", localeFilter, in)
+			// logHandler.Translation.Printf("Translated [%v] to [%v]", in, text.Message)
 			return text.Message
 		}
 		// If the locale is found, return it, otherwise proceed to the default
-		//logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, localisedText)
+		// logHandler.Translation.Printf("Translated [%v] to [%v]", in, localisedText)
 		return localisedText
 
 	}
 
-	//logHandler.TranslationLogger.Printf("Translated [%v] to [%v]", in, text.Message)
+	// logHandler.Translation.Printf("Translated [%v] to [%v]", in, text.Message)
 	return text.Message
 }

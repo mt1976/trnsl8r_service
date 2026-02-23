@@ -20,7 +20,7 @@ var serverHost string
 var serverProtocol string
 
 func init() {
-	logHandler.EventLogger.Println("Loading Routes")
+	logHandler.Event.Println("Loading Routes")
 	settings = commonConfig.Get()
 	appName = settings.GetApplication_Name()
 	msgTypeKey = settings.GetMessageKey_Type()

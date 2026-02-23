@@ -24,12 +24,11 @@ type LocaleResponse struct {
 }
 
 func Locales(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
 	c := commonConfig.Get()
 
 	localeResp := LocaleResponse{}
 
-	//originOfRequest := ps.ByName("origin")
+	// originOfRequest := ps.ByName("origin")
 
 	watch := timing.Start("Trnsl8r", "Locales", "All Locales")
 
@@ -37,7 +36,7 @@ func Locales(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// if originOfRequest == "" || realOrigin == "" {
 	// 	err := fmt.Errorf("no origin of request, a valid origin is required %v", originOfRequest)
-	// 	logHandler.ErrorLogger.Println(err.Error())
+	// 	logHandler.Error.Println(err.Error())
 	// 	watch.Stop(0)
 	// 	oops(w, r, nil, "error", err.Error())
 	// 	return
@@ -45,7 +44,7 @@ func Locales(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// if !slices.Contains(c.GetTranslation_PermittedOrigins(), realOrigin) {
 	// 	err := fmt.Errorf("invalid origin of request [%v]", realOrigin)
-	// 	logHandler.ErrorLogger.Println(err.Error())
+	// 	logHandler.Error.Println(err.Error())
 	// 	watch.Stop(0)
 	// 	oops(w, r, nil, "error", err.Error())
 	// 	return
@@ -55,7 +54,7 @@ func Locales(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	for _, loc := range locs {
 		safeLocName, _ := htmlHelpers.ToPathSafe(loc.Name)
 		safeLocKey, _ := htmlHelpers.ToPathSafe(loc.Key)
-		logHandler.TranslationLogger.Println("Permitted Locale: ", loc)
+		logHandler.Translation.Println("Permitted Locale: ", loc)
 		localeResp.Locales = append(localeResp.Locales, struct {
 			Locale string `json:"locale"`
 			Name   string `json:"name"`
@@ -71,43 +70,43 @@ func Locales(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// marshal the response
 	resp, err := json.Marshal(localeResp)
 	if err != nil {
-		logHandler.ErrorLogger.Println("Error marshalling response: ", err)
+		logHandler.Error.Println("Error marshalling response: ", err)
 		watch.Stop(0)
 		oops(w, r, nil, "error", err.Error())
 		return
 	}
 
 	//	fmt.Fprintf(w, "{\"message\":\"%v\"}", translatedItem)
-	//htmlResp := fmt.Sprintf("{\"message\":\"%v\"}", translatedItem)
-	//w.Write([]byte(htmlResp))
+	// htmlResp := fmt.Sprintf("{\"message\":\"%v\"}", translatedItem)
+	// w.Write([]byte(htmlResp))
 
 	w.Write(resp)
 	w.WriteHeader(http.StatusOK)
-	logHandler.TranslationLogger.Println("Response to translate message [", resp, "] Status=", http.StatusOK)
-	//logHandler.InfoLogger.Printf("Translated message [%v] to [%v]", itemToTranslate, translatedItem)
+	logHandler.Translation.Println("Response to translate message [", resp, "] Status=", http.StatusOK)
+	// logHandler.Info.Printf("Translated message [%v] to [%v]", itemToTranslate, translatedItem)
 	watch.Stop(1)
 }
 
 func LocaleTest(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Build a URI query string
-	baseReq := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logHandler.ServiceLogger).FromOrigin("trnsl8r_connect")
+	baseReq := trnsl8r.NewRequest().WithProtocol(trnsServerProtocol).WithHost(trnsServerHost).WithPort(trnsServerPort).WithLogger(logHandler.Service).FromOrigin("trnsl8r_connect")
 
-	//baseReq.Spew()
+	// baseReq.Spew()
 
-	logHandler.TranslationLogger.Println("Request to translate message ", stringHelpers.DCurlies(baseReq.String()))
+	logHandler.Translation.Println("Request to translate message ", stringHelpers.DCurlies(baseReq.String()))
 
 	resp, err := baseReq.GetLocales()
 	if err != nil {
-		logHandler.ErrorLogger.Println("Error getting locales: ", err)
+		logHandler.Error.Println("Error getting locales: ", err)
 		oops(w, r, nil, "error", err.Error())
 		return
 	}
 
-	logHandler.TranslationLogger.Printf("Response to translate message %+v", resp)
+	logHandler.Translation.Printf("Response to translate message %+v", resp)
 
 	x, err := json.Marshal(resp)
 	if err != nil {
-		logHandler.ErrorLogger.Println("Error marshalling response: ", err)
+		logHandler.Error.Println("Error marshalling response: ", err)
 		oops(w, r, nil, "error", err.Error())
 		return
 	}

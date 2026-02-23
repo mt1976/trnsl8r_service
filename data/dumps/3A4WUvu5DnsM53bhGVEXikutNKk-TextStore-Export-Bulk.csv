@@ -1,0 +1,10 @@
+ID|Key|Raw|original|message
+100|e2b7292f8fca5ce698ee39a73936306be41a970467378f00ff4f1148be42699f|bb84eece642758c33addc04a4bef0743c296fff5cdb6e6dcd360eb808e9b6672|🙁 ERROR [%v]|🙁 ERROR [%v]
+101|7ad6661f85545964670d37aea8fdcb7e3426dd763b81b17a25d893ec27737980|0772599b309dad5c4c9030f8b723b876d4922c59e7fd76b13eb950482c7a61b3|This application provides for monitoring and notification of network devices.|This application provides for monitoring and notification of network devices.
+102|296272259a08c4593964414ddda3a1468a187abcd023c41f5abe62cb225f9827|36026aafc6509819440baa28754c4bb58f99b56e54d515a3d4cc814072054349|trnsl8r_service|trnsl8r_service
+103|83ffbb58fe542e1396faa96ab982a29c274c1bab99dfa7efc6c6b17b8888909a|cb0db568087c60a943011fcc56de9262acbe8e45d43a6347c4b59c7310685208|Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]|Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]
+104|f4363d595d4be5c1e7255edc5002fff57bbdc17028d7fd47f8b29b8ffe8b82a2|ac3bafc8441a3cbb3a1a8fed8b8410d63cdc2d1ad268564bf5d49c0a682fb378|ts|ts
+105|d82f341edcbb330a3f808ccaafb34bf059e73e3b3102af0ff4edecfd01a84df7|66db491a73d5c996f9ee146d4758dbba11366c7442f553f842d989b0afd95342|List|List
+106|05cbf2113c125c262a2d1e9cceaced5a761128777cc4fe0ed0806dc1d34f5810|97fda48d9eea75da5e03e10f7416f7236fecd0b3be1c4035ba440b2b52ca5156|Texts|Texts
+107|896ba8cf17d14786ae5b70233f0a1b9cc2c560038459eab259662c290793e6c7|f54f49972581f966616805e822a76afc3a6d57cbbd618c89bd06e289b0dd2179|View|View
+# Exported (8/8) 3A4WUvu5DnsM53bhGVEXikutNKk-TextStore-Export-Bulk(s) to [/Volumes/External HD/Dev/GitHub/trnsl8r_service/data/dumps/3A4WUvu5DnsM53bhGVEXikutNKk-TextStore-Export-Bulk.csv] at 13:12:21 2026-02-23 by 501-matttownsend on orion(*nix) in BULK mode.

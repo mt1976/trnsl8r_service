@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -15,51 +16,51 @@ import (
 )
 
 func trace(r *http.Request) {
-	mesg := translate.Get("Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]", "")
-	logHandler.TraceLogger.Printf(mesg, r.Method, r.URL, r.Header, r.Context(), r.RequestURI)
+	mesg := translate.Get(r.Context(), "Method=[%s] URI=[%s] Header[%v] Context[%+v] RequestURI=[%s]", "")
+	logHandler.Trace.Printf(mesg, r.Method, r.URL, r.Header, r.Context(), r.RequestURI)
 }
 
-func getID(ps httprouter.Params) (int, error) {
-	id, err := iconv(ps.ByName("id"))
+func getID(ps httprouter.Params, ctx context.Context) (int, error) {
+	id, err := iconv(ps.ByName("id"), ctx)
 	if err != nil {
 		return 0, err
 	}
 	return id, nil
 }
 
-func getIDString(ps httprouter.Params) (string, error) {
+func getIDString(ps httprouter.Params, ctx context.Context) (string, error) {
 	id := ps.ByName("id")
 	return id, nil
 }
 
-func getItemName(ps httprouter.Params) (string, error) {
+func getItemName(ps httprouter.Params, ctx context.Context) (string, error) {
 	itemName := ps.ByName("item")
 	if itemName == "" {
-		msg := translate.Get("Invalid Item Name [%s]", "")
+		msg := translate.Get(ctx, "Invalid Item Name [%s]", "")
 		return "", fmt.Errorf(msg, itemName)
 	}
 	return itemName, nil
 }
 
-func iconv(arg interface{}) (int, error) {
+func iconv(arg interface{}, ctx context.Context) (int, error) {
 	switch x := arg.(type) {
 	case int:
 		return x, nil
 	case string:
 		i, er := strconv.Atoi(x)
 		if er != nil {
-			msg := translate.Get("Invalid ID [%s]", "")
+			msg := translate.Get(ctx, "Invalid ID [%s]", "")
 			return 0, fmt.Errorf(msg, arg.(string))
 		}
 		return i, er
 	}
-	msg := translate.Get("Invalid trip argument [%s]", "")
+	msg := translate.Get(ctx, "Invalid trip argument [%s]", "")
 	return 0, fmt.Errorf(msg, arg.(string))
 }
 
 // func templatedHTML() string {
 // 	where := paths.HTMLTemplates().String() + "templates.html"
-// 	logger.InfoLogger.Printf("[TEMPLATE] Template Loc=[%v]", where)
+// 	logger.Info.Printf("[TEMPLATE] Template Loc=[%v]", where)
 // 	return where
 // }
 

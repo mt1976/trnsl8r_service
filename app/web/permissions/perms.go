@@ -24,7 +24,7 @@ func (r *Rights) Spew() {
 	msg := fmt.Sprintf(msgTemplate, r.List, r.New, r.View, r.Edit, r.Update, r.Delete, r.Activate, r.Deactivate, r.Action)
 
 	prefix := "[PERMISSIONS] %v"
-	logger.InfoLogger.Printf(prefix, msg)
+	logger.Info.Printf(prefix, msg)
 }
 
 func (r *Rights) Defaults() {

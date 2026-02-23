@@ -11,7 +11,6 @@ import (
 )
 
 func Test(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
 	trace(r)
 	title := "Tests"
 	action := "View"
@@ -20,8 +19,8 @@ func Test(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Add("Application", appName)
 
-	err := t.Execute(w, pages.Generic(title, action)) // merge.
+	err := t.Execute(w, pages.Generic(r.Context(), title, action)) // merge.
 	if err != nil {
-		logHandler.ErrorLogger.Print(err.Error())
+		logHandler.Error.Print(err.Error())
 	}
 }

@@ -1,0 +1,16 @@
+// TemplateStore.definition
+// Add your entity fields here, these will be used in the generated DAO code.
+// This is a sample structure to illustrate various data types.
+// Modify as needed for your specific entity.
+
+    // Domain specific fields, starts.
+    //
+	Signature         string            `csv:"-"`        // secondary key (used a unique identifier)
+	Domain            string            `csv:"-"`        // Saved for future use
+	Type              string            `csv:"-"`        // Saved for future use
+	Original          string            `csv:"original"` // Holds the original text, unformated.
+	Message           string            `csv:"message"`  // Holds the translated text, formated.
+	SourceApplication string            `csv:"-"`        // Saved for future use
+	SourceLocale      string            `csv:"-"`        // Saved for future use
+	ConsumedBy        []string          `csv:"-"`        // Saved for future use
+	Localised         map[string]string `csv:"-"`        // Saved for future use

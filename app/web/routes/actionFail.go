@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"context"
 	"html/template"
 	"net/http"
 
@@ -14,9 +15,10 @@ import (
 )
 
 func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	logHandler.EventLogger.Printf("[%v] [FAIL] [View] Fail", domains.ROUTE.String())
+	logHandler.Event.Printf("[%v] [FAIL] [View] Fail", domains.ROUTE.String())
 
 	settings := commonConfig.Get()
+	ctx := r.Context()
 
 	title := "Fail"
 	action := "Message"
@@ -28,17 +30,17 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	messageContent := r.URL.Query().Get(msgContentKey)
 	messageAction := r.URL.Query().Get(msgActionKey)
 
-	logHandler.ErrorLogger.Printf("[%v] [FAIL] message Type: [%v]=[%v]\n", domains.ROUTE.String(), msgTypeKey, messageType)
-	logHandler.ErrorLogger.Printf("[%v] [FAIL] message title: [%v]=[%v]\n", domains.ROUTE.String(), msgTitleKey, messageTitle)
-	logHandler.ErrorLogger.Printf("[%v] [FAIL] message content: [%v]=[%v]\n", domains.ROUTE.String(), msgContentKey, messageContent)
-	logHandler.ErrorLogger.Printf("[%v] [FAIL] message action: [%v]=[%v]\n", domains.ROUTE.String(), msgActionKey, messageAction)
+	logHandler.Error.Printf("[%v] [FAIL] message Type: [%v]=[%v]\n", domains.ROUTE.String(), msgTypeKey, messageType)
+	logHandler.Error.Printf("[%v] [FAIL] message title: [%v]=[%v]\n", domains.ROUTE.String(), msgTitleKey, messageTitle)
+	logHandler.Error.Printf("[%v] [FAIL] message content: [%v]=[%v]\n", domains.ROUTE.String(), msgContentKey, messageContent)
+	logHandler.Error.Printf("[%v] [FAIL] message action: [%v]=[%v]\n", domains.ROUTE.String(), msgActionKey, messageAction)
 
 	t := template.Must(template.ParseFiles(getTemplate(title, action), paths.HTMLTemplate())) // Create a template.
 
 	w.Header().Set("Content-Type", "text/html")
 	w.Header().Add("Application", settings.GetApplication_Name())
 
-	pg := pages.Generic(title, action)
+	pg := pages.Generic(ctx, title, action)
 
 	pg.MessageType = "error"
 	if messageType != "" {
@@ -60,22 +62,22 @@ func Fail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		pg.PageAction = messageAction
 	}
 
-	pg.MessageType = translate.Get(pg.MessageType, "")
-	pg.PageTitle = translate.Get(pg.PageTitle, "")
-	pg.Message = translate.Get(pg.Message, "")
-	pg.PageAction = translate.Get(pg.PageAction, "")
+	pg.MessageType = translate.Get(ctx, pg.MessageType, "")
+	pg.PageTitle = translate.Get(ctx, pg.PageTitle, "")
+	pg.Message = translate.Get(ctx, pg.Message, "")
+	pg.PageAction = translate.Get(ctx, pg.PageAction, "")
 
 	err := t.Execute(w, pg) // merge.
 	if err != nil {
-		logHandler.ErrorLogger.Print(err.Error())
+		logHandler.Error.Print(err.Error())
 	}
 }
 
-func buildFailPS(msg string, title string, content string, action string) httprouter.Params {
+func buildFailPS(ctx context.Context, msg string, title string, content string, action string) httprouter.Params {
 	ps := httprouter.Params{}
-	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translate.Get(msg, "")})
-	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translate.Get(title, "")})
-	ps = append(ps, httprouter.Param{Key: msgContentKey, Value: translate.Get(content, "")})
-	ps = append(ps, httprouter.Param{Key: msgActionKey, Value: translate.Get(action, "")})
+	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translate.Get(ctx, msg, "")})
+	ps = append(ps, httprouter.Param{Key: msgTitleKey, Value: translate.Get(ctx, title, "")})
+	ps = append(ps, httprouter.Param{Key: msgContentKey, Value: translate.Get(ctx, content, "")})
+	ps = append(ps, httprouter.Param{Key: msgActionKey, Value: translate.Get(ctx, action, "")})
 	return ps
 }

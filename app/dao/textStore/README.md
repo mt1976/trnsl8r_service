@@ -1,289 +1,153 @@
-# Text Store DAO
+# textStore
 
-Package `TextStore` provides Data Access Object (DAO) functionality for managing `TextStore` entities.
+`textStore` is a DAO package for the TextStore table in the frantic-amphora framework.
 
-## Domain Information
+## Overview
 
-- **Domain**: `Text` (from `Domain`)
-- **Table Name**: `TextStore` (from `TableName = Domain + "Store"`)
+This package provides:
 
-## Package Variables
+- **Type-safe database operations** using strongly-typed field queries
+- **Audit trail integration** for all CRUD operations
+- **Cache management** with automatic hydration and synchronization
+- **Background worker** support for async operations
+- **Import/Export** capabilities (JSON and CSV formats)
+- **Validation** using struct tags
 
-- `Domain = "Text"`
-- `TableName = Domain + "Store"`
-- `Fields` provides a structured way to reference model field names.
+## Entity Definition
 
-## Struct Definition
+The `TextStore` struct represents records in the TextStore table.
 
-### TextStore
+## Field Definitions
 
-`TextStore` represents a User entity.
+The `TextStore` struct contains the following fields:
 
-| Field           | Type            | Tags                                      | Description                     |
-| --------------- | --------------- | ----------------------------------------- | ------------------------------- |
-| `ID`            | `int`           | `storm:"id,increment=100"`                | Primary key with auto increment |
-| `Key`           | `string`        | `storm:"unique"`                          | Key                             |
-| `Raw`           | `string`        | `storm:"unique"`                          | Raw ID before encoding          |
-| `UID`           | `string`        | `validate:"required"`                     |                                 |
-| `GID`           | `string`        | `storm:"index" validate:"required"`       |                                 |
-| `RealName`      | `string`        | `validate:"required,min=5"`               | This field will not be indexed  |
-| `UserName`      | `string`        | `validate:"required,min=5"`               |                                 |
-| `UserCode`      | `string`        | `storm:"index" validate:"required,min=5"` |                                 |
-| `Email`         | `string`        |                                           |                                 |
-| `Notes`         | `string`        | `validate:"max=75"`                       |                                 |
-| `Active`        | `dao.StormBool` |                                           |                                 |
-| `ExampleInt`    | `dao.Int`       |                                           |                                 |
-| `ExampleFloat`  | `dao.Float`     |                                           |                                 |
-| `ExampleBool`   | `dao.Bool`      |                                           |                                 |
-| `ExampleDate`   | `time.Time`     |                                           |                                 |
-| `ExampleString` | `string`        |                                           |                                 |
-| `LastLogin`     | `time.Time`     |                                           |                                 |
-| `LastHost`      | `string`        |                                           |                                 |
-| `Audit`         | `audit.Audit`   | `csv:"-"`                                 | Audit data                      |
+| Field Name | Field Reference | Type | Tags | Purpose |
+|------------|----------------|------|------|---------|
+| **ID** (required) | `Fields.ID` | `int` | `storm:"id,increment=100"` | Primary key with auto-increment |
+| **Key** (required) | `Fields.Key` | `string` | `storm:"index,unique"` | Encoded unique identifier |
+| **Raw** (required) | `Fields.Raw` | `string` | `storm:"index,unique"` | Raw unique identifier |
+| **Audit** (required) | `Fields.Audit` | `audit.Audit` | `csv:"-"` | Audit trail information |
+| **Lock** (required) | `Fields.Lock` | `sync.Mutex` | `csv:"-"` | Record locking for concurrent updates |
+| Signature | `Fields.Signature` | `string` | `csv:"-"` |  |
+| Domain | `Fields.Domain` | `string` | `csv:"-"` |  |
+| Type | `Fields.Type` | `string` | `csv:"-"` |  |
+| Original | `Fields.Original` | `string` | `csv:"original"` |  |
+| Message | `Fields.Message` | `string` | `csv:"message"` |  |
+| SourceApplication | `Fields.SourceApplication` | `string` | `csv:"-"` |  |
+| SourceLocale | `Fields.SourceLocale` | `string` | `csv:"-"` |  |
+| ConsumedBy | `Fields.ConsumedBy` | `[]string` | `csv:"-"` |  |
+| Localised | `Fields.Localised` | `map[string]string` | `csv:"-"` |  |
 
-### Field Constants
+| Signature | `Fields.Signature` | `string` | `csv:"-"` |  |
+| Domain | `Fields.Domain` | `string` | `csv:"-"` |  |
+| Type | `Fields.Type` | `string` | `csv:"-"` |  |
+| Original | `Fields.Original` | `string` | `csv:"original"` |  |
+| Message | `Fields.Message` | `string` | `csv:"message"` |  |
+| SourceApplication | `Fields.SourceApplication` | `string` | `csv:"-"` |  |
+| SourceLocale | `Fields.SourceLocale` | `string` | `csv:"-"` |  |
+| ConsumedBy | `Fields.ConsumedBy` | `[]string` | `csv:"-"` |  |
+| Localised | `Fields.Localised` | `map[string]string` | `csv:"-"` |  |
+
+
+**Note:** Fields marked as **(required)** are mandatory framework fields and must not be modified or removed.
+
+### Using Field References
+
+Field references enable type-safe queries throughout the DAO:
 
 ```go
-Fields.ID            = "ID"
-Fields.Key           = "Key"
-Fields.Raw           = "Raw"
-Fields.Audit         = "Audit"
-Fields.UID           = "UID"
-Fields.GID           = "GID"
-Fields.RealName      = "RealName"
-Fields.UserName      = "UserName"
-Fields.UserCode      = "UserCode"
-Fields.Email         = "Email"
-Fields.Notes         = "Notes"
-Fields.Active        = "Active"
-Fields.ExampleInt    = "ExampleInt"
-Fields.ExampleFloat  = "ExampleFloat"
-Fields.ExampleBool   = "ExampleBool"
-Fields.ExampleDate   = "ExampleDate"
-Fields.ExampleString = "ExampleString"
-Fields.LastLogin     = "LastLogin"
-Fields.LastHost      = "LastHost"
+// Get a record by a specific field
+record, err := textStore.GetBy(textStore.Fields.Key, "abc123")
+
+// Query with WHERE conditions
+records, err := textStore.GetAllWhere(textStore.Fields.SomeField, value)
+
+// Count records matching criteria
+count, err := textStore.CountWhere(textStore.Fields.Active, true)
 ```
 
-## Operations
+## Public API
 
-### Initialisation / Lifecycle
+### Exported types/vars
 
-| Function          | Signature                                           | Description |
-| ---------------- | --------------------------------------------------- | ----------- |
-| `Initialise`     | `Initialise(ctx context.Context)`                   | Sets up the database connection and prepares the DAO for operations. |
-| `IsInitialised`  | `IsInitialised() bool`                              | Returns the initialisation status of the DAO. |
-| `Close`          | `Close()`                                           | Terminates the connection to the database used by the DAO. |
-| `Drop`           | `Drop() error`                                      | Removes the DAO's database entirely. |
-| `ClearDown`      | `ClearDown(ctx context.Context) error`              | Removes all records from the DAO's database. |
-| `GetDatabaseConnections` | `GetDatabaseConnections() func() ([]*database.DB, error)` | Returns a function that fetches the current database instances. |
+- `type TextStore struct { ... }`
+- `var TableName entities.Table`
+- `var Fields fieldNames`
 
-### Create
+### Database lifecycle
 
-| Function | Signature                                                                                        | Description |
-| -------- | ------------------------------------------------------------------------------------------------ | ----------- |
-| `New`    | `New() TextStore`                                                                            | Creates a new Text instance. |
-| `Create` | `Create(ctx context.Context, userName, uid, realName, email, gid string) (TextStore, error)` | Creates a new Text instance in the database. |
-| `Add`    | `Add(ctx context.Context) (TextStore, error)`                                                | (No doc comment) |
-| `(*TextStore) Create` | `(record *TextStore) Create(ctx context.Context, note string) error`            | Inserts a new TextStore record into the database. |
+- `func Initialise(ctx context.Context, cached bool)`
+- `func IsInitialised() bool`
+- `func Close()`
+- `func GetDatabaseConnections() func() ([]*database.DB, error)`
 
-### Read
+### Queries
 
-| Function      | Signature                                                          | Description |
-| ------------- | ------------------------------------------------------------------ | ----------- |
-| `GetBy`       | `GetBy(field dao.Field, value any) (TextStore, error)`         | Retrieves a record by specified field and value. |
-| `GetById`     | `GetById(id any) (TextStore, error)`                           | Retrieves a record by ID. |
-| `GetByKey`    | `GetByKey(key any) (TextStore, error)`                         | Retrieves a record by key. |
-| `GetAll`      | `GetAll() ([]TextStore, error)`                                | Retrieves all records. |
-| `GetAllWhere` | `GetAllWhere(field dao.Field, value any) ([]TextStore, error)` | Retrieves all records matching criteria. |
-| `Count`       | `Count() (int, error)`                                             | Returns the total number of records. |
-| `CountWhere`  | `CountWhere(field dao.Field, value any) (int, error)`              | Counts records matching criteria. |
+- `func Count() (int, error)`
+- `func CountWhere(field entities.Field, value any) (int, error)`
+- `func GetBy(field entities.Field, value any) (*TextStore, error)`
+- `func GetAll() ([]TextStore, error)`
+- `func GetAllWhere(field entities.Field, value any) ([]TextStore, error)`
 
-### Update
+### Mutations
 
-| Function           | Signature                                                                                                      | Description |
-| ------------------ | -------------------------------------------------------------------------------------------------------------- | ----------- |
-| `(*TextStore) Update`           | `(record *TextStore) Update(ctx context.Context, note string) error`                         | Updates the record in the database. |
-| `(*TextStore) UpdateWithAction` | `(record *TextStore) UpdateWithAction(ctx context.Context, auditAction audit.Action, note string) error` | Updates with a specified audit action. |
-| `(*TextStore) SetName`          | `(u *TextStore) SetName(name string) error`                                                  | (No doc comment) |
+- `func Delete(ctx context.Context, id int, note string) error`
+- `func DeleteBy(ctx context.Context, field entities.Field, value any, note string) error`
+- `func Drop() error`
+- `func ClearDown(ctx context.Context) error`
 
-### Delete
+### Record methods
 
-| Function      | Signature                                                                      | Description |
-| ------------- | ------------------------------------------------------------------------------ | ----------- |
-| `Delete`      | `Delete(ctx context.Context, id int, note string) error`                       | Deletes a record by ID. |
-| `DeleteBy`    | `DeleteBy(ctx context.Context, field dao.Field, value any, note string) error` | Deletes a record by specified field and value. |
-| `DeleteByKey` | `DeleteByKey(ctx context.Context, key string, note string) error`              | Deletes a record by key. |
+- `func (record *TextStore) Validate() error`
+- `func (record *TextStore) Update(ctx context.Context, note string) (*TextStore, error)`
+- `func (record *TextStore) UpdateWithAction(ctx context.Context, auditAction audit.Action, note string) (*TextStore, error)`
+- `func (record *TextStore) Clone(ctx context.Context) (*TextStore, error)`
 
-### Validation / Utility
+### Lookups
 
-| Function | Signature                                           | Description |
-| -------- | --------------------------------------------------- | ----------- |
-| `(*TextStore) Validate` | `(record *TextStore) Validate() error`                    | Checks if the record is valid. |
-| `(*TextStore) Clone`    | `(record *TextStore) Clone(ctx context.Context) (TextStore, error)` | Clones the current record in the database. |
-| `(*TextStore) Spew`     | `(record *TextStore) Spew()`                               | Outputs the record contents to the Info log. |
-| `Login`                     | `Login(ctx context.Context)`                                   | (No doc comment) |
+- `func GetDefaultLookup() (lookup.Lookup, error)`
+- `func GetLookup(field, value entities.Field) (lookup.Lookup, error)`
 
-### Lookup
+### Cache integration
 
-| Function           | Signature                                          | Description |
-| ------------------ | -------------------------------------------------- | ----------- |
-| `GetDefaultLookup` | `GetDefaultLookup() (lookup.Lookup, error)`        | Builds a default lookup using `Key` and `Raw`. |
-| `GetLookup`        | `GetLookup(field, value dao.Field) (lookup.Lookup, error)` | Builds a lookup for specified fields. |
+- `func CacheHydrator(ctx context.Context) func() ([]any, error)`
+- `func CacheSynchroniser(ctx context.Context) func(any) error`
+
+### Construction
+
+- `func New() *TextStore`
+- `func Create(ctx context.Context, basis *TextStore) (*TextStore, error)`
 
 ### Import / Export
 
-| Function | Signature | Description |
-| -------- | --------- | ----------- |
-| `ExportAllAsCSV`  | `ExportAllAsCSV() error`              | Exports all records as a CSV file. |
-| `ExportAllAsJSON` | `ExportAllAsJSON(message string)`     | Exports all records as JSON files. |
-| `ImportAllFromCSV` | `ImportAllFromCSV() error`           | (No doc comment) |
-| `(*TextStore) ExportRecordAsCSV`  | `(record *TextStore) ExportRecordAsCSV(name string) error` | Exports a single record as CSV. |
-| `(*TextStore) ExportRecordAsJSON` | `(record *TextStore) ExportRecordAsJSON(name string)`      | Exports a single record as JSON. |
+- `func (record *TextStore) ExportRecordToJSON(name string)`
+- `func ExportAllToJSON(message string)`
+- `func (record *TextStore) ExportRecordToCSV(name string) error`
+- `func ExportAllToCSV(msg string) error`
+- `func ImportAllFromCSV() error`
 
-### Worker / Cache
+### Worker
 
-| Function  | Signature                                   | Description |
-| --------- | ------------------------------------------- | ----------- |
-| `PreLoad` | `PreLoad(ctx context.Context) error`        | Preloads the cache from the database. |
-| `Worker`  | `Worker(j jobs.Job, db *database.DB)`       | Job scheduled to run at a predefined interval. |
+- `func Worker(j jobs.Job, db *database.DB)`
 
-## Usage Examples
+### Debug
 
-> Note: call `Initialise(ctx)` once during application startup (before CRUD operations), and `Close()` during shutdown.
+- `func (record *TextStore) Spew()`
 
-### Initialise and create a record
+## Regenerate
 
-```go
-package main
+- From this package directory, run: `go generate ./...`
 
-import (
-    "context"
-    "log"
+## Next edits
 
-    "github.com/mt1976/frantic-core/dao/test/TextStore"
-)
+- Adjust the domain fields in the model file.
+- Update validation/defaulting hooks.
+- Replace any placeholder logic (e.g. clone, import processor) with real implementations.
 
-func main() {
-    ctx := context.Background()
+---
 
-    TextStore.Initialise(ctx)
-    defer TextStore.Close()
+## Generation Information
 
-    rec, err := TextStore.Create(ctx, "jdoe", "1001", "John Doe", "jdoe@example.com", "group-1")
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    log.Printf("created ID=%d Key=%s", rec.ID, rec.Key)
-}
-```
-
-### Read, update, validate, and delete
-
-```go
-package main
-
-import (
-    "context"
-    "log"
-
-    "github.com/mt1976/frantic-core/dao/test/TextStore"
-)
-
-func main() {
-    ctx := context.Background()
-
-    TextStore.Initialise(ctx)
-    defer TextStore.Close()
-
-    // Fetch by a field (recommended)
-    rec, err := TextStore.GetBy(TextStore.Fields.UserCode, "1001:jdoe")
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    // Update
-    rec.Email = "john.doe@newdomain.test"
-    if err := rec.Validate(); err != nil {
-        log.Fatal(err)
-    }
-    if err := rec.Update(ctx, "updated email"); err != nil {
-        log.Fatal(err)
-    }
-
-    // Delete by ID
-    if err := TextStore.Delete(ctx, rec.ID, "cleanup"); err != nil {
-        log.Fatal(err)
-    }
-}
-```
-
-### Lookup and export
-
-```go
-package main
-
-import (
-    "context"
-    "log"
-
-    "github.com/mt1976/frantic-core/dao/test/TextStore"
-)
-
-func main() {
-    ctx := context.Background()
-
-    TextStore.Initialise(ctx)
-    defer TextStore.Close()
-
-    // Build a default lookup (Key -> Raw)
-    lu, err := TextStore.GetDefaultLookup()
-    if err != nil {
-        log.Fatal(err)
-    }
-    _ = lu // use lookup
-
-    // Export all records
-    if err := TextStore.ExportAllAsCSV(); err != nil {
-        log.Fatal(err)
-    }
-    TextStore.ExportAllAsJSON("nightly backup")
-}
-```
-
-### Cache preload
-
-```go
-package main
-
-import (
-    "context"
-    "log"
-
-    "github.com/mt1976/frantic-core/dao/test/TextStore"
-)
-
-func main() {
-    ctx := context.Background()
-
-    TextStore.Initialise(ctx)
-    defer TextStore.Close()
-
-    if err := TextStore.PreLoad(ctx); err != nil {
-        log.Fatal(err)
-    }
-}
-```
-
-## Package Files
-
-- `TextStore.go`
-- `TextStoreCache.go`
-- `TextStoreDB.go`
-- `TextStoreHelpers.go`
-- `TextStoreImpex.go`
-- `TextStoreInternals.go`
-- `TextStoreModel.go`
-- `TextStoreNew.go`
-- `TextStoreWorker.go`
+**Generated Date:** 23/02/2026 & 12:36  
+**Generated By:** matttownsend (orion)  
+**Generated From Template Version:** 0.5.24 - 2026-01-31

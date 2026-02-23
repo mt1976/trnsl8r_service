@@ -11,12 +11,10 @@ import (
 )
 
 func Success(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
 	successMessage(w, r, ps, "")
 }
 
 func successMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params, msg string) {
-
 	title := "Success"
 	action := "Message"
 
@@ -24,11 +22,11 @@ func successMessage(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 
 	t := template.Must(template.ParseFiles(getTemplate(title, action), paths.HTMLTemplate())) // Create a template.
 	w.Header().Set("Content-Type", "text/html")
-	p := pages.Message(title, action, "success", msg)
-	//p.Message = msg
+	p := pages.Message(r.Context(), title, action, "success", msg)
+	// p.Message = msg
 
 	err := t.Execute(w, p) // merge.
 	if err != nil {
-		logHandler.ErrorLogger.Print(err.Error())
+		logHandler.Error.Print(err.Error())
 	}
 }

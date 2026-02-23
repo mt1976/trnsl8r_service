@@ -15,7 +15,6 @@ import (
 )
 
 func TextList(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
 	title := "Texts"
 	action := "List"
 
@@ -24,21 +23,20 @@ func TextList(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	t := template.Must(template.ParseFiles(getTemplate(title, action), paths.HTMLTemplate())) // Create a template.
 	w.Header().Set("Content-Type", "text/html")
 
-	page, err := pages.TextList(title, action)
+	page, err := pages.TextList(r.Context(), title, action)
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
 		oops(w, r, ps, page.MessageType, page.Message)
 		return
 	}
 
 	err = t.Execute(w, page) // merge.
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
 	}
 }
 
 func TextView(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
 	title := "Texts"
 	action := "View"
 
@@ -49,21 +47,20 @@ func TextView(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	id := ps.ByName("id")
 
-	page, err := pages.TextView(title, action, id)
+	page, err := pages.TextView(r.Context(), title, action, id)
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
 		oops(w, r, ps, page.MessageType, page.Message)
 		return
 	}
 
 	err = t.Execute(w, page) // merge.
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
 	}
 }
 
 func TextEdit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
 	trace(r)
 
 	title := "Texts"
@@ -74,61 +71,60 @@ func TextEdit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	id := ps.ByName("id")
 
-	page, err := pages.TextEdit(title, action, id)
+	page, err := pages.TextEdit(r.Context(), title, action, id)
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
 		oops(w, r, ps, page.MessageType, page.Message)
 		return
 	}
 
 	err = t.Execute(w, page) // merge.
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
 	}
 }
 
 func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-
 	set := commonConfig.Get()
-	//title := "Texts"
-	//action := "Update"
+	// title := "Texts"
+	// action := "Update"
 
 	trace(r)
-	logHandler.TraceLogger.Printf("Params=%+v", ps)
-	logHandler.TraceLogger.Printf("Request=%+v", r)
-	logHandler.TraceLogger.Printf("r.Form: %+v %v\n", r.Form, len(r.Form))
-	logHandler.TraceLogger.Printf("r.Body: %+v\n", r.Body)
+	logHandler.Trace.Printf("Params=%+v", ps)
+	logHandler.Trace.Printf("Request=%+v", r)
+	logHandler.Trace.Printf("r.Form: %+v %v\n", r.Form, len(r.Form))
+	logHandler.Trace.Printf("r.Body: %+v\n", r.Body)
 
-	//id := r.FormValue("entity")
-	//fmt.Printf("entity: %v\n", id)
-	id, err := getIDString(ps)
+	// id := r.FormValue("entity")
+	// fmt.Printf("entity: %v\n", id)
+	id, err := getIDString(ps, r.Context())
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
-		oops(w, r, ps, translate.Get("error", ""), err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
+		oops(w, r, ps, translate.Get(r.Context(), "error", ""), err.Error())
 		return
 	}
 	if id == "" {
-		msg := translate.Get("invalid ID: ID is required", "")
-		logHandler.InfoLogger.Print(msg)
-		oops(w, r, ps, translate.Get("error", ""), msg)
+		msg := translate.Get(r.Context(), "invalid ID: ID is required", "")
+		logHandler.Info.Print(msg)
+		oops(w, r, ps, translate.Get(r.Context(), "error", ""), msg)
 		return
 	}
 
-	t, err := textStore.GetBySignature(id)
+	t, err := textStore.GetBy(textStore.Fields.Signature, id)
 	if err != nil {
-		logHandler.ErrorLogger.Printf("Error=[%v]", err.Error())
-		oops(w, r, ps, translate.Get("error", ""), err.Error())
+		logHandler.Error.Printf("Error=[%v]", err.Error())
+		oops(w, r, ps, translate.Get(r.Context(), "error", ""), err.Error())
 		return
 	}
 
-	//newMessage := r.FormValue("message")
+	// newMessage := r.FormValue("message")
 	newMessage := r.FormValue("Message")
 	oldMessage := t.Message
 
 	if newMessage == "" {
-		msg := translate.Get("invalid Name: Message is required", "")
-		logHandler.InfoLogger.Print(msg)
-		oops(w, r, ps, translate.Get("error", ""), msg)
+		msg := translate.Get(r.Context(), "invalid Name: Message is required", "")
+		logHandler.Info.Print(msg)
+		oops(w, r, ps, translate.Get(r.Context(), "error", ""), msg)
 		return
 	}
 
@@ -144,7 +140,7 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 		localText := r.FormValue(locale)
 
-		logHandler.EventLogger.Printf("Update Locale=[%v] Text=[%v] Original=[%v]", locale, localText, t.Localised[locale])
+		logHandler.Event.Printf("Update Locale=[%v] Text=[%v] Original=[%v]", locale, localText, t.Localised[locale])
 
 		if t.Localised[locale] != localText {
 			t.Localised[locale] = localText
@@ -153,13 +149,13 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	}
 
-	logHandler.EventLogger.Printf("newMessage=[%v] oldMessage=[%v] msgUpdated=[%v]", newMessage, oldMessage, msgUpdated)
+	logHandler.Event.Printf("newMessage=[%v] oldMessage=[%v] msgUpdated=[%v]", newMessage, oldMessage, msgUpdated)
 
 	if !msgUpdated {
 		if newMessage == oldMessage {
-			msg := translate.Get("no change: Message is the same", "")
-			logHandler.InfoLogger.Print(msg)
-			oops(w, r, ps, translate.Get("error", ""), msg)
+			msg := translate.Get(r.Context(), "no change: Message is the same", "")
+			logHandler.Info.Print(msg)
+			oops(w, r, ps, translate.Get(r.Context(), "error", ""), msg)
 			return
 		}
 	}
@@ -169,18 +165,18 @@ func TextUpdate(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Get the current valid locales
 
 	msg := "Message updated from [%v]->[%v]"
-	msg = translate.Get(msg, "")
+	msg = translate.Get(r.Context(), msg, "")
 	msg = fmt.Sprintf(msg, oldMessage, newMessage)
 	msg2 := msg
 	logmsg := "[TEXT] " + msg
-	logHandler.InfoLogger.Println(logmsg)
+	logHandler.Info.Println(logmsg)
 
 	err = t.Update(nil, msg)
 	if err != nil {
-		oops(w, r, ps, translate.Get("error", ""), err.Error())
+		oops(w, r, ps, translate.Get(r.Context(), "error", ""), err.Error())
 		return
 	}
-	//winmsg := "Zone %v"
-	winmsg := fmt.Sprintf(translate.Get("Text %v : ", ""), t.Signature) + msg2
+	// winmsg := "Zone %v"
+	winmsg := fmt.Sprintf(translate.Get(r.Context(), "Text %v : ", ""), t.Signature) + msg2
 	successMessage(w, r, ps, winmsg)
 }

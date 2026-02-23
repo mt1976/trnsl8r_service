@@ -1,15 +1,16 @@
 package jobs
 
 import (
-	"github.com/mt1976/frantic-core/dao/database"
-	"github.com/mt1976/frantic-core/jobs"
+	"context"
+
+	"github.com/mt1976/frantic-amphora/dao/database"
+	"github.com/mt1976/frantic-amphora/jobs"
 	"github.com/mt1976/frantic-core/timing"
 	"github.com/mt1976/trnsl8r_service/app/business/domains"
 	"github.com/mt1976/trnsl8r_service/app/business/translate"
 )
 
-type template struct {
-}
+type template struct{}
 
 func (job *template) Run() error {
 	jobNotifications()
@@ -28,7 +29,7 @@ func (job *template) Schedule() string {
 }
 
 func (job *template) Name() string {
-	return translate.Get("Template Job", "")
+	return translate.Get(context.Background(), "Template Job", "")
 }
 
 func jobNotifications() {

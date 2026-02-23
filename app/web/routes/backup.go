@@ -9,18 +9,18 @@ import (
 )
 
 func Backup(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	logHandler.EventLogger.Println("Backup")
+	logHandler.Event.Println("Backup")
 
 	trace(r)
 
 	err := jobs.DatabaseBackup.Run()
 	if err != nil {
-		logHandler.ErrorLogger.Print(err.Error())
+		logHandler.Error.Print(err.Error())
 	}
 
 	w.Header().Set("Content-Type", "text/html")
 	_, err = w.Write([]byte("done"))
 	if err != nil {
-		logHandler.ErrorLogger.Print(err.Error())
+		logHandler.Error.Print(err.Error())
 	}
 }
