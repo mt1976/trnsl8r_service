@@ -1,7 +1,7 @@
 // Data Access Object for the TextStore table
 // Template Version: 0.6.00 - 2026-02-14
 // Generated
-// Date: 23/02/2026 & 12:36
+// Date: 24/02/2026 & 10:04
 // Who : matttownsend (orion)
 
 package textStore
@@ -45,6 +45,7 @@ type TextStore struct {
 	SourceLocale      string            `csv:"-"`        // Saved for future use
 	ConsumedBy        []string          `csv:"-"`        // Saved for future use
 	Localised         map[string]string `csv:"-"`        // Saved for future use
+	Notes             string            `csv:"-"`        // Saved for future use
 	// Add no more fields below this line
 }
 
@@ -65,6 +66,7 @@ type fieldNames struct {
 	SourceLocale      entities.Field
 	ConsumedBy        entities.Field
 	Localised         entities.Field
+	Notes             entities.Field
 
 	// Add no more fields below this line
 }
@@ -91,5 +93,6 @@ var Fields = fieldNames{
 	SourceLocale:      "SourceLocale",
 	ConsumedBy:        "ConsumedBy",
 	Localised:         "Localised",
+	Notes:             "Notes",
 	// Add no more fields below this line
 }

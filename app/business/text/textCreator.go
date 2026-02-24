@@ -3,7 +3,6 @@ package text
 import (
 	"context"
 
-	"github.com/mt1976/frantic-core/commonConfig"
 	"github.com/mt1976/frantic-core/idHelpers"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
@@ -15,8 +14,8 @@ func Creator(ctx context.Context, in *textStore.TextStore) (id string, skipPostC
 	signature := in.Signature
 	message := in.Message
 
-	settings := commonConfig.Get()
-	appName := settings.GetApplication_Name()
+	// settings := commonConfig.Get()
+	// appName := settings.GetApplication_Name()
 	// Create a new d
 	record = textStore.New()
 	record.Signature = signature

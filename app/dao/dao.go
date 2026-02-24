@@ -23,6 +23,7 @@ func Initialise(cfg *commonConfig.Settings) error {
 	// database.Connect()
 	textStore.Initialise(context.TODO(), false)
 	textStore.RegisterCreator(text.Creator)
+	textStore.RegisterImporter(text.Importer)
 
 	routes.Initialise(cfg)
 

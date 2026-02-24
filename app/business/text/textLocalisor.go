@@ -16,7 +16,7 @@ func GetLocalised(signature, localeFilter string) (*textStore.TextStore, error) 
 	// logger.Info.Printf("GET: %v Object: %v", tableName, fmt.Sprintf("%+v", id))
 
 	// Initialize an empty d object
-	u := textStore.New()
+	// u := textStore.New()
 
 	// Retrieve the dest object from the database based on the given IDs
 	u, err := textStore.GetBy(textStore.Fields.Signature, signature)

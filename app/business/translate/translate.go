@@ -2,10 +2,9 @@ package translate
 
 import (
 	"context"
-	"strings"
 
-	"github.com/mt1976/frantic-core/idHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
+	"github.com/mt1976/trnsl8r_service/app/business/text"
 	textDataAccess "github.com/mt1976/trnsl8r_service/app/business/text"
 	"github.com/mt1976/trnsl8r_service/app/dao/textStore"
 )
@@ -13,19 +12,19 @@ import (
 func Get(ctx context.Context, in, localeFilter string) string {
 	// Validate the input data
 	// logHandler.Translation.Printf("Translating [%v] locale=[%v]", in, localeFilter)
-	id := idHelpers.Encode(strings.ToUpper(in))
+	signature := text.BuildSignature(in)
 
 	inRec := textStore.New()
-	inRec.Signature = id
+	inRec.Signature = signature
 	inRec.Message = in
 
-	text, err := textDataAccess.GetLocalised(id, localeFilter)
+	text, err := textDataAccess.GetLocalised(signature, localeFilter)
 	if err != nil {
-		logHandler.Translation.Printf("New text translation available Id=[%v], for [%v]", id, in)
+		logHandler.Translation.Printf("New text translation available Id=[%v], for [%v]", signature, in)
 		text, err := textStore.Create(ctx, inRec)
 		if err != nil {
-			logHandler.Error.Printf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())
-			logHandler.Translation.Panicf("Error creating translation! In=[%v] Working=[%v] %v", in, id, err.Error())
+			logHandler.Error.Printf("Error creating translation! In=[%v] Working=[%v] %v", in, signature, err.Error())
+			logHandler.Translation.Panicf("Error creating translation! In=[%v] Working=[%v] %v", in, signature, err.Error())
 			return ""
 		}
 		logHandler.Translation.Printf("Translated [%v] to [%v]", in, text.Message)

@@ -14,3 +14,4 @@
 	SourceLocale      string            `csv:"-"`        // Saved for future use
 	ConsumedBy        []string          `csv:"-"`        // Saved for future use
 	Localised         map[string]string `csv:"-"`        // Saved for future use
+	Notes             string            `csv:"-"`    // Saved for future use

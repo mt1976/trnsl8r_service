@@ -7,6 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/mt1976/frantic-core/commonConfig"
+	"github.com/mt1976/frantic-core/contextHandler"
 	dockerHelpers "github.com/mt1976/frantic-core/dockerHelpers"
 	"github.com/mt1976/frantic-core/logHandler"
 	"github.com/mt1976/frantic-core/stringHelpers"
@@ -77,7 +78,7 @@ func main() {
 	logHandler.Service.Printf("[%v] Backup Done", appName)
 
 	logHandler.Info.Printf("[%v] Starting...", appName)
-	setupSystemUser()
+	ctx = setupSystemUser(ctx)
 
 	na := strings.ToUpper(appName)
 
@@ -92,7 +93,10 @@ func main() {
 	// logHandler.Info.Printf("[%v] Texts [%v]", na, xx2)
 
 	logHandler.Banner(na, "Initialise", "Start...")
-
+	err = dao.Initialise(settings)
+	if err != nil {
+		logHandler.Error.Fatal(err.Error())
+	}
 	// Preload the text store
 	logHandler.Banner(na, "Texts", "Importing")
 	err = textStore.ImportDefaults(ctx)
@@ -157,12 +161,14 @@ func tl8(ctx context.Context, msg string) {
 	}
 }
 
-func setupSystemUser() {
+func setupSystemUser(ctx context.Context) context.Context {
 	logHandler.Banner("System", "Users", "Setup")
 	// Create the system user
 
 	sysUCode := "sys"
 	sysUName := "service"
 
+	ctx = contextHandler.AddUserContext(ctx, sysUCode, sysUName)
 	logHandler.Info.Printf("System User [%v] [%v] Available", sysUName, sysUCode)
+	return ctx
 }

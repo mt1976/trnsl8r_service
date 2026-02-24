@@ -1,7 +1,7 @@
 // Data Access Object for the TextStore table
 // Template Version: 0.6.00 - 2026-02-14
 // Generated 
-// Date: 23/02/2026 & 12:36
+// Date: 24/02/2026 & 10:04
 // Who : matttownsend (orion)
 
 package textStore
@@ -166,7 +166,7 @@ func Create(ctx context.Context, basis *TextStore) (*TextStore, error) {
 	}
 	// godump.Dump(basis)
 	logHandler.Trace.Printf("**** Created %v Record: %v %+v", tableName, basis.Raw, &basis)
-	logHandler.Database.Printf("Created %v record %v(%v)", tableName, basis.Key, basis.Raw)
+	logHandler.Event.Printf("Created %v record %v(%v)", tableName, basis.Key, basis.Raw)
 	return basis, nil
 }
 

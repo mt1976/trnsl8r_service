@@ -1,7 +1,7 @@
 // Data Access Object for the TextStore table
 // Template Version: 0.6.00 - 2026-02-14
 // Generated
-// Date: 23/02/2026 & 12:36
+// Date: 24/02/2026 & 10:04
 // Who : matttownsend (orion)
 
 package textStore
@@ -25,13 +25,15 @@ type (
 	preDeleteFunc      func(ctx context.Context, record *TextStore) error
 	postGetFunc        func(ctx context.Context, record *TextStore) error
 	clonerFunc         func(ctx context.Context, source *TextStore) (clonedRecord *TextStore, err error)
-	duplicateCheckFunc func(*TextStore) (bool, error)
+	duplicateCheckFunc func(*TextStore) (found bool, err error)
 	workerFunc         func(string, string)
 	postCreateFunc     func(ctx context.Context, record *TextStore) error
 	postUpdateFunc     func(ctx context.Context, record *TextStore) error
 	postDeleteFunc     func(ctx context.Context, record *TextStore) error
 	postCloneFunc      func(ctx context.Context, record *TextStore) error
 	postDropFunc       func(ctx context.Context) error
+	importerFunc       func(ctx context.Context, record *TextStore) (err error)
+	exporterFunc       func(ctx context.Context, record *TextStore) (err error)
 )
 
 var (
@@ -50,6 +52,8 @@ var (
 	postClone      postCloneFunc
 	postDrop       postDropFunc
 	postClearDown  postDropFunc
+	importer       importerFunc
+	exporter       exporterFunc
 )
 
 // RegisterCreator registers a creator function for TextStore.
@@ -157,6 +161,20 @@ func RegisterWorker(fn workerFunc) {
 	worker = fn
 }
 
+// RegisterImporter registers an importer function for TextStore.
+func RegisterImporter(fn importerFunc) {
+	logHandler.Event.Printf("[REGISTER] Importer for %v (%v)", tableName, dao.GetFunctionName(fn))
+	logHandler.Database.Printf("[REGISTER] Importer for %v (%v)", tableName, dao.GetFunctionName(fn))
+	importer = fn
+}
+
+// RegisterExporter registers an exporter function for TextStore.
+func RegisterExporter(fn exporterFunc) {
+	logHandler.Event.Printf("[REGISTER] Exporter for %v (%v)", tableName, dao.GetFunctionName(fn))
+	logHandler.Database.Printf("[REGISTER] Exporter for %v (%v)", tableName, dao.GetFunctionName(fn))
+	exporter = fn
+}
+
 // upgradeProcessing performs any one-time upgrade or migration logic on the record.
 func (record *TextStore) upgradeProcessing() error {
 	if upgrader != nil {
@@ -165,6 +183,7 @@ func (record *TextStore) upgradeProcessing() error {
 		if err != nil {
 			return err
 		}
+		//*record = *updatedRecord
 		logHandler.Database.Printf("[UPGRADE] Upgrade complete for record %v of %v", record.Key, TableName.String())
 	}
 	return nil
